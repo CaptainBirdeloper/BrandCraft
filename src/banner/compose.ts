@@ -1,4 +1,5 @@
 import { bannerFont, type BannerSpec } from '../preset/banner';
+import { drawGrainRect, drawLayersRect } from '../preset/variants';
 import type { BannerCard } from './cards';
 import {
   BANNER_W,
@@ -18,6 +19,8 @@ export const BANNER_Z_ORDER = ['bg', 'left', 'right', 'text'] as const;
 export interface BannerFigure {
   /** Alpha-trimmed render, transparent background. */
   image: HTMLImageElement;
+  /** Opaque fraction of the figure's top row; near 1 means the head is cut flat. */
+  topRun: number;
 }
 
 export interface BannerCompose {
@@ -73,9 +76,13 @@ export function composeBanner(
   ctx.save();
   if (crop === 'strip') ctx.translate(-layout.strip.x, -layout.strip.y);
 
-  // Outside the strip there is exactly one colour and nothing else.
-  ctx.fillStyle = input.card.bg;
-  ctx.fillRect(0, 0, layout.width, layout.height);
+  // The backdrop is the same print system the profile cards use, painted over the
+  // whole frame — the phone shows the strip, a desktop shows the rest of it too.
+  const area =
+    crop === 'strip'
+      ? { x: layout.strip.x, y: layout.strip.y, w: layout.strip.w, h: layout.strip.h }
+      : { x: 0, y: 0, w: layout.width, h: layout.height };
+  drawLayersRect(ctx, layout.width, layout.height, input.card.left.variant, area);
 
   ctx.beginPath();
   ctx.rect(layout.strip.x, layout.strip.y, layout.strip.w, layout.strip.h);
@@ -96,6 +103,7 @@ export function composeBanner(
     scaleRect(rects.text, input.spec.textScale),
     token('--accent', '#ffff00'),
   );
+  drawGrainRect(ctx, layout.width, layout.height, input.card.left.variant, area);
   ctx.restore();
 
   return { canvas, rects };

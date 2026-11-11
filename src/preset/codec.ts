@@ -2,8 +2,8 @@ import { DEFAULT_RIG, parseRig, serializeRig } from '../lighting/lightrig';
 import type { LightRig } from '../lighting/lightrig';
 import type { BonePose, Crop } from './presets';
 import { DEFAULT_CROP, SLOT_KEYS } from './presets';
-import type { Slot, StarSpec } from './variants';
-import { DEFAULT_VARIANT } from './variants';
+import type { BackdropSpec, Slot, StarSpec } from './variants';
+import { DEFAULT_BACKDROP, DEFAULT_VARIANT } from './variants';
 
 const VERSION = 'MC1';
 const MAX_LENGTH = 260;
@@ -42,8 +42,12 @@ export function encodePreset(slot: Slot): string {
     `star:${star.points},${Math.round(star.x * 100)},${Math.round(star.y * 100)},` +
       `${Math.round(star.size * 100)},${Math.round(star.rotation)},${star.color.toLowerCase()}`,
   );
-  parts.push(`light:${serializeRig(preset.light)}`);
-  return parts.join('|');
+  parts.push(
+    `bgl:${variant.backdrop.style === 'riso' ? 'r' : 'f'},` +
+      `${Math.round(variant.backdrop.pitch * 1000)},` +
+      `${Math.round(variant.backdrop.grain * 100)},${variant.backdrop.ink2 ? 1 : 0}`,
+  );
+  parts.push(`light:${serializeRig(preset.light)}`);  return parts.join('|');
 }
 
 /** Parse a share code. Returns null for anything malformed. */
@@ -96,6 +100,20 @@ export function decodePreset(code: string): Slot | null {
         color: chunks[5].toLowerCase(),
       };
       variant = { ...variant, star };
+      continue;
+    }
+
+    if (key === 'bgl') {
+      const chunks = body.split(',');
+      const pitch = Number(chunks[1]);
+      const grain = Number(chunks[2]);
+      const backdrop: BackdropSpec = {
+        style: chunks[0] === 'r' ? 'riso' : 'flat',
+        pitch: Number.isFinite(pitch) ? clamp(pitch, 6, 30) / 1000 : DEFAULT_BACKDROP.pitch,
+        grain: Number.isFinite(grain) ? clamp(grain, 0, 100) / 100 : DEFAULT_BACKDROP.grain,
+        ink2: chunks[3] !== '0',
+      };
+      variant = { ...variant, backdrop };
       continue;
     }
 

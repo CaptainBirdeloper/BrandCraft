@@ -31,29 +31,40 @@ const MASTER = 2048;
 const YOUTUBE_MAX_BYTES = 6_000_000;
 
 /**
- * The card bust: the preset's vertical band, but the render's full width, then
- * trimmed to the ink. Keeping the whole width is what makes an uncut bust possible:
- * a narrow crop would bake the slice in, and no amount of layout maths can undo it.
+ * The card bust is built from nothing but the render and the ink: the whole square
+ * capture, trimmed to its alpha bounds, then cut from the *top* of that bound down.
+ * Anchoring at the ink top is what keeps the head whole — the old preset band
+ * started at `crop.y` and sliced the crown off any pose that framed high.
  */
-function trimBust(raw: HTMLImageElement, slot: Slot): HTMLCanvasElement {
-  const { crop } = slot.preset;
+const BUST_ASPECT = 1.18;
+
+function trimBust(raw: HTMLImageElement): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = MASTER;
-  canvas.height = Math.round(crop.h * MASTER);
+  canvas.height = MASTER;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D canvas unavailable');
-  ctx.drawImage(
-    raw,
-    0,
-    crop.y * MASTER,
-    MASTER,
-    crop.h * MASTER,
-    0,
-    0,
-    canvas.width,
-    canvas.height,
-  );
-  return trimAlphaCanvas(canvas);
+  ctx.drawImage(raw, 0, 0, MASTER, MASTER);
+  const ink = trimAlphaCanvas(canvas);
+  const height = Math.min(ink.height, Math.round(ink.width / BUST_ASPECT));
+  if (height >= ink.height) return ink;
+  const out = document.createElement('canvas');
+  out.width = ink.width;
+  out.height = height;
+  const outCtx = out.getContext('2d');
+  if (!outCtx) throw new Error('2D canvas unavailable');
+  outCtx.drawImage(ink, 0, 0, ink.width, height, 0, 0, ink.width, height);
+  return out;
+}
+
+/** Opaque share of the top row: ~1 means the capture itself cut the head. */
+function topRowRun(canvas: HTMLCanvasElement): number {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return 1;
+  const { data } = ctx.getImageData(0, 0, canvas.width, 1);
+  let hits = 0;
+  for (let x = 0; x < canvas.width; x += 1) if (data[x * 4 + 3] > 8) hits += 1;
+  return hits / canvas.width;
 }
 
 /** Approximate decoded byte length of a data URL, without a base64 round-trip. */
@@ -105,11 +116,14 @@ async function captureFigures(
 
   const raws = await Promise.all(shots.map((shot) => toImage(shot.url)));
   const figures = await Promise.all(
-    shots.map(async (shot, index) => {
+    shots.map(async (_shot, index) => {
       const raw = raws[index];
       if (!raw) throw new Error('Banner capture missing');
-      const trimmed = trimBust(raw, shot.slot);
-      return { image: await toImage(trimmed.toDataURL('image/png')) } satisfies BannerFigure;
+      const trimmed = trimBust(raw);
+      return {
+        image: await toImage(trimmed.toDataURL('image/png')),
+        topRun: topRowRun(trimmed),
+      } satisfies BannerFigure;
     }),
   );
 
@@ -138,7 +152,12 @@ export async function renderBannerPreview(
   if (!figures) throw new Error('Banner figures missing');
   const { canvas, rects } = composeBanner({ card, spec, figures }, width, 'strip');
   const probe = window as Window & { __bcBannerPreview?: unknown };
-  probe.__bcBannerPreview = { width: canvas.width, rects, aspects: figures.map((f) => f.image.width / f.image.height) };
+  probe.__bcBannerPreview = {
+    width: canvas.width,
+    rects,
+    aspects: figures.map((f) => f.image.width / f.image.height),
+    topRuns: figures.map((f) => Math.round(f.topRun * 100) / 100),
+  };
   return canvas.toDataURL('image/png');
 }
 

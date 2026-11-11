@@ -65,6 +65,12 @@ export function randomVariant(rand: () => number): Variant {
   return {
     bg: hslHex(bgHue, range(rand, 0.45, 0.85), range(rand, 0.1, 0.26)),
     star,
+    backdrop: {
+      style: 'riso',
+      pitch: Math.round(range(rand, 0.009, 0.017) * 1000) / 1000,
+      ink2: rand() < 0.7,
+      grain: Math.round(range(rand, 0.3, 0.55) * 100) / 100,
+    },
   };
 }
 

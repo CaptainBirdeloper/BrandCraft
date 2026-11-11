@@ -32,6 +32,11 @@ const PLACEHOLDER_ASPECT = 1;
 const TEXT_MIN_W = STRIP_W * 0.16;
 const TEXT_GUTTER = 16;
 const TEXT_H_RATIO = 0.58;
+/**
+ * Bust height as a share of the strip. The cut is at the floor, not the crown:
+ * air above the head is what stops a pose from looking clipped by the strip edge.
+ */
+const FIG_H = STRIP_H * 0.92;
 
 export interface Rect {
   x: number;
@@ -80,7 +85,7 @@ export function bannerRects(
 
   // Both figures stay extreme for as long as they fit; if the pair is too wide the
   // only honest correction is to scale both down. Cropping is what we are avoiding.
-  let h = STRIP_H;
+  let h = FIG_H;
   let wl = left * h;
   let wr = right * h;
   const room = (STRIP_W - TEXT_MIN_W) / 2 - TEXT_GUTTER;
