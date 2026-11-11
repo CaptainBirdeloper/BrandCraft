@@ -39,7 +39,7 @@ export interface Slot {
 
 export const DEFAULT_BACKDROP: BackdropSpec = {
   style: 'riso',
-  pitch: 0.012,
+  pitch: 0.017,
   ink2: true,
   grain: 0.45,
 };
@@ -205,7 +205,7 @@ function halftoneScreen(
   const reach = Math.hypot(area.w, area.h) / 2 + pitch;
 
   const inks: Array<{ color: string; angle: number; floor: number; scale: number }> = [
-    { color: darkenRgba(variant.bg, 0.45, 0.55), angle: Math.PI / 4, floor: 0, scale: 1 },
+    { color: darkenRgba(variant.bg, 0.45, 0.7), angle: Math.PI / 4, floor: 0, scale: 1 },
   ];
   if (spec.ink2) {
     inks.push({
