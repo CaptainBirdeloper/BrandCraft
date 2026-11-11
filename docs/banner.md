@@ -13,15 +13,21 @@ fixed once and everything else is measured off it.
 Paint order is `bg → left → right → text`, clipped to the strip.
 
 - `bg` is one `fillRect` of the preset backdrop colour over the whole frame
-- Figures are alpha-trimmed bust renders, `object-fit: contain`, anchored to the
-  strip floor. Boxes are 470×423, inset `PAD = 26` px from each strip edge (533 px
-  and 1557 px from the frame's left edge), so the whole silhouette stays inside the
-  strip. Nothing bleeds: a bust sliced flat down its outside edge reads as a bug
-- The wordmark box is the clear gap between the two busts minus a 16 px gutter,
-  522×245 centred on the strip. It is derived from the figure boxes, so the type can
-  never crowd a pose at any output width. `drawBannerText` picks the largest size
-  that fits width and cap height, then centres the glyph run. The spec's
-  `textScale` shrinks the box around its own centre, which is the size dial
+- Figures are alpha-trimmed bust renders, drawn at full strip height and pinned to
+  their own strip edge. The box width is the bust's own aspect — no fixed 470 px
+  box, no padding — so the outer contour sits exactly on the edge: extreme in the
+  strip, and uncut, because the image bound *is* the silhouette bound. The bust is
+  cropped from the render's full width (the preset crop only supplies the vertical
+  band), otherwise the slice would be baked into the image before layout sees it
+- The wordmark box is symmetric about the strip centre, sized to the tighter of the
+  two clearances minus a 16 px gutter (444×245 on a typical pair, 17.3 % of the
+  frame width). It is derived from the figure widths, so the type can never crowd a
+  pose at any output width, and unequal bust widths cannot push it off centre.
+  If a pair is wide enough to squeeze the box under 16 % of the strip, both figures
+  scale down together — crop nothing, keep the outer edges flush.
+  `drawBannerText` picks the largest size that fits width and cap height, then
+  centres the glyph run. The spec's `textScale` shrinks the box around its own
+  centre, which is the size dial
 
 ## Cards
 
@@ -67,5 +73,5 @@ for one card at export size and reports `{ url, bytes, ms, layout }`, plus the
 ## Output
 
 1280, 2048 or 2560 wide, PNG. If the PNG crosses 6 MB (YouTube's cap) the same
-canvas is written as JPEG 0.92. A 2560×1440 export measures around 187 KB in
-158 ms.
+canvas is written as JPEG 0.92. A 2560×1440 export measures around 208 KB in
+177 ms.

@@ -30,19 +30,23 @@ const CARD_WIDTH = 1240;
 const MASTER = 2048;
 const YOUTUBE_MAX_BYTES = 6_000_000;
 
-/** The card bust: crop the render to the preset's box, then trim to the ink. */
+/**
+ * The card bust: the preset's vertical band, but the render's full width, then
+ * trimmed to the ink. Keeping the whole width is what makes an uncut bust possible:
+ * a narrow crop would bake the slice in, and no amount of layout maths can undo it.
+ */
 function trimBust(raw: HTMLImageElement, slot: Slot): HTMLCanvasElement {
   const { crop } = slot.preset;
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(crop.w * MASTER);
+  canvas.width = MASTER;
   canvas.height = Math.round(crop.h * MASTER);
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('2D canvas unavailable');
   ctx.drawImage(
     raw,
-    crop.x * MASTER,
+    0,
     crop.y * MASTER,
-    crop.w * MASTER,
+    MASTER,
     crop.h * MASTER,
     0,
     0,
@@ -132,7 +136,10 @@ export async function renderBannerPreview(
   await ensureBannerFonts();
   const figures = pairs[0];
   if (!figures) throw new Error('Banner figures missing');
-  return composeBanner({ card, spec, figures }, width, 'strip').toDataURL('image/png');
+  const { canvas, rects } = composeBanner({ card, spec, figures }, width, 'strip');
+  const probe = window as Window & { __bcBannerPreview?: unknown };
+  probe.__bcBannerPreview = { width: canvas.width, rects, aspects: figures.map((f) => f.image.width / f.image.height) };
+  return canvas.toDataURL('image/png');
 }
 
 /** One banner, full 16:9 frame, for the download screen and the export. */
@@ -147,13 +154,14 @@ export async function renderBanner(
   await ensureBannerFonts();
   const figures = pairs[0];
   if (!figures) throw new Error('Banner figures missing');
-  const canvas = composeBanner({ card, spec, figures }, width);
+  const composed = composeBanner({ card, spec, figures }, width);
+  const canvas = composed.canvas;
 
   let url = canvas.toDataURL('image/png');
   // YouTube refuses anything over 6 MB; flat colour compresses well, but not always.
   if (dataUrlBytes(url) > YOUTUBE_MAX_BYTES) url = canvas.toDataURL('image/jpeg', 0.92);
   const bytes = dataUrlBytes(url);
-  const layout = bannerLayout(width);
+  const layout = { ...bannerLayout(width), ...composed.rects };
   const ms = Math.round(performance.now() - started);
 
   const probe = window as Window & {

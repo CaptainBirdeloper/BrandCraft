@@ -1,6 +1,15 @@
-﻿import { bannerFont, type BannerSpec } from '../preset/banner';
+import { bannerFont, type BannerSpec } from '../preset/banner';
 import type { BannerCard } from './cards';
-import { BANNER_W, STRIP_W, bannerLayout, scaleRect, type Rect } from './layout';
+import {
+  BANNER_W,
+  STRIP_W,
+  bannerLayout,
+  bannerRects,
+  bustAspect,
+  scaleRect,
+  type BannerRects,
+  type Rect,
+} from './layout';
 import { drawBannerText } from './text';
 
 /** Canvas paint order. The verify probe asserts it, so it lives next to the painter. */
@@ -30,20 +39,27 @@ function token(name: string, fallback: string): string {
   return value || fallback;
 }
 
-/** Object-fit contain, anchored to the bottom so both figures share a floor. */
+/**
+ * The rect already is the figure's own aspect at strip height, pinned to its edge,
+ * so this is a straight fill: no re-fit, no centring, nothing that could reintroduce
+ * a gap between the silhouette and the strip edge.
+ */
 function drawFigure(ctx: CanvasRenderingContext2D, rect: Rect, image: HTMLImageElement): void {
-  const scale = Math.min(rect.w / image.width, rect.h / image.height);
-  const w = image.width * scale;
-  const h = image.height * scale;
-  ctx.imageSmoothingEnabled = scale < 1;
-  ctx.drawImage(image, rect.x + (rect.w - w) / 2, rect.y + rect.h - h, w, h);
+  ctx.imageSmoothingEnabled = rect.w < image.width;
+  ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
+}
+
+export interface ComposedBanner {
+  canvas: HTMLCanvasElement;
+  /** Where the figures and the wordmark actually landed at this width. */
+  rects: BannerRects;
 }
 
 export function composeBanner(
   input: BannerCompose,
   width: number,
   crop: BannerCrop = 'frame',
-): HTMLCanvasElement {
+): ComposedBanner {
   // `width` is the output width; the strip canvas needs a wider virtual frame.
   const frameWidth = crop === 'strip' ? Math.round((width / STRIP_W) * BANNER_W) : width;
   const layout = bannerLayout(frameWidth);
@@ -66,16 +82,21 @@ export function composeBanner(
   ctx.clip();
 
   const [left, right] = input.figures;
-  if (left) drawFigure(ctx, layout.left, left.image);
-  if (right) drawFigure(ctx, layout.right, right.image);
+  const rects = bannerRects(
+    frameWidth,
+    left ? bustAspect(left.image) : null,
+    right ? bustAspect(right.image) : null,
+  );
+  if (left) drawFigure(ctx, rects.left, left.image);
+  if (right) drawFigure(ctx, rects.right, right.image);
   drawBannerText(
     ctx,
     input.spec.text,
     bannerFont(input.spec.fontId),
-    scaleRect(layout.text, input.spec.textScale),
+    scaleRect(rects.text, input.spec.textScale),
     token('--accent', '#ffff00'),
   );
   ctx.restore();
 
-  return canvas;
+  return { canvas, rects };
 }

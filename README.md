@@ -53,7 +53,7 @@ Paste it back and you land on the same render. Paste it at someone else and they
 Channel art has rules most people find out about after the crop looks wrong on a TV. brandcraft draws the real thing: a 2560×1440 frame with the 1546×423 strip every phone and desktop shows.
 
 - Banners are a section under the profile picture grid, four to a row across the full stage width. Each card is the strip itself, 3.655:1, so nothing gets letterboxed or clipped
-- Two figures per banner, extreme left and extreme right, standing on the strip floor and fully inside it: 26 px of air between a bust and the strip edge, so no silhouette is ever sliced
+- Two figures per banner, extreme left and extreme right, standing on the strip floor with their outer contour on the strip edge: the bust is cropped from the render's full width and drawn at its own aspect, so it is flush with the edge and never sliced by it
 - "Subscribe" centred on the strip, ink measured to the pixel. The wordmark box is the clear gap between the two busts, so the type can never crowd a pose
 - Four banners, each with its own typeface, lighting family, text scale and slot pairing, and its own randomizer: rolling one leaves the other three alone
 - Five typefaces: caps, roman, italic, Inter italic and Advercase
@@ -86,6 +86,6 @@ One skin viewer is shared by everything. Renders queue through a single promise 
 --state banner-export   clicks 2560, checks the frame size and the byte count
 ```
 
-Current numbers: cards span the full 1021 px stage width at 3.655:1 and sit 110 px below the preset grid, the 1600×900 banner preview samples as one flat RGB value outside the strip with the wordmark ink drifting 0 px off centre at 19.9 % of the frame width, and the 2560×1440 export comes out around 187 KB in 158 ms at the same 20.39 % text box.
+Current numbers: cards span the full 1021 px stage width at 3.655:1 and sit 110 px below the preset grid, the 1600×900 banner preview samples as one flat RGB value outside the strip with both busts flush against the strip edges (0.0 px offset, longest ink run down an edge 34 px of 264, so no flat slice) and the wordmark ink drifting 1.4 px off centre, and the 2560×1440 export comes out around 208 KB in 177 ms at the same 17.3 % text box.
 
 GPL-3.0, see [LICENSE](LICENSE).
