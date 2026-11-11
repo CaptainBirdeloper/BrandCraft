@@ -1,0 +1,39 @@
+:root {
+  /* Single source for the accent. Change this one line to re-skin every primary state. */
+  --accent: #ffff00;
+  /* Label ink on the accent. Must flip for light accents; contrast cannot be derived. */
+  --accent-ink: #090446;
+  /* Accent at 25%: the muted yellow used for paste pills and secondary labels. */
+  --accent-dim: color-mix(in srgb, var(--accent) 25%, transparent);
+  /* Card outline, sampled from the mockups. */
+  --border-card: #231d59;
+
+  --surface-canvas: #090446;
+  --surface-raised: #221d58;
+  --surface-overlay: #3a366b;
+
+  --text-primary: #ffffff;
+  --text-secondary: #b5b0a0;
+  --text-muted: #938c75;
+  --text-inverse: #090446;
+  --text-link: var(--accent);
+  --text-error: #f95d72;
+
+  --action-primary: var(--accent);
+  --action-primary-text: var(--accent-ink);
+  --action-primary-hover: color-mix(in srgb, var(--accent) 85%, #000000);
+  --action-primary-active: color-mix(in srgb, var(--accent) 70%, #000000);
+  --action-destructive: #f71735;
+  --action-destructive-text: #090446;
+  --action-destructive-hover: #c2095a;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: #787599;
+  --focus-ring: var(--accent);
+
+  --chart-1: var(--accent);
+  --chart-2: #f71735;
+  --chart-3: #938c75;
+  --chart-4: #c2095a;
+  --chart-5: #8482a2;
+}

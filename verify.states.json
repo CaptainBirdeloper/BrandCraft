@@ -1,0 +1,706 @@
+{
+  "defaults": {
+    "viewport": "1280x900",
+    "timeout": 20000
+  },
+  "states": {
+    "hero": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "settle": 200
+        }
+      ]
+    },
+    "editor": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3500
+        }
+      ]
+    },
+    "gates": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3500
+        },
+        {
+          "eval": "(() => { const imgs = [...document.querySelectorAll('img')].filter((i) => i.closest('.preset')); if (imgs.length !== 8) throw new Error('cards rendered=' + imgs.length); const empty = imgs.filter((i) => !i.src.startsWith('data:image/png') || i.naturalWidth < 32); if (empty.length) throw new Error('bad card images=' + empty.length); return true; })()"
+        },
+        {
+          "eval": "(() => { const b = document.querySelector('.refresh'); if (!b) throw new Error('no refresh button'); b.focus(); const s = getComputedStyle(b); const r = b.getBoundingClientRect(); if (b.textContent.trim() !== '') throw new Error('button has text=' + b.textContent.trim()); if (b.querySelectorAll('svg').length !== 1) throw new Error('button not icon only'); if (s.outlineStyle !== 'none' && s.outlineStyle !== '') throw new Error('focus ring=' + s.outlineStyle); if (r.width > 40 || r.height > 40) throw new Error('button too big=' + r.width); return true; })()"
+        }
+      ]
+    },
+    "perf": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 4000
+        },
+        {
+          "eval": "(() => { window.__bcSrcs = [...document.querySelectorAll('.preset img')].map((i) => i.src); window.__bcT0 = performance.now(); document.querySelector('.refresh').click(); return true; })()"
+        },
+        {
+          "settle": 1500
+        },
+        {
+          "eval": "(() => { const imgs = [...document.querySelectorAll('.preset img')]; const before = window.__bcSrcs; const changed = imgs.filter((i, n) => i.src !== before[n]).length; const holes = document.querySelectorAll('.preset-placeholder').length; throw new Error('changed=' + changed + ' placeholders=' + holes + ' rollMs=' + window.__bcRollMs + ' batchDoneAt=' + window.__bcDrawn); })()"
+        }
+      ]
+    },
+    "boot": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 400
+        },
+        {
+          "eval": "(() => { const imgs = [...document.querySelectorAll('.preset img')]; throw new Error('firstBatchMs=' + window.__bcRollMs + ' cardsVisibleAt=' + window.__bcDrawn + ' imgs=' + imgs.length); })()"
+        }
+      ]
+    },
+    "anim": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "settle": 90
+        },
+        {
+          "eval": "(() => { const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; const cards = [...document.querySelectorAll('.preset')]; const ops = cards.map((el) => Number(getComputedStyle(el).opacity)); const moving = ops.filter((o) => o < 0.98).length; if (!reduce && moving === 0) throw new Error('no entrance motion, ops=' + ops.join(',')); throw new Error('reduce=' + reduce + ' moving=' + moving + '/' + cards.length + ' ops=' + ops.map((o) => o.toFixed(2)).join(',')); })()"
+        }
+      ]
+    },
+    "anim-settled": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3000
+        },
+        {
+          "eval": "(() => { document.querySelector('.refresh').click(); return true; })()"
+        },
+        {
+          "settle": 90
+        },
+        {
+          "eval": "(() => { const t = getComputedStyle(document.querySelector('.refresh')).transform; window.__bcSpin = t; return true; })()"
+        },
+        {
+          "settle": 1800
+        },
+        {
+          "eval": "(() => { const t = getComputedStyle(document.querySelector('.refresh')).transform; const imgs = document.querySelectorAll('.preset img').length; const ghosts = [...document.querySelectorAll('.preset img')].filter((i) => Number(getComputedStyle(i).opacity) < 0.99).length; throw new Error('spinSettled=' + t + ' imgs=' + imgs + ' ghosts=' + ghosts); })()"
+        }
+      ]
+    },
+    "custom": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3500
+        },
+        {
+          "eval": "(() => { const cards = document.querySelectorAll('.preset').length; const imgs = document.querySelectorAll('.preset img').length; throw new Error('cards=' + cards + ' imgs=' + imgs); })()"
+        }
+      ]
+    },
+    "probe": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3500
+        },
+        {
+          "eval": "(() => { const cards = [...document.querySelectorAll('img')].filter((i) => i.closest('.preset')); const lum = cards.map((img) => { const c = document.createElement('canvas'); c.width = 96; c.height = 96; const g = c.getContext('2d'); g.drawImage(img, 0, 0, 96, 96); const d = g.getImageData(0, 0, 96, 96).data; const buckets = new Set(); let s = 0; let n = 0; for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 9) continue; const l = d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114; s += l; n += 1; buckets.add(Math.round(l / 8)); } return n ? Math.round(s / n) + '/' + buckets.size : 'none'; }); throw new Error('cards=' + cards.length + ' lum=' + lum.join(' ')); })()"
+        }
+      ]
+    },
+    "download": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3500
+        },
+        {
+          "hover": ".preset:nth-child(1)"
+        },
+        {
+          "settle": 300
+        },
+        {
+          "click": ".preset:nth-child(1) .circle:last-of-type"
+        },
+        {
+          "waitFor": ".download"
+        },
+        {
+          "settle": 2500
+        }
+      ]
+    },
+    "pose-match": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 3000
+        },
+        {
+          "eval": "(() => { window.__fp = (img) => { const c = document.createElement('canvas'); c.width = 32; c.height = 32; const g = c.getContext('2d'); g.drawImage(img, 0, 0, 32, 32); return g.getImageData(0, 0, 32, 32).data.slice(); }; window.__md = (a, b) => { let s = 0; for (let i = 0; i < a.length; i += 1) s += Math.abs(a[i] - b[i]); return s / a.length; }; document.querySelector('.refresh').click(); return true; })()"
+        },
+        {
+          "settle": 150
+        },
+        {
+          "eval": "(() => { document.querySelector('.refresh').click(); return true; })()"
+        },
+        {
+          "settle": 5000
+        },
+        {
+          "eval": "(() => { window.__cards = [...document.querySelectorAll('.preset img')].map((i) => window.__fp(i)); document.querySelector('.preset:nth-child(3) [aria-label=\"Download preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".download"
+        },
+        {
+          "settle": 3000
+        },
+        {
+          "eval": "(() => { const p = window.__fp(document.querySelector('.download-img')); const d = window.__cards.map((c) => window.__md(c, p)); const min = Math.min(...d); const winner = d.indexOf(min) + 1; if (winner !== 3 || min > 3) throw new Error('download does not match clicked card: diffs=' + d.map((v) => v.toFixed(1)).join(',') + ' winner=' + winner); return true; })()"
+        },
+        {
+          "press": "Escape"
+        },
+        {
+          "settle": 4000
+        },
+        {
+          "eval": "(() => { const img = document.querySelector('.preset:nth-child(3) img'); if (!img) throw new Error('card missing after back'); const back = window.__md(window.__fp(img), window.__cards[2]); if (back > 1) throw new Error('grid not stable after back: diff=' + back.toFixed(1)); return true; })()"
+        }
+      ]
+    },
+    "edit-open": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { const img = document.querySelector('.edit-img'); const sliders = document.querySelectorAll('.slider').length; const groups = document.querySelectorAll('.control-card').length; const holes = document.querySelectorAll('.edit .preset-placeholder').length; const foot = document.querySelector('.edit-foot .edit-pill-primary'); if (!img) throw new Error('no preview img'); if (!img.src.startsWith('data:image/png')) throw new Error('preview is not a png: ' + img.src.slice(0, 24)); if (sliders !== 46) throw new Error('slider count ' + sliders); if (groups !== 6) throw new Error('group count ' + groups); if (holes !== 0) throw new Error('placeholder still showing'); if (!foot) throw new Error('no download button'); return true; })()"
+        }
+      ]
+    },
+    "edit-update": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__before = { code: document.querySelector('.edit-code-text').textContent, src: document.querySelector('.edit-img').src, value: document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent }; window.__setParam('star-rotation', 44); return true; })()"
+        },
+        {
+          "settle": 1400
+        },
+        {
+          "eval": "(() => { const code = document.querySelector('.edit-code-text').textContent; const src = document.querySelector('.edit-img').src; const value = document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent; if (value !== '44°') throw new Error('label did not follow: ' + value); if (code === window.__before.code) throw new Error('code unchanged'); if (src === window.__before.src) throw new Error('preview unchanged'); if (!code.includes('star:')) throw new Error('code lost star segment'); return true; })()"
+        }
+      ]
+    },
+    "edit-coalesce": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__base = window.__bcPreviewRenders; for (let i = 0; i < 12; i += 1) window.__setParam('cam-phi', 40 + i * 3); return true; })()"
+        },
+        {
+          "settle": 2400
+        },
+        {
+          "eval": "(() => { const renders = window.__bcPreviewRenders - window.__base; const value = document.querySelector('[data-param=\"cam-phi\"] .slider-value').textContent; if (value !== '73°') throw new Error('last value not painted: ' + value); if (renders > 2) throw new Error('burst was not coalesced: ' + renders + ' renders'); return true; })()"
+        }
+      ]
+    },
+    "edit-scroll": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { const scroller = document.querySelector('.edit-scroll'); scroller.scrollTop = scroller.scrollHeight; return true; })()"
+        },
+        {
+          "settle": 400
+        },
+        {
+          "eval": "(() => { const button = document.querySelector('.edit-foot .edit-pill-primary'); const box = button.getBoundingClientRect(); if (box.bottom > innerHeight + 1 || box.top < 0) throw new Error('download button off screen: ' + Math.round(box.top) + '..' + Math.round(box.bottom) + ' of ' + innerHeight); button.click(); return true; })()"
+        },
+        {
+          "waitFor": ".download"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { const img = document.querySelector('.download-img'); if (!img || !img.src.startsWith('data:image/png')) throw new Error('download page has no preview'); return true; })()"
+        },
+        {
+          "press": "Escape"
+        },
+        {
+          "settle": 2400
+        },
+        {
+          "eval": "(() => { if (!document.querySelector('.edit')) throw new Error('escape from download did not return to the editor'); if (!document.querySelector('.edit-img')) throw new Error('editor preview lost'); return true; })()"
+        }
+      ]
+    },
+    "edit-escape": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__setParam('star-points', 7); window.__setParam('star-x', 20); return true; })()"
+        },
+        {
+          "settle": 1500
+        },
+        {
+          "press": "Escape"
+        },
+        {
+          "settle": 4200
+        },
+        {
+          "eval": "(() => { const cards = [...document.querySelectorAll('.preset img')]; if (document.querySelector('.edit')) throw new Error('still on the edit page'); if (cards.length !== 8) throw new Error('cards=' + cards.length); const after = cards[0].src; if (!after || !after.startsWith('data:image/png')) throw new Error('card 1 lost its image'); if (!window.__cardBefore) throw new Error('no baseline image'); if (after === window.__cardBefore) throw new Error('grid card did not pick up the edit'); return true; })()"
+        }
+      ]
+    },
+    "edit-edge": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; [['crop-size', 100], ['crop-x', 100], ['crop-y', 100], ['star-points', 3], ['star-size', 45], ['star-rotation', -90], ['light-key-i', 2], ['light-fill-i', 0], ['light-rim-el', 85], ['cam-phi', 177], ['cam-zoom', 20], ['bone-hd-x', 180], ['bone-ll-z', -180], ['bg-l', 0], ['cam-theta', -180]].forEach(([id, v]) => window.__setParam(id, v)); return true; })()"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { const img = document.querySelector('.edit-img'); const code = document.querySelector('.edit-code-text').textContent; if (!img || !img.src.startsWith('data:image/png')) throw new Error('no preview after extremes'); if (code.length > 260) throw new Error('code too long: ' + code.length); const crop = /crop:(\\d+),(\\d+),(\\d+),(\\d+)/.exec(code); if (!crop) throw new Error('crop lost'); const cx = Number(crop[1]); const cy = Number(crop[2]); const cw = Number(crop[3]); if (cx + cw > 100 || cy + cw > 100) throw new Error('crop escaped the frame: ' + crop[0]); return true; })()"
+        }
+      ]
+    },
+    "emit-code": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { document.title = document.querySelector('.edit-code-text').textContent; return true; })()"
+        }
+      ]
+    },
+    "edit-hover": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "hover": ".preset:nth-child(1)"
+        },
+        {
+          "settle": 320
+        },
+        {
+          "eval": "(() => { const card = document.querySelector('.preset:nth-child(1)'); const box = card.getBoundingClientRect(); const buttons = [...card.querySelectorAll('.circle')]; if (buttons.length !== 3) throw new Error('circles=' + buttons.length); const labels = buttons.map((button, index) => { const r = button.getBoundingClientRect(); if (r.left < box.left - 1 || r.right > box.right + 1) throw new Error('circle ' + index + ' overflows the card'); if (r.top < 0 || r.bottom > innerHeight) throw new Error('circle ' + index + ' off screen'); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); const owner = hit && hit.closest('button'); if (!owner) throw new Error('circle ' + index + ' not hittable, got ' + (hit && hit.className)); return owner.getAttribute('aria-label'); }); return labels.join('/'); })()"
+        },
+        {
+          "eval": "(() => { const card = document.querySelector('.preset:nth-child(1)'); const button = card.querySelector('[aria-label=\"Edit preset\"]'); const r = button.getBoundingClientRect(); const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2); if (!hit || hit.closest('button') !== button) throw new Error('edit circle covered while hovered'); return true; })()"
+        }
+      ]
+    },
+    "fonts": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "settle": 200
+        },
+        {
+          "eval": "(()=>{const mk=(f)=>{const d=document.createElement('span');d.textContent='WWWWmmmmiiilll';d.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;font:700 48px '+f;document.body.appendChild(d);const w=d.getBoundingClientRect().width;d.remove();return Math.round(w*10)/10;};throw new Error('literal_serif='+mk(\"'serif', Georgia, serif\")+' generic='+mk('Georgia, serif')+' inter='+mk(\"Georgia\")+' size='+document.fonts.size);})()"
+        }
+      ]
+    }
+  }
+}

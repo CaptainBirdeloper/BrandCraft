@@ -1,0 +1,110 @@
+BrandCraft
+Generated: 2026-11-11 (trimmed index: map + traps. Long-form record lives in summarybkp.txt)
+Purpose: browser-only Minecraft skin renderer. Drop a skin -> 8 preset cards (share codes in src\preset\slots.txt) -> tune any card on the edit page (46 sliders over the same codec) -> download screen -> save the PNG (backdrop baked in) at 1K/2K/4K.
+
+0. Reader contract
+- Trust the map, verify before editing: paths and names here are maintained by hand, so confirm a file before a mutating edit. Grep is cheap; a stale assumption is not.
+- Single target: map request -> one file via section 1. Open that file only, by line range.
+- Surgical diffs: minimal contiguous blocks, exact anchors. Never rewrite a working file.
+- Hands off runtime: never kill, restart, or probe servers, daemons, ports, sockets.
+- Values live in code: palette in src\styles\tokens.css, geometry in src\styles\app.css, springs in src\motion.ts. This file never restates a value.
+- Deeper detail: docs\design.md (why + traps), docs\instruction.md (share-code spec), docs\summarybkp.txt (every CSS class, every module function, token tables).
+
+1. Files
+Folder layout: src\lighting\ (WebGL lighting plugin + rig maths), src\render\ (viewer, batches, editor preview, pose registration), src\preset\ (preset types, slots.txt + parser, codec, variants, randomizer), src\edit\ (parameter table, edit page, slider), src\components\ (screens and shared widgets), src\styles\; root keeps App.tsx, main.tsx, motion.ts, store.ts.
+
+Build config
+index.html -> Vite entry; #root mount, module script /src/main.tsx, data-theme=dark
+vite.config.ts -> react plugin; manualChunks puts @daidr/minecraft-skin-renderer in a "renderer" chunk
+tsconfig.json -> strict noEmit, jsx react-jsx, moduleResolution bundler, types vite/client
+package.json -> scripts: dev, build, preview, typecheck; no test runner
+start.cmd -> double-click launcher: finds node (PATH, then $USERPROFILE\.dsh bundled runtime, then NODE_EXE), runs vite dev on 5173 and opens the browser; any arguments are forwarded to vite
+
+App shell
+src\main.tsx -> createRoot(#root).render(MotionConfig + LazyMotion(domAnimation, strict) > App); imports tokens.css then app.css
+src\App.tsx -> screen switch inside AnimatePresence (hero/editor/edit/download keys, pages overlap); edit falls back to the grid when editDraft is null; reads #c= hash once on mount
+src\store.ts -> zustand: skinUrl, skinName, seed, slots, slot, customSlot, codeError, screen (editor|edit|download), editDraft, returnTo, toast + setSkin/selectPreset/setCustomPreset/setCodeError/reroll/openEdit/updateDraft/commitEdit/openDownload/closeDownload/showToast/clearToast
+src\motion.ts -> shared springs SMOOTH/SNAPPY/BOUNCY/FAST, TAP/TAP_TRANSITION, gridVariants (35ms stagger), cardVariants, screenVariants
+
+Render + lighting
+src\render\render.ts -> lazy WebGL viewer with the lighting plugin; renderPresets() one-pass batch of bust crops (contact shadow over the variant backdrop); renderPreset() single-card wrapper; renderCutout() upright full body, alpha-trimmed; renderPreview()/clearPreviewCache() for the editor
+src\render\poses.ts -> ensurePose(name, bones) registers one animation per name; poseKey(bones) FNV hash so an edited bone set gets its own animation
+src\lighting\lighting.ts -> custom WebGL renderer plugin: patched GLSL lighting model + per-draw uniform injection
+src\lighting\lightrig.ts -> LightRig/LightSource/RigColors, LIGHT_TARGET, DEFAULT_RIG, clampRig, resolveRigColors, darkenRgba, serializeRig/parseRig
+
+Preset data
+src\preset\slots.txt -> THE preset menu: one `Label: MC1|...` share code per line, grid order
+src\preset\slots.ts -> parses slots.txt at boot into SLOTS; bad lines warn + skip; empty file throws
+src\preset\presets.ts -> Preset/BonePose/Crop types, SLOT_KEYS, DEFAULT_CROP, EXPORT_SIZES
+src\preset\codec.ts -> encodePreset(slot), decodePreset(code): Slot|null (includes the light: segment)
+src\preset\variants.ts -> Variant/Slot types, DEFAULT_VARIANT, drawBackdrop/drawGlow/drawStar/drawVignette/drawLayers (pure painters, no generator)
+src\preset\randomize.ts -> seeded mulberry32: randomVariant/randomRig/randomizeSlots/nextSeed/seedFromSearch (hue maths only, no palette)
+
+Screens and widgets
+src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), paste-code form
+src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll + 4-col card grid) and right rail (Replace Skin pill, cutout square, paste form, toast, logo); owns the card batch render
+src\components\PresetCard.tsx -> card div + absolute select button + hover action circles (copy code, edit, download)
+src\components\DownloadScreen.tsx -> full-page download view: ESC hint, preview square, 1k/2k/4k pills
+src\components\PastePill.tsx -> shared paste-code form (hero + rail): Enter or clipboard paste loads the code
+src\components\SkinDrop.tsx -> shared skin upload: hidden file input + FileReader + drag/drop; variant "cta" (hero) or "pill" (rail)
+src\components\icons.tsx -> inline SVG icons (Upload, Replace, Paste, Copy, Edit, Download), stroke currentColor
+
+Edit page
+src\edit\controls.ts -> parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf/boundsOf/applyParam; HSL<->hex colours, az/el<->Vec3 lights, crop writes keep the square inside the frame
+src\edit\EditScreen.tsx -> sticky preview + scrolling 6-card control column + sticky footer (code chip, Done, Download); coalesced preview renders (counter at window.__bcPreviewRenders); Escape commits
+src\edit\Slider.tsx -> one labeled native range input: fixed-width value box, scaleX fill, no focus ring
+
+Styles and assets
+src\styles\tokens.css -> THE palette (roles in design.md, hexes only here)
+src\styles\app.css -> @font-face serif (400/700 + italics) + Inter Italic, onload, editor, rail, download, edit page
+CSS naming: a new screen prefixes its classes (.edit-*, .control-*, .download-*) because app.css is one flat sheet and a generic name like .pill already belongs to the rail
+public\logo.png -> wordmark, 1785x407 tight crop
+public\fonts\ -> serif Regular/Bold/Italic/BoldItalic, Inter-Italic.ttf (variable italic 100-900)
+docs\design.md -> decisions and traps (never restates a value)
+docs\instruction.md -> external-LLM spec for writing preset share codes
+docs\summarybkp.txt -> the full legacy index: every CSS class + measurements, per-file module detail, token tables
+
+2. Data
+Storage: none. No backend, no persistence, no cookies, no localStorage; the grid look is re-rolled per load unless ?r=<uint> pins the seed.
+Pipeline: File input -> FileReader.readAsDataURL -> store.skinUrl -> shared offscreen SkinViewer (master = size*2 clamped 1024..4096) -> screenshot("png") -> 2D canvas crop to the preset bust box -> output size -> data URL -> <img> card src / <a download> href.
+Cutout pipeline: same viewer, full body, no animation (bind pose), zoom 40 -> screenshot -> scan alpha -> trim to ink box -> scale long edge -> data URL.
+Editor preview: renderPreview() at a 2048 master, character cached per skin+camera+pose+light, 2D layers recomposed per keystroke.
+Skin never leaves the machine; no network calls at runtime.
+
+3. Endpoints
+None. Static SPA; the renderer library runs in-browser. No fetch/XHR/API.
+
+4. Commands
+Build gate: node <pnpm.mjs> exec tsc --noEmit, then exec vite build. pnpm is not on PATH in this shell; node + pnpm.mjs paths come from the runtime dependency payload.
+Verify: node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state <name>; states live in verify.states.json. States that only print numbers (custom, perf, anim, probe) are probes: they always throw with measurements.
+Verify gotchas: `goto` substitutes $url only when a step's value is exactly "$url", so put ?r= or #c= on --url; there is no --state-file flag.
+
+5. Pitfalls
+- One shared SkinViewer: concurrent renders corrupt each other; the promise queue is mandatory. renderPreset, renderCutout and renderPreview share it.
+- POSE BUG (fixed): playAnimation() alone does NOT touch the skeleton — only the render loop tick does — so screenshots taken right after playAnimation captured the previous batch's last pose. Symptom: every card showed the old pose over its own refreshed backdrop, and the download page matched no card. Never drop the pose frame; never trust "single keyframe so no frame needed". Same rule for any new capture path, the editor preview included.
+- registerAnimation is keyed by name, so editing bones without a new name replays the first pose registered under it; poseKey(bones) exists for exactly that.
+- OrbitControls clamps distance to 20..150; camera target fixed at [0,16,0]. Camera alone cannot frame a headshot: head framing comes from the 2D crop; zoom 40 + alpha trim is the full-body framing.
+- Crop must stay square and inside the render: x = .5 - w/2 for a centered head (theta does not move the head sideways). The editor's crop sliders clamp x/y to 100 - w.
+- PFP composition rule: judged at 64-128px. Head fills 55-60% of the crop height, face unobstructed, 3-6% margin above hair, shoulders below. Full body in a PFP = ~15px figure, all detail dies.
+- Head turn cap: 3/4 turn up to ~30deg, tilt up to ~10deg. Positive head X looks down, negative looks up. Bone axes: X forward/back swing, Z sideways raise, Head Y turn, Head Z tilt.
+- Bust crop means big gestures are impossible (overhead arm sits above the crop, T-pose arm outside it): personality comes from head turn/tilt, torso twist, framing.
+- enableRotate/enableZoom false = no user 3D controls; poses are premade only. Do not add orbit UI.
+- WebGLRendererPlugin must be registered with use() before createSkinViewer; preferredBackend "webgl" skips the WebGPU probe.
+- Card previews 512px, download preview 1024, downloads 1024/2048/4096; rendering is one queue entry per grid, not one per card. Backdrops composite in 2D after a single WebGL screenshot.
+- The exported PNG is opaque (bg + star baked in by cropSquare); the WebGL screenshot itself is still transparent. Do not move the backdrop into the viewer.
+- Hover actions are nested inside .preset, not inside the select button (buttons cannot nest): .preset-select is the absolute full-card target, .preset-actions sits above it with z-index 2. Cards have NO focus state and NO selected border; the accent border is hover-only, so a click never leaves a lingering outline (user requirement).
+- Edit page: sliders read/write the same Slot the codec serialises, steps mirror the codec rounding; updateDraft never touches the grid; Escape and Done both commit (slots by preset.id, or customSlot for a custom-* id); Download sets returnTo 'edit'.
+- Editor previews coalesce: one render in flight, newest wins, final value always painted. Camera/pose/light re-render the GL character; backdrop/star/crop only recompose 2D.
+- CSS collision trap: app.css is flat and later rules win on equal specificity, so a generic class (e.g. .pill, owned by the rail) silently restyles an unrelated screen. Prefix per screen.
+- Toast lives in the store and is cleared by an Editor effect after 1600ms; the Hero keeps a local toast because it has no skin yet.
+- Paste code is a real text input inside a form: Enter submits, clipboard paste auto-submits, invalid -> codeError ring, typing clears it.
+- .paste-hero is fixed-width by design; the input needs white-space nowrap + overflow hidden + ellipsis or long codes spill.
+- Download screen is a full page, not a modal: state in store.screen, Escape closes via a window keydown listener; closeDownload returns to returnTo.
+- File input resets event.target.value = "" so re-uploading the same file fires onChange again.
+- Randomizer scope: only bg:, star: and light: are re-rolled; poses, cameras and crops stay literal slots.txt data, and imported codes are never re-rolled. Copy/Download encode the re-rolled slot, so the code reproduces what is on screen.
+- Share codes are one-line strings: MC1|hd:x,y,z|cam:theta,phi,zoom|crop:x%,y%,w%,h%|bg:|star:|light:. Identity bones are omitted. decodePreset rejects malformed input instead of guessing (wrong version, unknown segment, non-finite numbers, crop outside 0..100, over-length) -> null -> codeError.
+- Imported code becomes an extra "Shared" card selected immediately; its pose name is unique per import.
+- URL hash #c=<encodeURIComponent(code)> is read once on mount; the hash is never rewritten.
+- navigator.clipboard may be blocked outside HTTPS/localhost; Copy falls back to a "copy failed" toast instead of throwing.
+- Renderer is a lazy dynamic import, so the main bundle stays small; the "renderer" chunk is named by manualChunks.
+- No state persistence: refresh loses skin and selection except a #c= code in the URL.

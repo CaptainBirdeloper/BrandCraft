@@ -1,0 +1,277 @@
+BrandCraft - FULL legacy index (superseded by summary.txt, kept as the long-form record)
+Kept on purpose: section 4 DOM anchors (every CSS class + its measurements), section 5 Modules (per-file function detail), section 6 token tables.
+Append here when a detail is too long for the trimmed summary.txt. summary.txt stays the file an agent reads first.
+
+BrandCraft
+Generated: 2026-11-09 (UI pass 3: onload -> editor -> edit page -> download screen)
+Purpose: browser-only Minecraft skin renderer. Drop a skin -> pick one of 8 preset cards (each defined by a share code in src\preset\slots.txt) -> tune any card in the edit page (46 sliders over the same codec) -> open the download screen -> save the PNG (backdrop baked in) at 1K/2K/4K.
+
+0. Reader contract
+- Blind trust: this file is ground truth. Do not re-verify by scanning files or grep.
+- Single target: map request -> one file via sections 1/4/5. Open that file only.
+- Surgical diffs: minimal contiguous blocks, exact anchors. Never rewrite a working file.
+- Hands off runtime: never kill, restart, or probe servers, daemons, ports, sockets.
+- No fluff: deliver edits, skip narration of environment or obvious diffs.
+
+1. Files
+index.html -> Vite entry; #root mount, module script /src/main.tsx, data-theme=dark
+vite.config.ts -> react plugin; manualChunks puts @daidr/minecraft-skin-renderer in renderer chunk
+tsconfig.json -> strict noEmit, jsx react-jsx, moduleResolution bundler, types vite/client
+package.json -> scripts: dev, build, preview, typecheck; no test runner
+Folder layout: src\lighting\ (WebGL lighting plugin + rig maths), src\render\ (viewer, batches, editor preview, pose registration), src\preset\ (preset types, slots.txt + parser, codec, variants, randomizer), src\edit\ (parameter table, edit page, slider), src\components\ (screens and shared widgets), src\styles\; root keeps App.tsx, main.tsx, motion.ts, store.ts.
+src\main.tsx -> createRoot(#root).render(MotionConfig + LazyMotion(domAnimation, strict) > App); imports tokens.css then app.css
+src\motion.ts -> shared springs SMOOTH/SNAPPY/BOUNCY/FAST, TAP/TAP_TRANSITION, gridVariants (35ms stagger), cardVariants, screenVariants
+src\App.tsx -> screen switch inside AnimatePresence (hero/editor/edit/download keys, pages overlap); edit falls back to the grid when editDraft is null; reads #c= hash once on mount
+src\store.ts -> zustand store: skinUrl, skinName, seed, slots (re-rolled grid), slot (preset+variation), customSlot, codeError, screen (editor|edit|download), editDraft, returnTo, toast + actions incl. reroll(), openEdit/updateDraft/commitEdit, openDownload/closeDownload
+src\preset\presets.ts -> Preset/BonePose/Crop types, SLOT_KEYS, DEFAULT_CROP, EXPORT_SIZES (preset data lives in slots.txt)
+src\render\poses.ts -> ensurePose(name, bones): register one animation per pose name; poseKey(bones): FNV hash, so an edited bone set gets its own animation instead of reusing the first one registered under that name
+src\preset\variants.ts -> Variant/Slot types, DEFAULT_VARIANT, drawBackdrop/drawGlow/drawStar/drawVignette/drawLayers (pure painters, no generator)
+src\preset\randomize.ts -> seeded mulberry32 randomizer: randomVariant/randomRig/randomizeSlots/nextSeed/seedFromSearch (hue maths only, no palette)
+src\lighting\lightrig.ts -> LightRig/LightSource/RigColors types, LIGHT_TARGET, DEFAULT_RIG, clampRig, resolveRigColors, darkenRgba, serializeRig/parseRig
+src\lighting\lighting.ts -> custom WebGL renderer plugin: patched GLSL lighting model + per-draw uniform injection
+src\edit\Slider.tsx -> one labelled native range input: fixed-width value box that re-ticks per value, scaleX fill (no layout pass), no focus ring
+src\edit\EditScreen.tsx -> edit page: sticky 768px preview + scrollable 6-card control column + sticky footer (code chip, Done, Download); coalesced preview renders (one in flight, newest wins, counter at window.__bcPreviewRenders); Escape commits
+src\preset\slots.txt -> THE preset menu: one `Label: MC1|...` share code per line, grid order
+src\preset\slots.ts -> parses slots.txt at boot into SLOTS: Slot[]; bad lines warn + skip; empty file throws
+src\edit\controls.ts -> the edit page's parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf(), boundsOf(), applyParam() (clamps then applies); HSL<->hex colour sliders and az/el<->Vec3 light sliders live here; crop writes keep the square inside the frame
+src\preset\codec.ts -> encodePreset(slot): string, decodePreset(code): Slot|null (includes the light: segment)
+src\render\render.ts -> lazy WebGL viewer with the lighting plugin; renderPresets() one-pass batch of bust crops with contact shadow over the variant backdrop; renderPreset() single-card wrapper; renderCutout() upright full body, alpha-trimmed; renderPreview(slot, skin, size) editor frame that caches the character (skin+cam+pose+light, master 2048) and only recomposes the 2D layers when backdrop/star/crop move; clearPreviewCache()
+src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), paste-code form
+src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll button + 4-col card grid) and right rail (Replace Skin pill, cutout square, paste form, toast, logo); owns the card batch render
+src\components\PresetCard.tsx -> card div + absolute select button + hover action circles (copy code, open download)
+src\components\DownloadScreen.tsx -> full-page download view: ESC hint, preview square, 1k/2k/4k pills
+src\components\PastePill.tsx -> shared paste-code form (hero + rail): Enter or clipboard paste loads the code
+src\components\SkinDrop.tsx -> shared skin upload: hidden file input + FileReader + drag/drop; variant "cta" (hero) or "pill" (rail)
+src\components\icons.tsx -> inline SVG icons (UploadIcon, ReplaceIcon, PasteIcon, CopyIcon, DownloadIcon), stroke currentColor
+src\styles\tokens.css -> THE palette: design.md names the roles and the hard constraints, never the hexes
+CSS naming: a new screen prefixes its classes (.edit-*, .download-*, .control-*) because app.css is one flat sheet and a generic name like .pill already belongs to the rail; later rules win on equal specificity
+src\styles\app.css -> @font-face serif (400/700 + 400/700 italic) + Inter Italic, onload, editor, rail, download screen, narrow-screen fallback
+public\logo.png -> wordmark, 1785x407 tight crop
+public\fonts\serif-Regular.otf, -Bold.otf, -Italic.otf, -BoldItalic.otf, Inter-Italic.ttf -> italic weights are real serif italics; Inter is variable italic 100-900
+design.md -> palette source of truth (do not fork token values)
+instruction.md -> external-LLM spec for writing preset share codes (segment table, colour maths, base templates, self-check)
+summary.txt -> this index
+
+2. Data
+Storage: none. No backend, no persistence, no cookies, no localStorage.
+State lives in zustand memory only; full page refresh resets everything.
+Pipeline: File input -> FileReader.readAsDataURL -> store.skinUrl -> shared offscreen SkinViewer (master render, size*2 clamped 1024..4096) -> screenshot("png") -> 2D canvas crop to preset bust box -> output size -> data URL -> <img> card src / <a download> href.
+Cutout pipeline: same viewer, full body, no animation (bind pose), zoom 40 -> screenshot("png") -> scan alpha channel -> trim to ink box -> scale long edge -> data URL -> rail <img>.
+Skin never leaves the machine; no network calls at runtime.
+
+3. Endpoints
+None. Static SPA; renderer library runs in-browser. No fetch/XHR/API.
+
+4. DOM anchors
+#root -> React mount, div, id=root
+.onload -> onload centering, main, min-height 100dvh, place-items center, padding-bottom 3.4vh
+.onload-stack -> logo + pill + paste column, div, flex column align center
+.onload-logo -> wordmark, img, width clamp(140px,13.54vw,300px)
+.cta -> Drop Skin pill, label wrapping hidden input, yellow bg, ink text, serif 700, radius 999, height clamp(44px,4.33vw,96px)
+.cta-icon -> upload arrow, svg, width clamp(18px,2.3vw,50px)
+.paste -> paste-code pill, form, accent at 25% bg (--accent-dim), radius 999, height clamp(34px,3.42vw,76px)
+.paste-hero -> onload paste pill, form, width clamp(120px,11.73vw,270px), margin-top clamp(6px,0.7vw,16px)
+.paste-rail -> sidebar paste pill, width 81.4%, centered, height clamp(32px,4.05vw,86px)
+.paste-error -> same pill with 2px --text-error ring
+.paste-icon -> clipboard glyph, svg, ink color
+.paste-input -> code field, input, transparent, serif italic 700, ink text, nowrap + text-overflow ellipsis
+.editor -> editor layout, main, min-height 100dvh, flex row
+.stage -> main column, section, flex 1, padding clamp(14px,1.98vw,44px) right clamp(12px,2.06vw,48px)
+.stage-title -> "Profile Picture", h1, serif 700, yellow, clamp(16px,1.76vw,38px)
+.grid -> card grid, div, 4 equal cols, width min(59.86vw,100%), margin-left auto, gap clamp(6px,1.07vw,24px) clamp(6px,1.22vw,26px)
+.preset -> card, div, aspect-ratio 1, radius clamp(8px,1.22vw,26px), 2px --border-card border, black tile, overflow hidden; border turns accent on :hover ONLY (no focus border, no selected border)
+.preset:hover -> accent border on hover only (no selected/focus border)
+.preset-select -> full-card click target, button, absolute inset 0, transparent; every focus state inside a card is killed (.preset :focus/:focus-visible outline none), no focus border, no focus circles
+.preset-img -> rendered bust preview, img, object-fit cover
+.preset-placeholder -> Rendering / Render failed text, span, Inter Italic
+.preset-actions -> hover circle row, div, absolute bottom-right, opacity 0 -> 1 on card hover only
+.circle -> round action button, button, yellow bg, ink icon, width clamp(22px,2.44vw,52px), icon 58%
+.rail -> sidebar, aside, width clamp(180px,16.34vw,360px), 1px yellow left border, flex column
+.pill -> sidebar yellow pill, label, full width, height clamp(38px,4.27vw,92px), serif 700, space-between
+.pill-replace -> "Replace Skin" pill, margin-right clamp(3px,0.46vw,10px)
+.pill-icon -> replace arrows, svg, width clamp(18px,2.29vw,50px)
+.cutout -> full-body preview square, div, aspect-ratio 1, 1px --border-card, radius clamp(12px,1.6vw,34px)
+.cutout-img -> trimmed cutout, img, height 100%, width auto, object-fit contain
+.toast -> "copied" / "preset loaded" pill, span, --accent-dim bg, Inter Italic 700, auto-hides after 1600ms
+.rail-logo -> wordmark bottom-right, img, width clamp(120px,15.04vw,320px), margin-top auto
+.download -> download screen, main, min-height 100dvh, flex column center, padding-bottom 18vh
+.download-back -> "press ESC to go back", button, --accent-dim text, hover yellow
+.download-preview -> preview square, div, width clamp(180px,22.44vw,480px), radius clamp(14px,2.05vw,44px), black tile
+.download-img -> rendered preset, img, object-fit cover
+.sizes -> size pill row, div, flex, gap clamp(8px,1.2vw,26px)
+.size-pill -> 1k/2k/4k button, width clamp(58px,8.08vw,180px), height clamp(34px,4.85vw,104px), serif 700, ink text, disabled while rendering
+.edit -> edit page, main, grid minmax(0,0.95fr)/minmax(320px,1.05fr), gap clamp(12px,2vw,40px), padding clamp(14px,2vw,40px)
+.edit-stage -> sticky preview column, flex column center, position sticky top clamp(14px,2vw,40px)
+.edit-frame -> preview tile, width min(100%,clamp(200px,33vw,560px)), aspect-ratio 1, black, 1px --border-card, radius clamp(14px,2.05vw,44px)
+.edit-img -> draft render, img, 100% cover; .edit-error -> render failure text (--text-error); .edit-hint -> "Esc commits" italic (--text-muted)
+.edit-panel -> control column, flex column, max-height calc(100dvh - 2*pad); @media 820px collapses the grid to one column and unsticks
+.edit-scroll -> the only scroller, overflow-y auto, overscroll-behavior contain, 6 cards, thin scrollbar
+.control-card -> section card, --surface-raised, 1px --border-card, radius clamp(10px,1.2vw,22px), gap clamp(6px,0.7vw,12px)
+.control-head / .control-title / .control-hint -> section header row (title left, italic hint right)
+.slider / .slider-head / .slider-label / .slider-value -> one param row; value box min-width 5.5ch, tabular nums, --accent
+.slider-track / ::before / .slider-fill -> 13-24px hit area, 3px track (--surface-overlay), accent fill animated as scaleX from the left
+.slider-input -> native range over the track: transparent runnable track, accent thumb clamp(11px,1vw,18px) with 2px --accent-ink ring, outline none
+.edit-foot -> sticky footer row, 1px --border-subtle top, wraps; holds .edit-code + .edit-actions
+.edit-code -> share-code chip, monospace clamp(8px,0.7vw,13px), ellipsis, click copies; .edit-code-label uppercase accent
+.edit-pill / .edit-pill-primary -> Done (--surface-overlay) / Download (--action-primary), radius 999. Namespaced on purpose: the rail already owns .pill
+
+5. Modules
+src\store.ts:
+- useAppStore = create<AppState>() -> zustand hook
+- state: skinUrl: string|null = null, skinName: string = "", seed: number = seedFromSearch(location.search), slots: Slot[] = randomizeSlots(SLOTS, seed), slot: Slot = slots[0], customSlot: Slot|null = null, codeError: boolean = false, screen: "editor"|"edit"|"download" = "editor", editDraft: Slot|null = null, returnTo: "editor"|"edit" = "editor", toast: string|null = null
+- actions: setSkin(url, name) (also resets screen to "editor"), selectPreset(slot), setCustomPreset(slot) (also selects it and clears codeError), setCodeError(bool), openEdit(slot) (sets editDraft+slot, screen "edit"), updateDraft(slot) (draft+slot only, grid untouched), commitEdit() (writes the draft into slots by preset.id, or into customSlot for a custom-* id, then screen "editor"), openDownload() (also sets returnTo from the current screen), closeDownload() (screen = returnTo), showToast(message), clearToast(), reroll() (nextSeed -> randomizeSlots -> keeps the selection by preset.id)
+src\preset\presets.ts:
+- interface Crop { x, y, w, h } -> normalized 0..1 box of the full square render
+- SLOT_KEYS = ["hd","bd","ra","la","rl","ll"] -> fixed bone order for codes; never reorder
+- interface BonePose { slot: number; x?, y?, z? } -> slot indexes SLOT_KEYS
+- interface Preset { id, label, pose, bones, theta, phi, zoom, crop }
+- DEFAULT_CROP = { x .29, y .02, w .42, h .42 }
+- All presets are profile-picture busts: head fills 55-60% of the crop; shoulders/chest fill the rest.
+- EXPORT_SIZES = [1024, 2048, 4096] as const; type ExportSize
+src\render\poses.ts:
+- ensurePose(name: string, bones: readonly BonePose[]): Promise<void> -> idempotent per name via registered Set; maps slot -> BoneIndex [Head, Body, RightArm, LeftArm, RightLeg, LeftLeg]; builds Animation {name, duration 1, loop true, tracks [{boneIndex, keyframes [{time 0, rotation: quatFromEuler(x,y,z)}]}]}; registerAnimation
+- poseKey(bones: readonly BonePose[]): string -> FNV-1a over `slot:x,y,z;`, prefix `pose-`; used by edit/controls so an edited bone set registers as a NEW animation (ensurePose would otherwise serve the first pose under that name)
+- ensurePose is idempotent per name; each slots.txt line gets its own `pose-<slug>` name
+- Bust crop means legs are out of frame and arm angles stay small; no overhead/wide gestures (cropped out or over the face).
+src\preset\variants.ts:
+- interface StarSpec { points, x, y, size, rotation, color } -> x/y/size are fractions of the square side, rotation in degrees, color #rrggbb
+- interface Variant { bg: string; star: StarSpec } -> the full painted backdrop for one card
+- interface Slot { preset: Preset; variant: Variant } -> everything needed to render one card or one download
+- no fixed palette anywhere: colours are hue maths or literal code data, never a list; slots.txt stays the source of poses/cameras/crops, randomize.ts re-rolls bg/star/light on top of it
+- DEFAULT_VARIANT -> canvas bg + 5-point yellow star top-right; used when a share code omits bg:/star: segments
+- drawBackdrop(ctx,size,variant) -> flat fillRect; drawGlow(ctx,size,star) -> radial star-colour halo; drawStar(ctx,size,star) -> sharp 2*points polygon, inner radius .42*outer (.34 for 4 points); drawVignette(ctx,size,variant) -> corner falloff tinted from bg; drawLayers = backdrop, glow, star, vignette
+- Layers stay separate on purpose: a future "transparent only" download can call drawBackdrop/drawStar on their own canvases and export the skin alone
+- SLOTS (in slots.ts) = decoded lines of slots.txt, grid order as written; to add/edit/reorder cards edit that text file, never TS
+src\preset\randomize.ts:
+- prng(seed) -> mulberry32, 32-bit; same seed always rebuilds the same grid
+- randomVariant(rand) -> bg from a random base hue (s 45-85%, l 10-26%), star hue = bg hue +180 +-40, points 3..6, one of 8 ANCHORS +-0.04, size .16..0.30, rotation +-25; hslHex does the conversion, no colour constants
+- randomRig(rand) -> key az +-72 deg / el 18..62 / dist 44-72 / intensity .95-1.5, fill az 140..220 el -12..24 int .3-.8, rim az 130..230 el 8..50 int .6-1.3, ambient .36-.62, contrast .10-.30, all through clampRig
+- randomizeSlots(base, seed) -> Slot[]: keeps preset.pose/bones/theta/phi/zoom/crop from the base card, replaces preset.light + variant
+- nextSeed(seed) -> LCG step for the refresh button; seedFromSearch(search) -> ?r=1234 pins a grid, otherwise Math.random
+src\lighting\lightrig.ts:
+- interface LightSource { pos: [x,y,z]; intensity } -> model space, feet y=0, torso centre y=24, head top y~32, facing +z; LIGHT_TARGET = [0,24,0]
+- interface LightRig { key, fill, rim, ambient, contrast } -> ambient 0..1 hemisphere, contrast 0..1 S-curve
+- DEFAULT_RIG -> key high front-left, fill low right, rim behind; used when a code omits light: or a light key
+- clampRig: positions +-200, intensity 0..2, ambient/contrast 0..1
+- resolveRigColors(variant) -> key tinted from star hue, fill from its complement, rim from star hue, sky/ground from bg; no colour comes from a fixed palette
+- serializeRig/parseRig -> `k=x,y,z,i;f=...;r=...;a=..;c=..`, unknown keys ignored, bad value rejects the rig
+- darkenRgba(hex, amount, alpha) -> tints the contact shadow and vignette from the card bg
+src\lighting\lighting.ts:
+- composeShader: injects `out vec3 v_worldPos` (vertex) and the custom fragment chunk, replacing the library's `// Lambert lighting` block; throws if the anchor is gone
+- lighting model: hemisphere ambient + wrapped key + opposite fill + fresnel rim, then gain 0.86, clamp, contrast S-curve
+- setLightRig(rig, colors) fills preallocated Float32Arrays (directions = normalize(pos - LIGHT_TARGET)); defaults installed at module load
+- uniform injection: a Proxy wraps the stock WebGL renderer, writes u_light* uniforms into params.bindGroup.uniforms before delegating to draw; camera position comes from inverting u_viewProjectionMatrix
+- registerLighting(core, stockPlugin) re-registers the webgl backend (use() is keyed by backend), so it must run before createSkinViewer; on any failure it logs and keeps the stock plugin
+src\preset\codec.ts:
+- encodePreset(slot): string -> MC1|hd:x,y,z|...|cam:theta,phi,zoom|crop:x%,y%,w%,h%|bg:#rrggbb|star:points,x%,y%,size%,rotation,#rrggbb|light:k=x,y,z,i;f=..;r=..;a=..;c=..; identity bones omitted; ~150-220 chars
+- decodePreset(code): Slot|null -> validates version, segment keys, finite numbers; clamps cam theta +-2pi, phi .05..pi-.05, zoom 20..150, bone degrees +-180, crop percents 0..100 with x+w<=100, y+h<=100 and w,h>=10, star points 3..7, x/y 0..100, size 6..45, rotation -90..90; bg/star colours must match /^#[0-9a-f]{6}$/; rejects >260 chars; returns id custom-<base36 time>, label "Shared", pose pose-<id>; missing bg:/star:/light: falls back to DEFAULT_VARIANT / DEFAULT_RIG (old codes still load)
+- Share code has no server: it is a pure one-line string; the URL hash #c=<encoded code> auto-loads it on mount
+src\render\render.ts:
+- createViewer(): Promise<SkinViewer> -> dynamic import core + /webgl, use(WebGLRendererPlugin), registerLighting(core, WebGLRendererPlugin) (replaces the backend plugin before the viewer builds its pipelines), createSkinViewer({canvas, preferredBackend:"webgl", antialias:true, pixelRatio:1, preserveDrawingBuffer:false, enableRotate:false, enableZoom:false})
+- getViewer(): Promise<SkinViewer> -> module singleton
+- doRenderBatch(slots, skin, size) -> resize(master,master) once, setSkin once, then ONE warm-up (startRenderLoop + 2 RAF) and the loop STAYS RUNNING for the batch; cards are grouped by preset.pose and each group costs one RAF (ensurePose, playAnimation, nextFrames(1)) because AnimationController.updateAnimationController only writes the skeleton from inside the loop tick; inside a group, per card: setLightRig(preset.light, resolveRigColors(variant)), setRotation, setZoom, screenshot("png") with no frame wait (camera setters snap, screenshot redraws synchronously); stopRenderLoop in finally; then cropSquare per index. Frames are assigned by ORIGINAL index, not loop order.
+- measured with verify (seed 1234, fw.png): first batch 420ms incl. skin upload; re-roll of all 8 cards 159ms, zero placeholder gaps; per-card 2-RAF waits used to cost ~265ms of pure vsync per grid
+- cropSquare(img, crop, master, size, variant): string -> 2D canvas size x size; drawLayers(bg+glow+star+vignette), drawContactShadow(blurred silhouette filled with darkened bg), then the skin render on top; source rect = crop * master; imageSmoothingEnabled = source > size (smooth downscale, nearest upscale keeps MC pixels); toDataURL("image/png") -> opaque PNG with the backdrop baked in
+- trimAlpha(img, size): string -> 2D canvas at natural size, scan RGBA for alpha > 8, bbox, scale long edge to size, imageSmoothingEnabled false, toDataURL("image/png")
+- doCutout(skin, size) -> setLightRig(DEFAULT_RIG, resolveRigColors(DEFAULT_VARIANT)); resize(1024,1024); setSkin; setRotation(0, PI/2); setZoom(40); stopAnimation() (resets skeleton to bind pose); startRenderLoop; 2 RAF; screenshot("png"); stopRenderLoop; trimAlpha
+- renderPreview(slot, skin, size): Promise<string> -> editor frame; character cached under skin|cam|pose|light at PREVIEW_MASTER 2048, so backdrop/star/crop edits only re-run cropSquare (drawLayers + contact shadow)
+- clearPreviewCache(): void -> drops the cached HTMLImageElement when the editor unmounts
+- renderPresets(slots, skin, size): Promise<string[]> -> the grid path (one queue entry for the whole set); renderPreset(slot, skin, size) -> renderPresets([slot])[0]; renderCutout(skin, size): Promise<string> -> all serialized through one promise queue: one shared viewer, renders never overlap
+src\components\PresetCard.tsx:
+- presentational only: no effect, no render call; the Editor owns the batch and passes src/error down
+- a card keeps its previous data URL while a new batch runs (Editor merges into a Record<preset.id, string>), so a re-roll never flashes "Rendering"
+- props: slot: Slot, src: string|null, error: string|null, selected: boolean, onSelect, onCopy, onDownload
+- motion: root m.div carries cardVariants (stagger child); .preset-select and both .circle buttons use whileTap TAP; the square lives in AnimatePresence keyed by src, so a re-roll dissolves over the previous image instead of flashing
+- markup: <div className="preset"> -> <button className="preset-select" aria-pressed> (img or placeholder) + <div className="preset-actions"> with two .circle buttons (CopyIcon, DownloadIcon). No nested buttons; no text on cards; no data-selected attribute.
+src\components\PastePill.tsx:
+- props: variant: "hero"|"rail" = "hero", onLoaded?: () => void
+- local code state; load(raw) trims, decodePreset -> setCustomPreset + clear field + onLoaded(), else setCodeError(true)
+- m.form shakes x [0,-4,4,-4,0] over 220ms when codeError flips true; no loop, no idle animation
+- submit on Enter (form onSubmit); onPaste reads clipboardData.getData("text") and loads immediately, preventDefault only when it parsed (invalid paste stays in the field with the error ring)
+- typing clears codeError; fixed width on .paste-hero is what forces the ellipsis
+src\components\Editor.tsx:
+- reads store; renders store.slots (slots.txt base, re-rolled by seed; 8 cards) (+ customSlot appended as a 9th card, never re-rolled)
+- CARD_SIZE = 512; useEffect([list, skinUrl]) -> renderPresets(list, skinUrl, 512) -> merge into cards Record; writes window.__bcRollMs / __bcDrawn for verify; rejection -> console.error + error text on every card
+- list is useMemo([slots, customSlot]) or the effect re-runs every render
+- stage-head: h1.stage-title + button.refresh (icon only, aria-label "Randomize presets", RefreshIcon) -> store.reroll(); selection compares preset.id, not object identity
+- copyCode(slot): navigator.clipboard.writeText(encodePreset(slot)) -> showToast("copied"), reject -> showToast("copy failed")
+- cutout: useEffect([skinUrl]) -> renderCutout(skinUrl, 384) -> setCutout; failure -> null (placeholder text)
+- toast timer: useEffect([toast]) -> window.setTimeout(clearToast, 1600)
+- Replace Skin pill: <SkinDrop variant="pill"> (shared with Hero, adds drag/drop)
+- paste: <PastePill variant="rail" />; download circle -> selectPreset(item) then openDownload()
+src\components\Hero.tsx:
+- <SkinDrop variant="cta">; <PastePill variant="hero" onLoaded> plus a local "preset loaded" toast for 1800ms (a code alone cannot open the editor, so the toast is the only feedback)
+src\components\DownloadScreen.tsx:
+- PREVIEW_SIZE = 1024; useEffect([preset, skinUrl]) -> renderPreset -> preview
+- m.main screenVariants enter/exit; back button and size pills whileTap; preview image fades in; busy pills animate opacity to .5 (no layout shift)
+- window keydown Escape -> closeDownload(); the "press ESC to go back" button is also clickable
+- size pill click -> renderPreset(preset, skinUrl, size) -> <a download="brandcraft-<preset.id>-<size>.png"> -> closeDownload(); busy disables all pills while rendering
+
+6. Design tokens
+--surface-canvas: #090446 -> page background
+--surface-raised: #221D58 -> unused raised fills
+--surface-overlay: #3A366B -> unused overlays
+--text-primary: #FFFFFF -> headings
+--text-secondary: #B5B0A0 -> body text
+--text-muted: #938C75 -> placeholders
+--accent: #FFFF00 -> single source; all primary states derive from it
+--accent-ink: #090446 -> label/icon on accent; flip manually for light accents
+--accent-dim: accent at 25% via color-mix -> paste pills, toast, "press ESC" text (renders #474334 on canvas)
+--border-card: #231D59 -> preset card outline, cutout square outline
+--text-link: var(--accent) -> links
+--text-error: #F95D72 -> invalid code ring
+--action-primary: var(--accent) -> Drop Skin, Replace Skin, action circles, size pills
+--action-primary-hover: accent 85% + black -> hover
+--action-primary-active: accent 70% + black -> pressed
+--action-destructive: #F71735; --action-destructive-hover: #C2095A -> destructive only
+--border-subtle: rgba(255,255,255,.08) -> unused borders
+--border-strong: #787599 -> unused hover borders
+--focus-ring: var(--accent) -> paste-code field focus ring only (cards have no focus state)
+--chart-1..5: unused this pass
+Reskin: change --accent only; --accent-dim and every hover state derive from it via color-mix.
+Geometry: cards 4 per row, square, gap 1.22vw / 1.07vw, radius 8.7% of card, 2px border; rail 16.34vw with 1px yellow divider; download preview 22.44vw square radius 9%; size pills 8.08vw x 4.85vw; onload logo 13.54vw wide. All sizes clamp()d against a 1310-1432px artboard.
+Theme: dark only (html data-theme=dark, color-scheme dark). No drop shadows. Max two accents per view. Never green.
+Typography: serif 700 for every interactive label (Drop Skin, Replace Skin, Profile Picture, 1k/2k/4k); serif italic 700 for the paste-code field (real italic OTF, not a skewed upright); Inter Italic 700 for the remaining utility text (copied, press ESC to go back). System UI stack for anything else.
+
+7. Pitfalls
+- screenshot() only calls doRender(); it does NOT tick the animation. Pose applies on render-loop tick: startRenderLoop(), wait 2 requestAnimationFrame, then screenshot(). Skipping this renders unposed.
+- stopAnimation() resets the skeleton to the bind pose; that is what makes the sidebar cutout upright even after cards played a posed animation. playAnimation on the next card re-poses it.
+- Transparency requires renderer.clear(0,0,0,0) + WebGL alpha:true (library defaults); the viewer clears to alpha 0 on every frame, so screenshots are already transparent. Do not add a background fill.
+- The cutout relies on that alpha channel: trimAlpha scans for alpha > 8 to find the ink box, then scales the long edge. If the render is empty it throws "Empty render".
+- preserveDrawingBuffer not needed: screenshot renders then reads toDataURL in the same tick.
+- pixelRatio must stay 1 or canvas pixels != requested size; do not raise it for "crisper" output.
+- One shared SkinViewer: concurrent renders corrupt each other; the promise queue is mandatory. renderPreset and renderCutout share it.
+- OrbitControls clamps distance to 20..150; camera target is fixed at [0,16,0] (model center). Camera alone cannot frame a headshot: even at zoom 20 the full body is nearly in frame. Head framing comes from the 2D crop; zoom 40 + alpha trim is the full-body framing.
+- Crop math baseline (fov 70, zoom 27, phi 1.5): head top projects to frame y-fraction ~0.045, chin/shoulders ~0.28. crop {y:.02, h:.42} = head ~56% of crop height, ~6% hair margin, shoulders + upper chest below. zoom 24 puts the head top at ~ -0.01, i.e. outside the render, which cuts the hair; that is why 27 is the floor. Change theta/phi/zoom -> re-derive by rendering once and measuring, not by trusting the orthographic formula.
+- Crop must stay square and inside the render: x = .5 - w/2 for a centered head (theta does not move the head sideways, it sits on the Y rotation axis).
+- PFP composition rule: this is an avatar, judged at 64-128px. Head must fill 55-60% of the crop height, face unobstructed, ~3-6% margin above hair, shoulders/chest below. Full body in a PFP = ~15px figure, all detail dies.
+- Readability at small size: only eyes, mouth, hair silhouette and hat shape survive. Big color blocks carry the read; stripes, belts and tiny accessories vanish.
+- Head turn cap: 3/4 turn up to ~30deg, tilt up to ~10deg. More hides an eye or breaks the neck silhouette. Positive head X looks down, negative looks up.
+- Bust crop means big gestures are impossible: an overhead arm (z +-150) sits at world y~35, above the crop; a T-pose arm (z +-90) sits at x~+-16, outside a 13-unit-wide crop. Personality comes from head turn/tilt, torso twist and framing, not from arms.
+- Bone axes: X = forward/back swing, Z = sideways raise, Head Y = turn, Head Z = tilt. Positive X swings a limb backward, behind the torso.
+- Single keyframe at time 0 with duration 1 and loop true = constant pose at any normalized time; no animation speed needed.
+- POSE BUG (fixed): playAnimation() alone does NOT touch the skeleton — only the render loop tick does — so screenshots taken right after playAnimation captured the previous batch's last pose. Symptom: every card showed the old pose with its own refreshed backdrop, and the download page showed a profile that matched no card. Never drop the pose frame; never trust "single keyframe so no frame needed".
+- enableRotate:false and enableZoom:false = user gets no 3D controls; poses are premade only. Do not add orbit UI.
+- WebGLRendererPlugin must be registered with use() before createSkinViewer, else "Renderer \"webgl\" is not registered".
+- preferredBackend "webgl" skips the WebGPU probe; do not set "auto" unless WebGPU is registered.
+- Skin source is a data URL from FileReader; it never touches disk or network. No object URLs stored.
+- Card previews render at 512px, download preview at 1024, downloads at 1024/2048/4096. Rendering stays serialized (one viewer); the grid is one queue entry now, not eight. Each card composites its backdrop in 2D after one WebGL screenshot, so the variation layers cost no extra viewer runs.
+- The exported PNG is now opaque: bg + star are baked in by cropSquare. The WebGL screenshot itself is still transparent; do not move the backdrop into the viewer.
+- Hover actions are nested inside .preset, not inside the select button (buttons cannot nest). .preset-select is the absolute full-card target, .preset-actions sits above it with z-index 2; opacity 0 until .preset:hover. Cards have NO focus state and NO selected border: the accent border appears on hover only and disappears the moment the pointer leaves, so a click never leaves a lingering outline (user requirement).
+- Toast lives in the store and is cleared by an Editor effect after 1600ms; do not hold it in local state or the copy handler cannot trigger it from the card. The Hero keeps its own local toast because it has no skin yet.
+- Paste code is a real text input inside a form: Enter submits, no button. Pasting from the clipboard auto-submits (onPaste -> decodePreset), so a full code never needs a keypress. Invalid -> codeError ring; typing clears it. On the onload screen a valid code only stages the preset (no skin yet), hence the "preset loaded" toast.
+- .paste-hero is fixed-width (11.73vw) so the field is narrow by design; the input needs white-space nowrap + overflow hidden + text-overflow ellipsis or long codes spill past the pill.
+- Download screen is a full page, not a modal: state lives in store.screen, Escape closes it via a window keydown listener, and a successful download returns to the editor.
+- File input resets event.target.value = "" so re-uploading the same file fires onChange again.
+- Download uses data URL directly as <a href> + download attr; no blob conversion needed.
+- Renderer is a lazy dynamic import, so the main bundle stays small; renderer chunk named "renderer" by manualChunks.
+- Build gate: node <pnpm.mjs> exec tsc --noEmit then vite build. pnpm is not on PATH in this shell.
+- No state persistence: refresh loses skin and selection, except a #c= preset code in the URL. The grid look is never persisted either: every load re-rolls a new seed unless ?r=<uint> is in the URL.
+- Randomizer scope: only bg:, star: and light: are re-rolled. Poses, cameras and crops stay literal slots.txt data, so a randomizer bug can never break framing. Imported (pasted) codes are never re-rolled.
+- Grid look and the share code must agree: copy/download read the re-rolled slot, so the code a user gets reproduces exactly what they see.
+- Share codes are one-line strings, no backend: MC1|hd:x,y,z|cam:theta,phi,zoom|crop:x%,y%,w%,h%. Identity bones are omitted, so a built-in preset reduces to ~20-40 chars.
+- decodePreset rejects malformed input instead of guessing: wrong version, unknown segment, non-finite numbers, crop outside 0..100, code over 200 chars -> null -> codeError.
+- Imported preset becomes a fourth card labeled "Shared" and is selected immediately; its pose name is unique per import (pose-<id>) because registerAnimation is keyed by name and reusing a name silently keeps stale bones.
+- URL hash #c=<encodeURIComponent(code)> is read once on mount; Copy code writes the current preset, there is no Load button anymore (the hash is not rewritten).
+- navigator.clipboard may be blocked outside HTTPS/localhost; Copy falls back to a "copy failed" toast instead of throwing.
+- Inter italic is the variable file public/fonts/Inter-Italic.ttf declared as font-style: italic; the family name is "Inter Italic" so normal-weight system Inter can never match it by accident.

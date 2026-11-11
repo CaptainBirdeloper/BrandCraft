@@ -1,0 +1,13 @@
+# BrandCraft preset menu — the ONLY place presets live.
+# One line per card, in grid order: `Label: MC1|...`
+# Format is identical to the share codes from instruction.md. Edit, add, reorder,
+# or delete lines; the grid follows. Blank lines and lines starting with # are ignored.
+# Invalid lines are skipped with a console warning instead of breaking the app.
+Classic: MC1|hd:0,0,3|ra:2,0,-6|la:-2,0,6|cam:0,1.5,27|crop:29,2,42,42|bg:#0c2c0b|star:5,84,52,23,-17,#e733dd|light:k=-38,52,34,1.3;f=30,10,26,0.4;r=6,30,-40,0.8;a=0.42;c=0.18
+Attitude: MC1|hd:3,-22,-7|bd:0,16,0|ra:-8,0,-10|la:6,0,12|rl:3,0,0|ll:-3,0,0|cam:0.32,1.5,27|crop:29,2,42,42|bg:#133733|star:6,78,78,30,17,#ed677a|light:k=42,20,30,1.45;f=-26,34,18,0.3;r=-14,26,-38,0.9;a=0.3;c=0.3
+Hero: MC1|hd:-10,8,4|bd:-2,-6,0|ra:8,0,-8|la:8,0,8|rl:2,0,0|ll:-2,0,0|cam:0.06,1.56,27|crop:29,2,42,42|bg:#131d2c|star:3,14,48,24,21,#f67e2f|light:k=10,70,18,1.2;f=-30,8,22,0.45;r=0,20,-46,0.75;a=0.45;c=0.15
+Classic II: MC1|hd:0,0,3|ra:2,0,-6|la:-2,0,6|cam:0,1.5,27|crop:29,2,42,42|bg:#2b1444|star:3,78,23,23,17,#8cf95b|light:k=0,30,60,1.1;f=0,20,-40,0.35;r=-30,40,-20,0.7;a=0.5;c=0.1
+Attitude II: MC1|hd:3,-22,-7|bd:0,16,0|ra:-8,0,-10|la:6,0,12|rl:3,0,0|ll:-3,0,0|cam:0.32,1.5,27|crop:29,2,42,42|bg:#441c3d|star:3,18,19,18,-8,#5df465|light:k=-46,36,20,1.35;f=28,16,24,0.55;r=34,32,-30,1.1;a=0.42;c=0.25
+Hero II: MC1|hd:-10,8,4|bd:-2,-6,0|ra:8,0,-8|la:8,0,8|rl:2,0,0|ll:-2,0,0|cam:0.06,1.56,27|crop:29,2,42,42|bg:#3a1b1b|star:4,79,81,16,-20,#4de2e3|light:k=34,-10,36,1.25;f=-20,40,20,0.65;r=18,44,-28,0.8;a=0.46;c=0.28
+Lean: MC1|hd:5,-28,0|bd:0,12,0|ra:12,0,-8|la:-10,0,8|cam:-0.45,1.48,32|crop:24,4,52,52|bg:#351318|star:4,82,22,24,14,#4feec2|light:k=30,44,42,1.3;f=-32,14,20,0.4;r=0,30,-44,0.85;a=0.4;c=0.2
+Recline: MC1|hd:-6,20,-5|bd:-4,-10,0|ra:18,0,-8|la:-12,0,8|cam:-0.15,1.7,33|crop:23,5,54,54|bg:#153329|star:6,86,50,22,20,#f45288|light:k=-30,26,-34,1.05;f=26,30,30,1;r=40,20,10,1.2;a=0.62;c=0.2
