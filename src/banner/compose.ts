@@ -28,7 +28,7 @@ export interface BannerCompose {
 }
 
 /**
- * `frame` draws the whole 2560Ã—1440 upload, flat colour either side of the strip.
+ * `frame` draws the whole 2560×1440 upload, flat colour either side of the strip.
  * `strip` draws only what a phone shows, which is what a banner card in the grid
  * has to look like: no crop of the figures, no letterbox.
  */
