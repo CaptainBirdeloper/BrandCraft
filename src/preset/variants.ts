@@ -38,11 +38,14 @@ export function drawBackdrop(
   ctx.fillRect(0, 0, size, size);
 }
 
-/** Draw the star silhouette. Sharp points, no stroke. */
-export function drawStar(ctx: CanvasRenderingContext2D, size: number, star: StarSpec): void {
-  const cx = star.x * size;
-  const cy = star.y * size;
-  const outer = star.size * size;
+/** Star outline at an explicit centre and radius, so square and banner share one shape. */
+function starPath(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  outer: number,
+  star: StarSpec,
+): void {
   const inner = outer * (star.points === 4 ? 0.34 : 0.42);
   const start = (star.rotation * Math.PI) / 180 - Math.PI / 2;
 
@@ -60,17 +63,14 @@ export function drawStar(ctx: CanvasRenderingContext2D, size: number, star: Star
   ctx.fill();
 }
 
+/** Draw the star silhouette. Sharp points, no stroke. */
+export function drawStar(ctx: CanvasRenderingContext2D, size: number, star: StarSpec): void {
+  starPath(ctx, star.x * size, star.y * size, star.size * size, star);
+}
+
 /** Soft halo in the star's own colour, so the star sits in the backdrop. */
 export function drawGlow(ctx: CanvasRenderingContext2D, size: number, star: StarSpec): void {
-  const cx = star.x * size;
-  const cy = star.y * size;
-  const radius = Math.max(star.size * size * 2.4, 1);
-  const gradient = ctx.createRadialGradient(cx, cy, radius * 0.15, cx, cy, radius);
-  gradient.addColorStop(0, `${star.color}55`);
-  gradient.addColorStop(0.55, `${star.color}22`);
-  gradient.addColorStop(1, `${star.color}00`);
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
+  glowRect(ctx, size, size, star);
 }
 
 /** Corner falloff tinted from the background, so the bust reads as the subject. */
@@ -79,18 +79,7 @@ export function drawVignette(
   size: number,
   variant: Variant,
 ): void {
-  const gradient = ctx.createRadialGradient(
-    size * 0.5,
-    size * 0.46,
-    size * 0.42,
-    size * 0.5,
-    size * 0.5,
-    size * 0.85,
-  );
-  gradient.addColorStop(0, darkenRgba(variant.bg, 0.5, 0));
-  gradient.addColorStop(1, darkenRgba(variant.bg, 0.5, 0.26));
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, size, size);
+  vignetteRect(ctx, size, size, variant);
 }
 
 /**
@@ -103,8 +92,64 @@ export function drawLayers(
   size: number,
   variant: Variant,
 ): void {
-  drawBackdrop(ctx, size, variant);
-  drawGlow(ctx, size, variant.star);
-  drawStar(ctx, size, variant.star);
-  drawVignette(ctx, size, variant);
+  drawLayersRect(ctx, size, size, variant);
+}
+
+/**
+ * The same four backdrop layers on a non-square canvas. The star and its glow
+ * stay circular (radius from the short edge) instead of stretching with the
+ * canvas; the vignette is drawn in a unit space that is scaled to the canvas, so
+ * a 16:9 banner gets an elliptical falloff rather than a pinned circle.
+ */
+function glowRect(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  star: StarSpec,
+): void {
+  const cx = star.x * width;
+  const cy = star.y * height;
+  const radius = Math.max(star.size * Math.min(width, height) * 2.4, 1);
+  const gradient = ctx.createRadialGradient(cx, cy, radius * 0.15, cx, cy, radius);
+  gradient.addColorStop(0, `${star.color}55`);
+  gradient.addColorStop(0.55, `${star.color}22`);
+  gradient.addColorStop(1, `${star.color}00`);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
+}
+
+function vignetteRect(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  variant: Variant,
+): void {
+  ctx.save();
+  ctx.translate(width * 0.5, height * 0.5);
+  ctx.scale(width, height);
+  const gradient = ctx.createRadialGradient(0, -0.04, 0.42, 0, 0, 0.85);
+  gradient.addColorStop(0, darkenRgba(variant.bg, 0.5, 0));
+  gradient.addColorStop(1, darkenRgba(variant.bg, 0.5, 0.26));
+  ctx.fillStyle = gradient;
+  ctx.fillRect(-0.5, -0.5, 1, 1);
+  ctx.restore();
+}
+
+export function drawLayersRect(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  variant: Variant,
+): void {
+  ctx.fillStyle = variant.bg;
+  ctx.fillRect(0, 0, width, height);
+  glowRect(ctx, width, height, variant.star);
+  starPath(
+    ctx,
+    variant.star.x * width,
+    variant.star.y * height,
+    variant.star.size * Math.min(width, height),
+    variant.star,
+  );
+  vignetteRect(ctx, width, height, variant);
 }

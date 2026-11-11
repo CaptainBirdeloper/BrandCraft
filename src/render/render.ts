@@ -188,11 +188,14 @@ async function doRenderBatch(
   );
 }
 
-/** Alpha-trim the render to its ink box, then scale the long edge to `size`. */
-function trimAlpha(img: HTMLImageElement, size: number): string {
+/**
+ * Crop `img` to its ink box at 1:1. The banner needs the untrimmed scale, so it
+ * gets the box; the square cutout path rescales it afterwards.
+ */
+export function trimAlphaCanvas(img: HTMLImageElement | HTMLCanvasElement): HTMLCanvasElement {
   const source = document.createElement('canvas');
-  source.width = img.naturalWidth;
-  source.height = img.naturalHeight;
+  source.width = img instanceof HTMLImageElement ? img.naturalWidth : img.width;
+  source.height = img instanceof HTMLImageElement ? img.naturalHeight : img.height;
   const sctx = source.getContext('2d');
   if (!sctx) throw new Error('2D canvas unavailable');
   sctx.drawImage(img, 0, 0);
@@ -214,16 +217,27 @@ function trimAlpha(img: HTMLImageElement, size: number): string {
   }
   if (maxX < 0) throw new Error('Empty render');
 
-  const boxW = maxX - minX + 1;
-  const boxH = maxY - minY + 1;
-  const scale = size / Math.max(boxW, boxH);
   const out = document.createElement('canvas');
-  out.width = Math.round(boxW * scale);
-  out.height = Math.round(boxH * scale);
+  out.width = maxX - minX + 1;
+  out.height = maxY - minY + 1;
   const octx = out.getContext('2d');
   if (!octx) throw new Error('2D canvas unavailable');
   octx.imageSmoothingEnabled = false;
-  octx.drawImage(source, minX, minY, boxW, boxH, 0, 0, out.width, out.height);
+  octx.drawImage(source, minX, minY, out.width, out.height, 0, 0, out.width, out.height);
+  return out;
+}
+
+/** Alpha-trim the render to its ink box, then scale the long edge to `size`. */
+function trimAlpha(img: HTMLImageElement, size: number): string {
+  const box = trimAlphaCanvas(img);
+  const scale = size / Math.max(box.width, box.height);
+  const out = document.createElement('canvas');
+  out.width = Math.round(box.width * scale);
+  out.height = Math.round(box.height * scale);
+  const octx = out.getContext('2d');
+  if (!octx) throw new Error('2D canvas unavailable');
+  octx.imageSmoothingEnabled = false;
+  octx.drawImage(box, 0, 0, box.width, box.height, 0, 0, out.width, out.height);
   return out.toDataURL('image/png');
 }
 
@@ -341,4 +355,30 @@ export async function renderPreview(slot: Slot, skin: string, size: number): Pro
 /** Drop the cached character, e.g. when the editor closes. */
 export function clearPreviewCache(): void {
   characterCache = null;
+}
+
+/**
+ * Run one extra capture job on the shared viewer queue. The banner renders six
+ * figures in a single job; jobs never overlap, so the GL context stays intact.
+ */
+export function enqueueCapture<T>(task: () => Promise<T>): Promise<T> {
+  const run = queue.then(task, task);
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+export function getSkinViewer(): Promise<Viewer> {
+  return getViewer();
+}
+
+export function prepareSkin(viewer: Viewer, skin: string): Promise<void> {
+  return ensureSkin(viewer, skin);
+}
+
+export function waitFrames(count: number): Promise<void> {
+  return nextFrames(count);
+}
+
+export function toImage(dataUrl: string): Promise<HTMLImageElement> {
+  return decodeImage(dataUrl);
 }

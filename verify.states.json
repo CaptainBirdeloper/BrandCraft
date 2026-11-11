@@ -418,7 +418,7 @@
           "settle": 1400
         },
         {
-          "eval": "(() => { const code = document.querySelector('.edit-code-text').textContent; const src = document.querySelector('.edit-img').src; const value = document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent; if (value !== '44°') throw new Error('label did not follow: ' + value); if (code === window.__before.code) throw new Error('code unchanged'); if (src === window.__before.src) throw new Error('preview unchanged'); if (!code.includes('star:')) throw new Error('code lost star segment'); return true; })()"
+          "eval": "(() => { const code = document.querySelector('.edit-code-text').textContent; const src = document.querySelector('.edit-img').src; const value = document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent; if (value !== '44Â°') throw new Error('label did not follow: ' + value); if (code === window.__before.code) throw new Error('code unchanged'); if (src === window.__before.src) throw new Error('preview unchanged'); if (!code.includes('star:')) throw new Error('code lost star segment'); return true; })()"
         }
       ]
     },
@@ -460,7 +460,7 @@
           "settle": 2400
         },
         {
-          "eval": "(() => { const renders = window.__bcPreviewRenders - window.__base; const value = document.querySelector('[data-param=\"cam-phi\"] .slider-value').textContent; if (value !== '73°') throw new Error('last value not painted: ' + value); if (renders > 2) throw new Error('burst was not coalesced: ' + renders + ' renders'); return true; })()"
+          "eval": "(() => { const renders = window.__bcPreviewRenders - window.__base; const value = document.querySelector('[data-param=\"cam-phi\"] .slider-value').textContent; if (value !== '73Â°') throw new Error('last value not painted: ' + value); if (renders > 2) throw new Error('burst was not coalesced: ' + renders + ' renders'); return true; })()"
         }
       ]
     },
@@ -699,6 +699,120 @@
         },
         {
           "eval": "(()=>{const mk=(f)=>{const d=document.createElement('span');d.textContent='WWWWmmmmiiilll';d.style.cssText='position:absolute;visibility:hidden;white-space:nowrap;font:700 48px '+f;document.body.appendChild(d);const w=d.getBoundingClientRect().width;d.remove();return Math.round(w*10)/10;};throw new Error('literal_serif='+mk(\"'serif', Georgia, serif\")+' generic='+mk('Georgia, serif')+' inter='+mk(\"Georgia\")+' size='+document.fonts.size);})()"
+        }
+      ]
+    },
+    "banner-section": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".banner-card img"
+        },
+        {
+          "settle": 9000
+        },
+        {
+          "eval": "(() => {\n  window.__bcSrcs = [...document.querySelectorAll('.banner-card img')].map((i) => i.src);\n  const cards = [...document.querySelectorAll('.banner-card')];\n  if (cards.length !== 4) throw new Error('cards=' + cards.length);\n  const rerolls = [...document.querySelectorAll('.banner-card-reroll')];\n  if (rerolls.length !== 4) throw new Error('randomizers=' + rerolls.length + ', need one per banner');\n  if (document.querySelector('.banner-card-tag')) throw new Error('number tags still rendered');\n  if (document.querySelector('.banners-head button')) throw new Error('a section-wide randomizer is still there');\n  if (cards.some((c) => !c.querySelector('img'))) throw new Error('a card has no render');\n  const title = document.querySelector('.stage-title').getBoundingClientRect();\n  const head = document.querySelector('.banners-head').getBoundingClientRect();\n  const g = document.querySelector('.banners-grid').getBoundingClientRect();\n  const stage = document.querySelector('.stage');\n  const cs = getComputedStyle(stage);\n  const inner = stage.getBoundingClientRect().width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);\n  const grid = document.querySelector('.grid').getBoundingClientRect();\n  if (g.top < grid.bottom) throw new Error('banners overlap the profile grid');\n  if (Math.abs(head.left - title.left) > 2) throw new Error('banners title off the stage edge');\n  if (Math.abs(g.left - title.left) > 2) throw new Error('banners grid off the stage edge');\n  if (Math.abs(g.width - inner) > 2) throw new Error('grid width ' + Math.round(g.width) + ' vs stage ' + Math.round(inner));\n  const ratios = cards.map((c) => { const r = c.getBoundingClientRect(); return r.width / r.height; });\n  const bad = ratios.find((r) => Math.abs(r - 1546 / 423) > 0.02);\n  if (bad) throw new Error('card aspect ' + bad.toFixed(3));\n  if (new Set(cards.map((c) => Math.round(c.getBoundingClientRect().top))).size !== 1) throw new Error('cards wrapped onto two rows');\n  return 'section ok: 4 cards, 4 randomizers, aspect ' + ratios[0].toFixed(3);\n})()"
+        },
+        {
+          "click": ".banner-card:nth-child(2) .banner-card-reroll"
+        },
+        {
+          "settle": 8000
+        },
+        {
+          "eval": "(() => {\n  const before = window.__bcSrcs;\n  const now = [...document.querySelectorAll('.banner-card img')].map((i) => i.src);\n  if (now.length !== before.length) throw new Error('card count changed');\n  const changed = now.map((src, i) => src !== before[i]);\n  const count = changed.filter(Boolean).length;\n  if (!changed[1]) throw new Error('card 2 did not change its look');\n  if (count !== 1) throw new Error(count + ' cards re-rolled, expected 1 — the randomizers are not separate');\n  throw new Error('per-banner reroll isolated to card 2, other 3 untouched');\n})()"
+        }
+      ]
+    },
+    "banner-frame": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".banner-card img"
+        },
+        {
+          "settle": 9000
+        },
+        {
+          "click": ".banner-card:first-child .banner-card-open"
+        },
+        {
+          "waitFor": ".download-preview.is-banner img"
+        },
+        {
+          "settle": 6000
+        },
+        {
+          "eval": "(() => {\n  const L = window.__bcBannerLayout;\n  if (!L) throw new Error('no layout probe');\n  if (L.order.join('>') !== 'bg>left>right>text') throw new Error('paint order ' + L.order.join('>'));\n  if (Math.abs(L.width / L.height - 16 / 9) > 0.01) throw new Error('frame aspect ' + (L.width / L.height).toFixed(3));\n  if (Math.abs(L.strip.x + L.strip.w / 2 - L.width / 2) > 2) throw new Error('strip off centre');\n  if (Math.abs(L.text.x + L.text.w / 2 - L.width / 2) > 2) throw new Error('wordmark box off centre');\n  if (L.left.x < L.strip.x + 4) throw new Error('left figure runs over the strip edge');\n  if (L.right.x + L.right.w > L.strip.x + L.strip.w - 4) throw new Error('right figure runs over the strip edge');\n  if (L.text.x < L.left.x + L.left.w - 1) throw new Error('wordmark box overlaps the left bust');\n  if (L.text.x + L.text.w > L.right.x + 1) throw new Error('wordmark box overlaps the right bust');\n\n  const img = document.querySelector('.download-preview.is-banner img');\n  const c = document.createElement('canvas');\n  c.width = img.naturalWidth;\n  c.height = img.naturalHeight;\n  const x = c.getContext('2d');\n  x.drawImage(img, 0, 0);\n  const W = c.width;\n  const H = c.height;\n  const px = (X, Y) => { const d = x.getImageData(X, Y, 1, 1).data; return d[0] + ',' + d[1] + ',' + d[2]; };\n  const outside = [px(4, 4), px(W - 5, 4), px(4, H - 5), px(W - 5, H - 5), px(Math.round(W / 2), 6), px(Math.round(W / 2), H - 6)];\n  if (!outside.every((v) => v === outside[0])) throw new Error('outside strip not flat: ' + outside.join(' | '));\n  const bg = outside[0];\n  const bleed = [];\n  for (let y = Math.round(L.left.y) + 30; y < Math.round(L.left.y + L.left.h) - 6; y += 24) {\n    bleed.push(px(Math.round(L.strip.x) + 2, y), px(Math.round(L.strip.x + L.strip.w) - 3, y));\n  }\n  const dirty = bleed.find((v) => v !== bg);\n  if (dirty) throw new Error('a figure is still sliced by the strip edge: found ' + dirty + ', bg ' + bg);\n  const gapFrom = Math.round(L.left.x + L.left.w);\n  const gapTo = Math.round(L.right.x);\n  const cols = new Int32Array(W);\n  for (let Y = Math.round(L.strip.y); Y < Math.round(L.strip.y + L.strip.h); Y += 1) {\n    for (let X = gapFrom; X <= gapTo; X += 1) {\n      const d = x.getImageData(X, Y, 1, 1).data;\n      if (d[0] > 200 && d[1] > 200 && d[2] < 110) cols[X] += 1;\n    }\n  }\n  let ink = 0;\n  let minX = -1;\n  let maxX = -1;\n  for (let X = gapFrom; X <= gapTo; X += 1) {\n    ink += cols[X];\n    if (cols[X] > 0) { if (minX < 0) minX = X; maxX = X; }\n  }\n  if (ink < 200 || minX < 0) throw new Error('wordmark missing between the busts, ink px=' + ink);\n  if (minX <= gapFrom + 1 || maxX >= gapTo - 1) throw new Error('wordmark runs into a figure: ' + minX + '..' + maxX + ' gap ' + gapFrom + '..' + gapTo);\n  const drift = Math.round((minX + maxX) / 2 - W / 2);\n  if (Math.abs(drift) > 8) throw new Error('wordmark off centre by ' + drift + 'px (' + minX + '..' + maxX + ' of ' + W + ')');\n  const ratio = (maxX - minX) / W;\n  if (ratio < 0.15 || ratio > 0.22) throw new Error('wordmark width ' + (ratio * 100).toFixed(1) + '% of the frame, wanted 15-22%');\n\n  throw new Error('frame=' + W + 'x' + H + ' bg=' + bg + ' flat=yes edge-clean=yes ink=' + ink + ' inkW=' + (maxX - minX) + ' drift=' + drift + 'px width=' + (ratio * 100).toFixed(1) + '% font=' + L.font + ' rig=' + L.rig + ' pair=' + L.pair.join('+'));\n})()"
+        }
+      ]
+    },
+    "banner-export": {
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".banner-card img"
+        },
+        {
+          "settle": 9000
+        },
+        {
+          "click": ".banner-card:first-child .banner-card-open"
+        },
+        {
+          "waitFor": ".download-preview.is-banner img"
+        },
+        {
+          "settle": 6000
+        },
+        {
+          "click": ".sizes .size-pill:last-child"
+        },
+        {
+          "settle": 8000
+        },
+        {
+          "eval": "(() => {\n  const L = window.__bcBannerLayout;\n  if (L.width !== 2560) throw new Error('export width ' + L.width);\n  if (L.height !== 1440) throw new Error('export height ' + L.height);\n  if (L.bytes < 30000) throw new Error('export too small: ' + L.bytes);\n  if (L.bytes > 6000000) throw new Error('over the YouTube cap: ' + L.bytes);\n  const ratio = L.text.w / L.width;\n  if (Math.abs(ratio - 0.2039) > 0.002) throw new Error('wordmark box is not the same fraction of the frame as the preview: ' + ratio.toFixed(4));\n  if (Math.abs(L.text.x + L.text.w / 2 - L.width / 2) > 2) throw new Error('wordmark box off centre in the export');\n  if (Math.abs(L.strip.w / L.width - 1546 / 2560) > 0.001) throw new Error('strip is not the same fraction of the frame');\n  throw new Error('export=' + L.width + 'x' + L.height + ' bytes=' + L.bytes + ' ms=' + L.ms + ' textBox=' + (ratio * 100).toFixed(2) + '% of frame (same as preview)');\n})()"
         }
       ]
     }

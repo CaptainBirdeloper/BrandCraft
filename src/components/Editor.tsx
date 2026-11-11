@@ -8,6 +8,7 @@ import type { Slot } from '../preset/variants';
 import { PastePill } from './PastePill';
 import { PresetCard } from './PresetCard';
 import { SkinDrop } from './SkinDrop';
+import { BannerSection } from './BannerSection';
 import { RefreshIcon } from './icons';
 
 const CARD_SIZE = 512;
@@ -115,7 +116,8 @@ export function Editor() {
       animate="show"
       exit="out"
     >
-      <section className="stage">
+      <div className="stage-column">
+        <section className="stage">
         <div className="stage-head">
           <h1 className="stage-title">Profile Picture</h1>
           <m.button
@@ -148,7 +150,10 @@ export function Editor() {
             />
           ))}
         </m.div>
-      </section>
+        </section>
+
+        <BannerSection />
+      </div>
 
       <aside className="rail">
         <SkinDrop variant="pill" />
@@ -167,7 +172,6 @@ export function Editor() {
             <span className="preset-placeholder">Rendering</span>
           )}
         </div>
-
         <PastePill variant="rail" />
 
         <AnimatePresence>

@@ -132,3 +132,4 @@ export function decodePreset(code: string): Slot | null {
   const preset = { id, label: 'Shared', pose: `pose-${id}`, bones, theta, phi, zoom, crop, light };
   return { preset, variant };
 }
+

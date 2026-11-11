@@ -1,0 +1,167 @@
+﻿/* ---------- Banner section (lives under the profile picture grid) ---------- */
+
+.stage-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The grid keeps its own height; the banner section below it scrolls in. */
+.stage-column > .stage {
+  flex: none;
+}
+
+.banners {
+  padding: 0 clamp(12px, 2.06vw, 48px) clamp(20px, 4vw, 64px) clamp(12px, 1.83vw, 40px);
+}
+
+/* Same head as the profile picture section, so the two read as siblings: title at
+   the stage's left edge, randomizer beside it. */
+.banners-head {
+  display: flex;
+  align-items: center;
+  gap: clamp(5px, 0.6vw, 14px);
+  margin: clamp(14px, 2vw, 44px) 0 0;
+}
+
+.banners-title {
+  margin: 0;
+  font-family: 'serif', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(16px, 1.76vw, 38px);
+  line-height: 1;
+  color: var(--accent);
+}
+
+.banners-error {
+  margin: clamp(6px, 0.7vw, 12px) 0 0;
+  color: var(--accent);
+  font-family: 'Inter Italic', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(9px, 0.7vw, 13px);
+}
+
+/* Four strips per row across the whole stage: banners get their own width budget,
+   they are not tied to the profile grid's columns. */
+.banners-grid {
+  margin: clamp(6px, 0.8vw, 16px) 0 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(4px, 0.73vw, 16px) clamp(4px, 0.68vw, 15px);
+}
+
+/* A banner card is the phone strip: 1546x423, nothing else. */
+.banner-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1546 / 423;
+  border: 2px solid var(--border-card);
+  border-radius: clamp(4px, 0.62vw, 12px);
+  background: #000000;
+  overflow: hidden;
+  transition: border-color 0.12s ease;
+}
+
+.banner-card:hover {
+  border-color: var(--accent);
+}
+
+/* The image is the click target: it opens the download page for this banner. */
+.banner-card-open {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.banner-card-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* One randomizer per banner, tucked in the corner so the strip stays the star. */
+.banner-card-reroll {
+  position: absolute;
+  top: clamp(2px, 0.3vw, 7px);
+  right: clamp(2px, 0.3vw, 7px);
+  display: grid;
+  place-items: center;
+  width: clamp(13px, 1.35vw, 30px);
+  height: clamp(13px, 1.35vw, 30px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(8, 5, 20, 0.55);
+  color: var(--accent);
+  cursor: pointer;
+  opacity: 0.72;
+  transition: opacity 0.12s ease, background 0.12s ease;
+}
+
+.banner-card-reroll:hover {
+  opacity: 1;
+  background: rgba(8, 5, 20, 0.85);
+}
+
+.banner-card-reroll svg {
+  width: 62%;
+  height: 62%;
+}
+
+.banner-card-error {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 2px 6px;
+  background: rgba(8, 5, 20, 0.8);
+  color: var(--accent);
+  font-family: 'Inter Italic', sans-serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(6px, 0.5vw, 10px);
+}
+
+.banner-card .preset-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(6px, 0.55vw, 11px);
+}
+
+/* ---------- Banner download preview: the whole 2560x1440 frame ---------- */
+
+.download-preview.is-banner {
+  width: min(1600px, 82vw);
+  aspect-ratio: 16 / 9;
+  border-radius: clamp(8px, 1.1vw, 22px);
+}
+
+@media (max-width: 900px) {
+  .banners {
+    padding: 0 12px 28px;
+  }
+
+  .banners-head,
+  .banners-grid,
+  .banners-error {
+    width: 100%;
+  }
+
+  .banners-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .download-preview.is-banner {
+    width: min(94vw, 640px);
+  }
+}

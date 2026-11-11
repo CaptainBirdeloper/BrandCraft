@@ -16,9 +16,13 @@ export default function App() {
 
   useEffect(() => {
     if (!window.location.hash.startsWith('#c=')) return;
-    const decoded = decodePreset(decodeURIComponent(window.location.hash.slice(3)));
-    if (decoded) setCustomPreset(decoded);
-    else setCodeError(true);
+    const code = decodeURIComponent(window.location.hash.slice(3));
+    const preset = decodePreset(code);
+    if (preset) {
+      setCustomPreset(preset);
+      return;
+    }
+    setCodeError(true);
   }, [setCustomPreset, setCodeError]);
 
   // Pages overlap instead of waiting on each other: the drop feels instant.
