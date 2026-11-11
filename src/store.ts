@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import {
   BANNER_SPEC_DEFAULTS,
   BANNER_FONTS,
@@ -45,7 +45,7 @@ interface AppState {
   openBannerDownload: (index: number) => void;
   closeDownload: () => void;
   setBanner: (index: number, patch: Partial<BannerSpec>) => void;
-  rerollBanner: (index: number) => void;
+  rerollBanners: () => void;
   showToast: (message: string) => void;
   clearToast: () => void;
 }
@@ -107,14 +107,14 @@ export const useAppStore = create<AppState>((set) => ({
       banners: state.banners.map((spec, at) => (at === index ? { ...spec, ...patch } : spec)),
     })),
   /**
-   * Re-rolls exactly one banner. Always moves on, because a refresh that lands on
-   * the look you already had reads as a dead button: typeface, light family,
-   * wordmark size and slot pairing all step, so one card has 5 x 3 x 3 x 5 looks.
+   * Re-rolls the whole banner section in one press, exactly like the profile
+   * picture randomizer: every card steps to a fresh look and they change together,
+   * so the four banners still give 5 x 3 x 3 x 5 combinations per press. A card
+   * never lands on the look it already had, because that reads as a dead button.
    */
-  rerollBanner: (index) =>
+  rerollBanners: () =>
     set((state) => ({
-      banners: state.banners.map((spec, at) => {
-        if (at !== index) return spec;
+      banners: state.banners.map((spec) => {
         const step = <T,>(list: readonly T[], current: T): T => {
           const from = list.indexOf(current);
           const next = (from + 1 + Math.floor(Math.random() * (list.length - 1))) % list.length;

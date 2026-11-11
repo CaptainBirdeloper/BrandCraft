@@ -65,8 +65,9 @@ export const DEFAULT_BANNER_SPEC: BannerSpec = {
 };
 
 /**
- * One spec per banner. Four banners means four independent randomizers, so the
- * first paint already shows four different looks instead of four copies.
+ * One spec per banner. Four specs means the first paint already shows four
+ * different looks instead of four copies, and one press of the section randomizer
+ * steps all four specs at once.
  */
 export const BANNER_SPEC_DEFAULTS: readonly BannerSpec[] = [
   DEFAULT_BANNER_SPEC,

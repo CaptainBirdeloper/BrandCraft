@@ -55,7 +55,7 @@ Channel art has rules most people find out about after the crop looks wrong on a
 - Banners are a section under the profile picture grid, four to a row across the full stage width. Each card is the strip itself, 3.655:1, so nothing gets letterboxed or clipped
 - Two figures per banner, extreme left and extreme right, standing on the strip floor with their outer contour on the strip edge: the bust is cropped from the render's full width and drawn at its own aspect, so it is flush with the edge and never sliced by it
 - "Subscribe" centred on the strip, ink measured to the pixel. The wordmark box is the clear gap between the two busts, so the type can never crowd a pose
-- Four banners, each with its own typeface, lighting family, text scale and slot pairing, and its own randomizer: rolling one leaves the other three alone
+- Four banners, each with its own typeface, lighting family, text scale and slot pairing, and one randomizer beside the "Banners" heading — the same control the profile picture grid has — that re-rolls all four at once
 - Five typefaces: caps, roman, italic, Inter italic and Advercase
 - Three lighting families (flat, editorial, rim) built on each preset's own rig, so a banner figure is lit the way its profile card is lit, only pushed outward. The refresh button on a card re-rolls that card's typeface, lighting, wordmark size and preset pairing, never lands on the look it already had, and leaves the other three cards untouched
 - Every pixel outside the strip is one flat colour taken from the preset backdrop. No star, no scrim, no vignette

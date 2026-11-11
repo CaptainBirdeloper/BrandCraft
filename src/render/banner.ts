@@ -123,8 +123,8 @@ async function captureFigures(
 
 /**
  * One banner card preview: the strip itself at `width`, which is exactly what a
- * phone shows, so the card never crops a figure. One card per call, because each
- * banner has its own randomizer.
+ * phone shows, so the card never crops a figure. One card per call: the section
+ * randomizer re-rolls every spec at once, and each card re-renders on its own.
  */
 export async function renderBannerPreview(
   spec: BannerSpec,

@@ -35,10 +35,11 @@ Four banners, each with its own `BannerSpec`: text, typeface, lighting family,
 text scale and pair offset. `bannerCards(slots, specs)` makes one card per spec;
 card `k` is slot `k` on the left and slot `(k + pairOffset) % 8` on the right.
 
-Each card owns its randomizer. `rerollBanner(index)` steps only that card's spec
-(5 typefaces × 3 families × 3 scales × 5 offsets = 225 looks, always different),
-and because the other specs keep their object identity the other three cards do
-not even re-render.
+One randomizer, beside the "Banners" heading — the same `stage-head` + `.refresh`
+control the profile picture section has. `rerollBanners()` steps every card's spec
+in one press (5 typefaces × 3 families × 3 scales × 5 offsets = 225 looks per card,
+never landing on the look it already had), so all four banners change together
+instead of hiding four buttons on top of the artwork.
 
 `renderBannerPreview` composes one preview with `crop: 'strip'`: the canvas is the
 1546×423 strip at the requested width, which is exactly what a phone shows. Cards

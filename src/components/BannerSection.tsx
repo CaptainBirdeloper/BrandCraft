@@ -3,7 +3,7 @@ import { m } from 'motion/react';
 import { bannerCards, type BannerCard } from '../banner/cards';
 import { renderBannerPreview } from '../render/banner';
 import type { BannerSpec } from '../preset/banner';
-import { BOUNCY, TAP } from '../motion';
+import { BOUNCY } from '../motion';
 import { useAppStore } from '../store';
 import { RefreshIcon } from './icons';
 
@@ -18,16 +18,14 @@ interface TileProps {
 }
 
 /**
- * One banner. Its own render, its own randomizer: pressing refresh on card 3
- * re-rolls card 3 only, and the other three keep their look.
+ * One banner. Just the strip and the tap target — randomizing lives on the section
+ * heading, beside the title, exactly like the profile picture grid.
  */
 function BannerTile({ card, spec, skinUrl }: TileProps) {
-  const rerollBanner = useAppStore((s) => s.rerollBanner);
   const openBannerDownload = useAppStore((s) => s.openBannerDownload);
 
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [spins, setSpins] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,11 +47,6 @@ function BannerTile({ card, spec, skinUrl }: TileProps) {
     };
   }, [spec, card, skinUrl]);
 
-  const shuffle = () => {
-    setSpins((value) => value + 1);
-    rerollBanner(card.index);
-  };
-
   return (
     <div className="banner-card">
       <button
@@ -68,18 +61,6 @@ function BannerTile({ card, spec, skinUrl }: TileProps) {
           <span className="preset-placeholder">Rendering</span>
         )}
       </button>
-      <m.button
-        type="button"
-        className="banner-card-reroll"
-        aria-label={`Randomize banner ${card.index + 1}`}
-        title="Randomize this banner: type, lighting, size, pairing"
-        onClick={shuffle}
-        whileTap={TAP}
-        animate={{ rotate: spins * 360 }}
-        transition={BOUNCY}
-      >
-        <RefreshIcon />
-      </m.button>
       {error ? <span className="banner-card-error">{error}</span> : null}
     </div>
   );
@@ -90,6 +71,14 @@ export function BannerSection() {
   const slots = useAppStore((s) => s.slots);
   const customSlot = useAppStore((s) => s.customSlot);
   const banners = useAppStore((s) => s.banners);
+  const rerollBanners = useAppStore((s) => s.rerollBanners);
+
+  const [spins, setSpins] = useState(0);
+
+  const shuffle = () => {
+    setSpins((value) => value + 1);
+    rerollBanners();
+  };
 
   const pool = useMemo(() => (customSlot ? [...slots, customSlot] : slots), [slots, customSlot]);
   /** Only the pairings matter to the cards; re-rolling one must not re-render the rest. */
@@ -103,8 +92,19 @@ export function BannerSection() {
 
   return (
     <section className="banners">
-      <div className="banners-head">
-        <h2 className="banners-title">Banners</h2>
+      <div className="stage-head banners-head">
+        <h2 className="stage-title">Banners</h2>
+        <m.button
+          type="button"
+          className="refresh"
+          aria-label="Randomize banners"
+          title="Randomize all four banners: type, lighting, size, pairing"
+          onClick={shuffle}
+          animate={{ rotate: spins * 360 }}
+          transition={BOUNCY}
+        >
+          <RefreshIcon />
+        </m.button>
       </div>
       <div className="banners-grid">
         {cards.map((card) => (
