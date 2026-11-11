@@ -3,7 +3,8 @@ import type { LightRig, Vec3 } from '../lighting/lightrig';
 import { poseKey } from '../render/poses';
 import { SLOT_KEYS } from '../preset/presets';
 import type { BonePose } from '../preset/presets';
-import type { Slot, StarSpec } from '../preset/variants';
+import { DEFAULT_BACKDROP } from '../preset/variants';
+import type { BackdropSpec, Slot, StarSpec } from '../preset/variants';
 
 export type GroupId = 'camera' | 'framing' | 'pose' | 'backdrop' | 'star' | 'light';
 
@@ -28,6 +29,19 @@ export interface Param {
   unit: string;
   get: (slot: Slot) => number;
   set: (slot: Slot, value: number) => Slot;
+}
+
+/**
+ * A switch, not a slider: one press flips it. The screen is either printed or flat,
+ * and the grain is either there or not — a two-stop range would say the same thing
+ * with more chrome.
+ */
+export interface Toggle {
+  id: string;
+  label: string;
+  group: GroupId;
+  get: (slot: Slot) => boolean;
+  set: (slot: Slot, on: boolean) => Slot;
 }
 
 type LampKey = 'key' | 'fill' | 'rim';
@@ -147,6 +161,36 @@ function withBone(slot: Slot, index: number, axis: number, value: number): Slot 
 
 function withStar(slot: Slot, patch: Partial<StarSpec>): Slot {
   return { ...slot, variant: { ...slot.variant, star: { ...slot.variant.star, ...patch } } };
+}
+
+function withBackdrop(slot: Slot, patch: Partial<BackdropSpec>): Slot {
+  return { ...slot, variant: { ...slot.variant, backdrop: { ...slot.variant.backdrop, ...patch } } };
+}
+
+/**
+ * Turning grain back on restores the default density rather than remembering the last
+ * value: the shared code carries one number, and a switch that restores a hidden
+ * strength is a switch that lies about the preset.
+ */
+export const TOGGLES: readonly Toggle[] = [
+  {
+    id: 'halftone',
+    label: 'Halftone',
+    group: 'backdrop',
+    get: (slot) => slot.variant.backdrop.style === 'riso',
+    set: (slot, on) => withBackdrop(slot, { style: on ? 'riso' : 'flat' }),
+  },
+  {
+    id: 'grain',
+    label: 'Grain',
+    group: 'backdrop',
+    get: (slot) => slot.variant.backdrop.grain > 0,
+    set: (slot, on) => withBackdrop(slot, { grain: on ? DEFAULT_BACKDROP.grain : 0 }),
+  },
+];
+
+export function togglesOf(group: GroupId): readonly Toggle[] {
+  return TOGGLES.filter((toggle) => toggle.group === group);
 }
 
 function withCrop(slot: Slot, patch: { size?: number; x?: number; y?: number }): Slot {
@@ -454,7 +498,7 @@ export const GROUPS: ParamGroup[] = [
   { id: 'camera', title: 'Camera', hint: 'Where the viewer stands' },
   { id: 'framing', title: 'Framing', hint: 'Square crop over the render' },
   { id: 'pose', title: 'Pose', hint: 'Degrees per bone' },
-  { id: 'backdrop', title: 'Backdrop', hint: 'Flat background fill' },
+  { id: 'backdrop', title: 'Backdrop', hint: 'Print, grain, fill colour' },
   { id: 'star', title: 'Star', hint: 'Shape and colour' },
   { id: 'light', title: 'Lighting', hint: 'Aim at the torso centre' },
 ];

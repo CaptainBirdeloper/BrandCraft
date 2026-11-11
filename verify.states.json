@@ -852,6 +852,67 @@
         }
       ],
       "description": "look-only clone of banner-frame: reports instead of throwing, so a screenshot can be taken"
+    },
+    "edit-backdrop": {
+      "description": "backdrop chips: halftone and grain flip independently and the share code round trips",
+      "steps": [
+        {
+          "goto": "$url"
+        },
+        {
+          "waitForNetwork": true
+        },
+        {
+          "upload": {
+            "selector": ".cta input[type=\"file\"]",
+            "files": [
+              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+            ]
+          }
+        },
+        {
+          "waitFor": ".preset img"
+        },
+        {
+          "settle": 2600
+        },
+        {
+          "eval": "(() => { window.__setParam = (id, v) => { const el = document.querySelector('[data-param=\"' + id + '\"] input'); if (!el) throw new Error('no slider ' + id); const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; setter.call(el, String(v)); el.dispatchEvent(new Event('input', { bubbles: true })); }; window.__cardBefore = document.querySelectorAll('.preset img')[0].src; document.querySelector('.preset:nth-child(1) [aria-label=\"Edit preset\"]').click(); return true; })()"
+        },
+        {
+          "waitFor": ".edit"
+        },
+        {
+          "settle": 2200
+        },
+        {
+          "eval": "(() => { const pr = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').getAttribute('aria-pressed'); const clk = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').click(); const token = () => (document.querySelector('.edit-code-text').textContent.split('|').find((t) => t.startsWith('bgl:')) || 'none'); const t0 = token(); window.__bcT0 = t0; if (pr('halftone') !== 'true' || pr('grain') !== 'true') throw new Error('defaults not on'); if (!t0.startsWith('bgl:r,')) throw new Error('not printed: ' + t0); if (Number(t0.slice(4).split(',')[2]) < 28) throw new Error('weak grain: ' + t0); clk('halftone'); return true; })()"
+        },
+        {
+          "settle": 900
+        },
+        {
+          "eval": "(() => { const pr = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').getAttribute('aria-pressed'); const clk = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').click(); const token = () => (document.querySelector('.edit-code-text').textContent.split('|').find((t) => t.startsWith('bgl:')) || 'none'); if (pr('halftone') !== 'false') throw new Error('halftone chip did not flip'); if (pr('grain') !== 'true') throw new Error('grain chip moved on its own'); const t = token(); const parts = t.slice(4).split(','); if (parts[0] !== 'f') throw new Error('code kept the print: ' + t); if (Number(parts[2]) < 28) throw new Error('grain lost when print off: ' + t); if (parts[1] !== window.__bcT0.slice(4).split(',')[1]) throw new Error('pitch moved'); clk('grain'); return true; })()"
+        },
+        {
+          "settle": 900
+        },
+        {
+          "eval": "(() => { const pr = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').getAttribute('aria-pressed'); const clk = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').click(); const token = () => (document.querySelector('.edit-code-text').textContent.split('|').find((t) => t.startsWith('bgl:')) || 'none'); if (pr('grain') !== 'false') throw new Error('grain chip did not flip'); const t = token(); if (!t.startsWith('bgl:f,') || t.slice(4).split(',')[2] !== '0') throw new Error('code after both off: ' + t); clk('halftone'); return true; })()"
+        },
+        {
+          "settle": 900
+        },
+        {
+          "eval": "(() => { const pr = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').getAttribute('aria-pressed'); const clk = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').click(); const token = () => (document.querySelector('.edit-code-text').textContent.split('|').find((t) => t.startsWith('bgl:')) || 'none'); if (pr('halftone') !== 'true' || pr('grain') !== 'false') throw new Error('partial restore wrong'); clk('grain'); return true; })()"
+        },
+        {
+          "settle": 900
+        },
+        {
+          "eval": "(() => { const pr = (id) => document.querySelector('.edit [data-toggle=\"' + id + '\"]').getAttribute('aria-pressed'); const t = (document.querySelector('.edit-code-text').textContent.split('|').find((x) => x.startsWith('bgl:')) || 'none'); if (pr('halftone') !== 'true' || pr('grain') !== 'true') throw new Error('did not restore'); const a = t.slice(4).split(','); const b = window.__bcT0.slice(4).split(','); if (a[0] !== 'r' || a[1] !== b[1] || a[3] !== b[3]) throw new Error('restored ' + t + ' from ' + window.__bcT0); if (a[2] !== '45') throw new Error('grain restore should return to the default 45, got ' + a[2]); throw new Error('report chips=2 halftone and grain flip alone, code went ' + window.__bcT0 + ' -> off -> ' + t + ', preview renders=' + window.__bcPreviewRenders); })()"
+        }
+      ]
     }
   }
 }

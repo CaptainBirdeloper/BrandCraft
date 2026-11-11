@@ -47,7 +47,8 @@ export function encodePreset(slot: Slot): string {
       `${Math.round(variant.backdrop.pitch * 1000)},` +
       `${Math.round(variant.backdrop.grain * 100)},${variant.backdrop.ink2 ? 1 : 0}`,
   );
-  parts.push(`light:${serializeRig(preset.light)}`);  return parts.join('|');
+  parts.push(`light:${serializeRig(preset.light)}`);
+  return parts.join('|');
 }
 
 /** Parse a share code. Returns null for anything malformed. */

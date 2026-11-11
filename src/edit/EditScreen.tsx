@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { m } from 'motion/react';
 import { encodePreset } from '../preset/codec';
-import { GROUPS, applyParam, boundsOf, paramsOf } from './controls';
+import { GROUPS, applyParam, boundsOf, paramsOf, togglesOf } from './controls';
 import { SMOOTH, TAP, TAP_TRANSITION, screenVariants } from '../motion';
 import { clearPreviewCache, renderPreview } from '../render/render';
 import { useAppStore } from '../store';
@@ -124,6 +124,28 @@ export function EditScreen() {
                 <h2 className="control-title">{group.title}</h2>
                 <span className="control-hint">{group.hint}</span>
               </header>
+              {togglesOf(group.id).length > 0 ? (
+                <div className="toggle-row">
+                  {togglesOf(group.id).map((toggle) => {
+                    const on = toggle.get(draft);
+                    return (
+                      <m.button
+                        key={toggle.id}
+                        type="button"
+                        className={`toggle-chip${on ? ' is-on' : ''}`}
+                        data-toggle={toggle.id}
+                        aria-pressed={on}
+                        whileTap={TAP}
+                        transition={TAP_TRANSITION}
+                        onClick={() => updateDraft(toggle.set(draft, !on))}
+                      >
+                        <span className="toggle-pip" />
+                        {toggle.label}
+                      </m.button>
+                    );
+                  })}
+                </div>
+              ) : null}
               {paramsOf(group.id).map((param) => {
                 const { min, max } = boundsOf(param, draft);
                 return (

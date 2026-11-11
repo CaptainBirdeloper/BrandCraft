@@ -45,11 +45,18 @@ function token(name: string, fallback: string): string {
 /**
  * The rect already is the figure's own aspect at strip height, pinned to its edge,
  * so this is a straight fill: no re-fit, no centring, nothing that could reintroduce
- * a gap between the silhouette and the strip edge.
+ * a gap between the silhouette and the strip edge. The drop shadow rides on the
+ * same draw — the silhouette's own alpha is the mask, so the bust still lands on
+ * the edge while the printed field behind it darkens into a contact shadow.
  */
 function drawFigure(ctx: CanvasRenderingContext2D, rect: Rect, image: HTMLImageElement): void {
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+  ctx.shadowBlur = Math.max(6, rect.w * 0.035);
+  ctx.shadowOffsetY = Math.max(2, rect.h * 0.022);
   ctx.imageSmoothingEnabled = rect.w < image.width;
   ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
+  ctx.restore();
 }
 
 export interface ComposedBanner {
