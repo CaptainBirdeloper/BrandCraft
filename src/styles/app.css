@@ -205,7 +205,8 @@ img {
 }
 
 /* Icon-only randomizer. No ring, no leftover border after a click. */
-.refresh {
+.refresh,
+.refresh-open {
   flex: none;
   width: clamp(18px, 1.68vw, 34px);
   aspect-ratio: 1;
@@ -225,11 +226,14 @@ img {
 }
 
 .refresh:focus,
-.refresh:focus-visible {
+.refresh:focus-visible,
+.refresh-open:focus,
+.refresh-open:focus-visible {
   outline: none;
 }
 
-.refresh svg {
+.refresh svg,
+.refresh-open svg {
   width: 100%;
   height: 100%;
 }

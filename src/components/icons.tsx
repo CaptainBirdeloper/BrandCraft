@@ -1,4 +1,4 @@
-﻿interface IconProps {
+interface IconProps {
   className?: string;
 }
 
@@ -55,6 +55,14 @@ export function DownloadIcon({ className }: IconProps) {
       <path d="M12 4.5v10" />
       <path d="M7.5 10 12 14.5 16.5 10" />
       <path d="M4.5 16v2.5A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5V16" />
+    </svg>
+  );
+}
+
+export function FullscreenIcon({ className }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...base}>
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
     </svg>
   );
 }

@@ -1,91 +1,119 @@
 # brandcraft
 
-Minecraft skin goes in, profile picture comes out. Also a YouTube banner. All of it renders in the browser with WebGL, so the skin file never touches a server.
+Browser-native Minecraft skin renderer. Turn a skin file into print-grade profile avatars and calibrated YouTube banner art without a backend, account, or cloud queue. Everything computes client-side via WebGL.
 
-![The drop screen](.assets/drop.png)
-*One button, one input. No account, no queue.*
+![BrandCraft Studio Interface](.assets/overview.png)
 
-## what you actually get
+---
 
-Drop a skin and the app rolls eight poses of it, each framed as a square PFP at 1024, 2048 or 4096 pixels.
+## Output Quality
 
-The hard part of a Minecraft PFP is that the face has to read at 96 px in a Discord member list. Eight finished starting points beat one empty orbit slider, because you can compare them side by side and pick a direction.
+Rendered sample exported directly at 2048×2048 with riso halftone screening, three-point directional lighting, and contact shadow:
 
-![The pose grid](.assets/grid.png)
-*Eight presets, from neutral Classic to the leaned-back Recline. The rail on the right swaps the skin without losing your place.*
+<p align="center">
+  <img src=".assets/brandcraft-recline-2048.png" alt="2048px Recline Preset Render" width="480" />
+</p>
 
-Then you make it yours. Every preset is a starting point, not a locked template.
+---
 
-## the editor
+## Workflow
 
-![The editor](.assets/editor.png)
-*Same skin, camera orbit at -9°, bust crop at 54%, and the share code updating live in the bottom bar.*
+### 1. Drop Skin
+Drag and drop your skin PNG or paste a base64 share code. No upload latency. The skin never leaves your browser.
 
-Five groups of controls, all of them live:
+![Drop Screen](.assets/drop.png)
 
-- Camera: orbit, height, distance
-- Framing: bust size and its horizontal/vertical offset, which is the crop that becomes your PFP square
-- Pose: pitch, turn and tilt on every bone in the skeleton, applied on top of the preset
-- Star: the four-pointed mark behind the head, with point count, position, size and rotation
-- Light: key, fill and rim lamps (azimuth, elevation, intensity) plus ambient and contrast
+### 2. Compare Presets
+Eight distinct studio presets render in one batch. Poses range from neutral portrait framing to dynamic leaned angles. The right-hand rail keeps skin swaps instant while preserving your active workspace.
 
-Esc commits and goes back. Nothing is written to disk until you ask for it.
+![Preset Grid Fullscreen](.assets/presets-fullscreen.png)
 
-## download
+### 3. Fine-Tune in the Studio Editor
+Tweak camera angles, bone rotations, lighting rigs, and halftone print patterns with live preview feedback.
 
-![The download screen](.assets/download.png)
-*1024, 2048 or 4096. The preview is the exact square that ships.*
+![Studio Editor](.assets/editor.png)
 
-PNG, 1:1, with the preset backdrop and star baked in. 4k for a channel avatar, 1k for a chat icon.
+Forty-six fine-grained controls across five groups:
 
-## share codes
+- **Camera**: Orbit azimuth, elevation, camera distance
+- **Framing**: Bust scale and XY offset inside the square crop
+- **Pose**: Bone-level pitch, roll, and yaw for head, torso, and limbs
+- **Star & Backdrop**: Geometric star backdrop with point counts, anchor positions, and riso dot pitch
+- **Three-Point Rig**: Directional key, fill, and rim lamps with independent hue derivation and ambient contrast
 
-Every look compresses into one line of text:
+Press `Esc` to commit changes and return to the stage.
 
-```
+### 4. YouTube Banner Suite
+Generates 2560×1440 channel art fitted with YouTube's 1546×423 mobile-and-desktop safe strip. Dual character busts anchor flush to the strip edges while custom typography centers cleanly in the negative space.
+
+![Banners Fullscreen](.assets/banners-fullscreen.png)
+
+- **Layout**: 3.655:1 strip aspect ratio; figure scale locked to 92% headroom.
+- **Lighting Families**: Flat, editorial, and rim rig configurations mapped per side.
+- **Typography**: Five display typefaces tuned with pixel-exact cap-height measurements.
+- **File Guard**: Automatic PNG export; falls back to JPEG (quality 0.92) if the file approaches YouTube's 6 MB ceiling.
+
+### 5. Multi-Scale Export
+Export uncompressed 1:1 square profile images at 1K, 2K, or 4K.
+
+![Download Modal](.assets/download.png)
+
+---
+
+## Share Codes
+
+Preset configurations serialize into compact, URL-safe strings:
+
+```text
 MC1|hd:-6,20,-5|bd:-4,-10,0|ra:18,0,-8|la:-12,0,8|cam:-0.15,1.7,33|crop:23,5,54,54|bg:#153329|star:6,86,50,22,20,#f45288|light:k=-30,26,-34,1.05;f=26,30,30,1;r=40,20,10,1.2;a=0.62;c=0.2
 ```
 
-Paste it back and you land on the same render. Paste it at someone else and they get your exact framing on their own skin. A malformed code gets rejected outright, so a bad paste never drops you into a half-broken editor.
+Share codes encode camera angles, skeleton poses, crop coordinates, backdrop colors, and light vectors. Paste a code anywhere in the interface to recreate the exact studio setup on any skin.
 
-## youtube banner
+---
 
-Channel art has rules most people find out about after the crop looks wrong on a TV. brandcraft draws the real thing: a 2560×1440 frame with the 1546×423 strip every phone and desktop shows.
+## Technical Stack
 
-- Banners are a section under the profile picture grid, four to a row across the full stage width. Each card is the strip itself, 3.655:1, so nothing gets letterboxed or clipped
-- Two figures per banner, extreme left and extreme right, standing on the strip floor with their outer contour on the strip edge: the bust is cropped from the render's full width and drawn at its own aspect, so it is flush with the edge and never sliced by it
-- "Subscribe" centred on the strip, ink measured to the pixel. The wordmark box is the clear gap between the two busts, so the type can never crowd a pose
-- Four banners, each with its own typeface, lighting family, text scale and slot pairing, and one randomizer beside the "Banners" heading — the same control the profile picture grid has — that re-rolls all four at once
-- Five typefaces: caps, roman, italic, Inter italic and Advercase
-- Three lighting families (flat, editorial, rim) built on each preset's own rig, so a banner figure is lit the way its profile card is lit, only pushed outward. The refresh button on a card re-rolls that card's typeface, lighting, wordmark size and preset pairing, never lands on the look it already had, and leaves the other three cards untouched
-- Every pixel outside the strip is one flat colour taken from the preset backdrop. No star, no scrim, no vignette
-- Exports at 1280, 2048 or 2560 wide. PNG by default; anything that would cross YouTube's 6 MB cap gets written as JPEG 0.92 instead
+- **Runtime**: React 19, TypeScript (strict), Vite 8
+- **Renderer**: [`@daidr/minecraft-skin-renderer`](https://github.com/daidr/minecraft-skin-renderer) with custom WebGL lighting shader plugin
+- **State**: Zustand
+- **Animations**: Motion
+- **Presets**: Plain-text definitions parsed from [`src/preset/slots.txt`](src/preset/slots.txt)
 
-Four banners, one capture job. Card `k` puts slot `k` on the left and the slot `pairOffset` further along on the right, so no card repeats a pose and the pairing is itself part of the roll.
+---
 
-## run it
+## Development
 
 ```bash
+# Install dependencies
 npm install
-npm run dev        # vite dev server
-npm run build      # tsc --noEmit via typecheck, then vite build
+
+# Start Vite dev server on port 5173
+npm run dev
+
+# Run strict type checking and build
 npm run typecheck
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-React 19, TypeScript strict, Vite 8, zustand for state, motion for transitions, and [`@daidr/minecraft-skin-renderer`](https://github.com/daidr/minecraft-skin-renderer) for the WebGL skin viewport. Presets live in plain text at [slots.txt](src/preset/slots.txt), one line per card, in grid order — edit that file and the grid follows.
+---
 
-One skin viewer is shared by everything. Renders queue through a single promise chain, because two WebGL captures at once corrupt the context.
+## Automated Verification
 
-## proof, not vibes
+Headless Chrome test suites run through `verify.states.json` to validate rendering passes and layout metrics:
 
-`verify.states.json` drives headless Chrome through the real flows: drop a skin, wait for the banner section, click a card, click an export size. Each state is a scripted run, and the probe asserts numbers instead of taking a screenshot. Point the `verify` skill at a preview server (`npm run preview`, port 4173) and ask for a state:
-
+```bash
+# Verify banner section geometry, ink boundaries, and export sizes
+node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-section
+node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-frame
+node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-export
 ```
---state banner-section  four cards at strip aspect, spanning the full stage width
---state banner-frame    paint order, wordmark ink centring, flat sides, ink pixel count
---state banner-export   clicks 2560, checks the frame size and the byte count
-```
 
-Current numbers: cards span the full 1021 px stage width at 3.655:1 and sit 110 px below the preset grid, the 1600×900 banner preview samples as one flat RGB value outside the strip with both busts flush against the strip edges (0.0 px offset, longest ink run down an edge 34 px of 264, so no flat slice) and the wordmark ink drifting 1.4 px off centre, and the 2560×1440 export comes out around 208 KB in 177 ms at the same 17.3 % text box.
+---
 
-GPL-3.0, see [LICENSE](LICENSE).
+## License
+
+GPL-3.0. See [LICENSE](LICENSE).

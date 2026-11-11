@@ -22,14 +22,23 @@ export interface BackdropSpec {
   pitch: number;
   /** Second, sparser screen in the star hue, at 15° against the first. */
   ink2: boolean;
-  /** Speckle strength 0..1. Drawn last, so the figures are printed too. */
-  grain: number;
+}
+
+/**
+ * Per-layer switches. Absent means every layer draws, which is what every share
+ * code written before the fullscreen feed produces.
+ */
+export interface VariantElements {
+  star: boolean;
+  glow: boolean;
+  vignette: boolean;
 }
 
 export interface Variant {
   bg: string;
   star: StarSpec;
   backdrop: BackdropSpec;
+  elements?: VariantElements;
 }
 
 export interface Slot {
@@ -41,7 +50,6 @@ export const DEFAULT_BACKDROP: BackdropSpec = {
   style: 'riso',
   pitch: 0.017,
   ink2: true,
-  grain: 0.45,
 };
 
 /** Fallback used when a share code omits `bg:`/`star:`. */
@@ -241,61 +249,6 @@ function halftoneScreen(
   ctx.restore();
 }
 
-let grainTile: HTMLCanvasElement | null = null;
-
-/** One 128 px speckle tile, built once, drawn as a repeating pattern. */
-function grainCanvas(): HTMLCanvasElement {
-  if (grainTile) return grainTile;
-  const size = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) throw new Error('2D canvas unavailable');
-  const image = ctx.createImageData(size, size);
-  let state = 0x9e3779b9;
-  for (let index = 0; index < size * size; index += 1) {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    const value = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    const dark = value < 0.5;
-    const level = Math.round(Math.abs(value - 0.5) * 4) / 4;
-    const offset = index * 4;
-    image.data[offset] = dark ? 0 : 255;
-    image.data[offset + 1] = dark ? 0 : 255;
-    image.data[offset + 2] = dark ? 0 : 255;
-    image.data[offset + 3] = Math.round(level * 255);
-  }
-  ctx.putImageData(image, 0, 0);
-  grainTile = canvas;
-  return canvas;
-}
-
-/**
- * Speckle over everything already painted, figures included: a tiled pattern, so
- * size stays proportional to canvas area and never to noise entropy.
- */
-export function drawGrainRect(
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  variant: Variant,
-  region?: Region,
-): void {
-  const strength = variant.backdrop.grain;
-  if (strength <= 0.01) return;
-  const pattern = ctx.createPattern(grainCanvas(), 'repeat');
-  if (!pattern) return;
-  const area = region ?? { x: 0, y: 0, w: width, h: height };
-  ctx.save();
-  ctx.globalAlpha = Math.min(0.6, strength * 0.7);
-  ctx.fillStyle = pattern;
-  ctx.fillRect(area.x, area.y, area.w, area.h);
-  ctx.restore();
-}
-
 export function drawLayersRect(
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -307,13 +260,16 @@ export function drawLayersRect(
   ctx.fillStyle = variant.bg;
   ctx.fillRect(area.x, area.y, area.w, area.h);
   halftoneScreen(ctx, width, height, variant, area);
-  glowRect(ctx, width, height, variant.star);
-  starPath(
-    ctx,
-    variant.star.x * width,
-    variant.star.y * height,
-    variant.star.size * Math.min(width, height),
-    variant.star,
-  );
-  vignetteRect(ctx, width, height, variant);
+  // Unset switches mean "draw": share codes written before the feed keep their output.
+  if (variant.elements?.glow ?? true) glowRect(ctx, width, height, variant.star);
+  if (variant.elements?.star ?? true) {
+    starPath(
+      ctx,
+      variant.star.x * width,
+      variant.star.y * height,
+      variant.star.size * Math.min(width, height),
+      variant.star,
+    );
+  }
+  if (variant.elements?.vignette ?? true) vignetteRect(ctx, width, height, variant);
 }

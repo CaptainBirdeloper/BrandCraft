@@ -4,6 +4,7 @@ import { decodePreset } from './preset/codec';
 import { DownloadScreen } from './components/DownloadScreen';
 import { EditScreen } from './edit/EditScreen';
 import { Editor } from './components/Editor';
+import { Feed } from './components/Feed';
 import { Hero } from './components/Hero';
 import { useAppStore } from './store';
 
@@ -11,6 +12,7 @@ export default function App() {
   const skinUrl = useAppStore((s) => s.skinUrl);
   const screen = useAppStore((s) => s.screen);
   const editDraft = useAppStore((s) => s.editDraft);
+  const feedKind = useAppStore((s) => s.feedKind);
   const setCustomPreset = useAppStore((s) => s.setCustomPreset);
   const setCodeError = useAppStore((s) => s.setCodeError);
 
@@ -27,16 +29,23 @@ export default function App() {
 
   // Pages overlap instead of waiting on each other: the drop feels instant.
   return (
-    <AnimatePresence initial={false}>
-      {!skinUrl ? (
-        <Hero key="hero" />
-      ) : screen === 'download' ? (
-        <DownloadScreen key="download" />
-      ) : screen === 'edit' && editDraft ? (
-        <EditScreen key="edit" />
-      ) : (
-        <Editor key="editor" />
-      )}
-    </AnimatePresence>
+    <>
+      <AnimatePresence initial={false}>
+        {!skinUrl ? (
+          <Hero key="hero" />
+        ) : screen === 'download' ? (
+          <DownloadScreen key="download" />
+        ) : screen === 'edit' && editDraft ? (
+          <EditScreen key="edit" />
+        ) : (
+          <Editor key="editor" />
+        )}
+      </AnimatePresence>
+      {/* The feed stays mounted behind a detour into the editor or the download page, so
+          closing those returns to the same scroll offset with the same cards. */}
+      {skinUrl && feedKind ? (
+        <Feed key={`feed-${feedKind}`} kind={feedKind} hidden={screen !== 'editor'} />
+      ) : null}
+    </>
   );
 }

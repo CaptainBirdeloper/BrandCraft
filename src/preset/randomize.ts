@@ -69,7 +69,6 @@ export function randomVariant(rand: () => number): Variant {
       style: 'riso',
       pitch: Math.round(range(rand, 0.013, 0.021) * 1000) / 1000,
       ink2: rand() < 0.7,
-      grain: Math.round(range(rand, 0.3, 0.55) * 100) / 100,
     },
   };
 }

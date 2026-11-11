@@ -1,5 +1,5 @@
 import { bannerFont, type BannerSpec } from '../preset/banner';
-import { drawGrainRect, drawLayersRect } from '../preset/variants';
+import { drawLayersRect } from '../preset/variants';
 import type { BannerCard } from './cards';
 import {
   BANNER_W,
@@ -110,7 +110,6 @@ export function composeBanner(
     scaleRect(rects.text, input.spec.textScale),
     token('--accent', '#ffff00'),
   );
-  drawGrainRect(ctx, layout.width, layout.height, input.card.left.variant, area);
   ctx.restore();
 
   return { canvas, rects };

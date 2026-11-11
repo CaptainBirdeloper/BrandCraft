@@ -45,7 +45,8 @@ export function encodePreset(slot: Slot): string {
   parts.push(
     `bgl:${variant.backdrop.style === 'riso' ? 'r' : 'f'},` +
       `${Math.round(variant.backdrop.pitch * 1000)},` +
-      `${Math.round(variant.backdrop.grain * 100)},${variant.backdrop.ink2 ? 1 : 0}`,
+      // Third slot is a retired grain value, kept as 0 so older codes still parse.
+      `0,${variant.backdrop.ink2 ? 1 : 0}`,
   );
   parts.push(`light:${serializeRig(preset.light)}`);
   return parts.join('|');
@@ -107,11 +108,9 @@ export function decodePreset(code: string): Slot | null {
     if (key === 'bgl') {
       const chunks = body.split(',');
       const pitch = Number(chunks[1]);
-      const grain = Number(chunks[2]);
       const backdrop: BackdropSpec = {
         style: chunks[0] === 'r' ? 'riso' : 'flat',
         pitch: Number.isFinite(pitch) ? clamp(pitch, 6, 30) / 1000 : DEFAULT_BACKDROP.pitch,
-        grain: Number.isFinite(grain) ? clamp(grain, 0, 100) / 100 : DEFAULT_BACKDROP.grain,
         ink2: chunks[3] !== '0',
       };
       variant = { ...variant, backdrop };

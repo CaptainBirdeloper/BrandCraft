@@ -1,0 +1,130 @@
+/* Fullscreen feed: one scroller of wild cards, everything else out of the way. */
+
+.feed {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-canvas);
+}
+
+.feed[hidden] {
+  display: none;
+}
+
+.feed-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.8vw, 16px);
+  padding: clamp(8px, 0.9vw, 16px) clamp(12px, 1.5vw, 28px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.feed-meta {
+  margin-right: auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(10px, 0.72vw, 13px);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.feed-exit {
+  flex: none;
+  padding: clamp(4px, 0.5vw, 9px) clamp(10px, 1vw, 18px);
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: clamp(10px, 0.78vw, 14px);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.feed-exit:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.feed-scroller {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.feed-canvas {
+  position: relative;
+  width: 100%;
+}
+
+.feed-cell {
+  position: absolute;
+  overflow: hidden;
+  border: 2px solid var(--border-card);
+  border-radius: clamp(6px, 1.1vw, 20px);
+  background: var(--surface-raised);
+}
+
+.feed-cell-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: feed-fade 0.28s ease both;
+}
+
+.feed-cell-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(10px, 0.8vw, 14px);
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.feed-cell-actions {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: clamp(4px, 0.45vw, 9px);
+  padding: clamp(4px, 0.5vw, 10px);
+  background: linear-gradient(transparent, rgba(9, 4, 70, 0.75));
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.feed-cell:hover .feed-cell-actions,
+.feed-cell:focus-within .feed-cell-actions {
+  opacity: 1;
+}
+
+.feed-cell-actions .circle {
+  width: clamp(22px, 2.1vw, 40px);
+}
+
+@keyframes feed-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed-cell-img {
+    animation: none;
+  }
+}

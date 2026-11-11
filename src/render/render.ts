@@ -3,7 +3,7 @@ import { DEFAULT_RIG, darkenRgba, resolveRigColors, serializeRig } from '../ligh
 import type { Crop } from '../preset/presets';
 import { ensurePose } from './poses';
 import type { Slot, Variant } from '../preset/variants';
-import { DEFAULT_VARIANT, drawLayers, drawGrainRect } from '../preset/variants';
+import { DEFAULT_VARIANT, drawLayers } from '../preset/variants';
 
 type Core = typeof import('@daidr/minecraft-skin-renderer');
 type Viewer = Awaited<ReturnType<Core['createSkinViewer']>>;
@@ -133,7 +133,6 @@ function cropSquare(
     size,
     size,
   );
-  drawGrainRect(ctx, size, size, variant);
   return canvas.toDataURL('image/png');
 }
 

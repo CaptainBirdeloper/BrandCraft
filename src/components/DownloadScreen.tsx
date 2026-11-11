@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, m } from 'motion/react';
 import { SMOOTH, TAP, TAP_TRANSITION, screenVariants } from '../motion';
 import { EXPORT_SIZES, type ExportSize } from '../preset/presets';
@@ -18,6 +18,7 @@ export function DownloadScreen() {
   const customSlot = useAppStore((s) => s.customSlot);
   const banners = useAppStore((s) => s.banners);
   const bannerIndex = useAppStore((s) => s.bannerIndex);
+  const feedBanner = useAppStore((s) => s.downloadBanner);
   const closeDownload = useAppStore((s) => s.closeDownload);
 
   const [preview, setPreview] = useState<string | null>(null);
@@ -25,9 +26,10 @@ export function DownloadScreen() {
 
   const pool = useMemo(() => (customSlot ? [...slots, customSlot] : slots), [slots, customSlot]);
   const cards = useMemo(() => bannerCards(pool, banners), [pool, banners]);
-  const card = bannerIndex === null ? null : cards[bannerIndex] ?? null;
+  /** A banner opened from the feed carries its own pair: it was never one of the four. */
+  const card = feedBanner?.card ?? (bannerIndex === null ? null : cards[bannerIndex] ?? null);
   /** Each banner carries its own dressing; the download page renders exactly what the card showed. */
-  const spec = (bannerIndex === null ? undefined : banners[bannerIndex]) ?? banners[0]!;
+  const spec = feedBanner?.spec ?? (bannerIndex === null ? undefined : banners[bannerIndex]) ?? banners[0]!;
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {

@@ -5,7 +5,7 @@ import { renderBannerPreview } from '../render/banner';
 import type { BannerSpec } from '../preset/banner';
 import { BOUNCY } from '../motion';
 import { useAppStore } from '../store';
-import { RefreshIcon } from './icons';
+import { RefreshIcon, FullscreenIcon } from './icons';
 
 /** Card previews are the strip itself at 1240 px wide: crisp on a 2x display. */
 const CARD_WIDTH = 1240;
@@ -105,6 +105,15 @@ export function BannerSection() {
         >
           <RefreshIcon />
         </m.button>
+        <button
+          type="button"
+          className="refresh-open"
+          aria-label="Open fullscreen banner feed"
+          title="Fullscreen: endless randomised banners, Esc to leave"
+          onClick={() => useAppStore.getState().openFeed('banner')}
+        >
+          <FullscreenIcon />
+        </button>
       </div>
       <div className="banners-grid">
         {cards.map((card) => (

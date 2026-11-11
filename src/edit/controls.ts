@@ -3,7 +3,6 @@ import type { LightRig, Vec3 } from '../lighting/lightrig';
 import { poseKey } from '../render/poses';
 import { SLOT_KEYS } from '../preset/presets';
 import type { BonePose } from '../preset/presets';
-import { DEFAULT_BACKDROP } from '../preset/variants';
 import type { BackdropSpec, Slot, StarSpec } from '../preset/variants';
 
 export type GroupId = 'camera' | 'framing' | 'pose' | 'backdrop' | 'star' | 'light';
@@ -32,9 +31,8 @@ export interface Param {
 }
 
 /**
- * A switch, not a slider: one press flips it. The screen is either printed or flat,
- * and the grain is either there or not — a two-stop range would say the same thing
- * with more chrome.
+ * A switch, not a slider: one press flips it. The screen is either printed or flat —
+ * a two-stop range would say the same thing with more chrome.
  */
 export interface Toggle {
   id: string;
@@ -168,9 +166,8 @@ function withBackdrop(slot: Slot, patch: Partial<BackdropSpec>): Slot {
 }
 
 /**
- * Turning grain back on restores the default density rather than remembering the last
- * value: the shared code carries one number, and a switch that restores a hidden
- * strength is a switch that lies about the preset.
+ * A backdrop switch is a two-stop range, so it restores the default rather than
+ * remembering a hidden value the shared code no longer carries.
  */
 export const TOGGLES: readonly Toggle[] = [
   {
@@ -179,13 +176,6 @@ export const TOGGLES: readonly Toggle[] = [
     group: 'backdrop',
     get: (slot) => slot.variant.backdrop.style === 'riso',
     set: (slot, on) => withBackdrop(slot, { style: on ? 'riso' : 'flat' }),
-  },
-  {
-    id: 'grain',
-    label: 'Grain',
-    group: 'backdrop',
-    get: (slot) => slot.variant.backdrop.grain > 0,
-    set: (slot, on) => withBackdrop(slot, { grain: on ? DEFAULT_BACKDROP.grain : 0 }),
   },
 ];
 
@@ -498,7 +488,7 @@ export const GROUPS: ParamGroup[] = [
   { id: 'camera', title: 'Camera', hint: 'Where the viewer stands' },
   { id: 'framing', title: 'Framing', hint: 'Square crop over the render' },
   { id: 'pose', title: 'Pose', hint: 'Degrees per bone' },
-  { id: 'backdrop', title: 'Backdrop', hint: 'Print, grain, fill colour' },
+  { id: 'backdrop', title: 'Backdrop', hint: 'Print screen, fill colour' },
   { id: 'star', title: 'Star', hint: 'Shape and colour' },
   { id: 'light', title: 'Lighting', hint: 'Aim at the torso centre' },
 ];

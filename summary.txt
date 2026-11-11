@@ -1,6 +1,6 @@
 BrandCraft
 Generated: 2026-11-11 (trimmed index: map + traps. Long-form record lives in summarybkp.txt)
-Purpose: browser-only Minecraft skin renderer. Drop a skin -> 8 preset cards (share codes in src\preset\slots.txt) -> tune any card on the edit page (46 sliders + 2 backdrop chips over the same codec) -> download screen -> save the PNG (riso print + grain baked in) at 1K/2K/4K. Below the grid: 4 banner cards (2 busts + wordmark, one shared refresh) that export 2560x1440 / 1546x423 strip.
+Purpose: browser-only Minecraft skin renderer. Drop a skin -> 8 preset cards (share codes in src\preset\slots.txt) -> tune any card on the edit page (46 sliders + 1 halftone chip over the same codec) -> download screen -> save the PNG (riso print baked in) at 1K/2K/4K. Below the grid: 4 banner cards (2 busts + wordmark, one shared refresh) that export 2560x1440 / 1546x423 strip.
 
 0. Reader contract
 - Trust the map, verify before editing: paths and names here are maintained by hand, so confirm a file before a mutating edit. Grep is cheap; a stale assumption is not.
@@ -35,7 +35,7 @@ src\lighting\lightrig.ts -> LightRig/LightSource/RigColors, LIGHT_TARGET, DEFAUL
 Banners
 src\render\banner.ts -> captureBanner() = 2 bust renders off the shared viewer, trimBust() (full MASTER render, alpha ink bbox, top-anchored slice, BUST_ASPECT 1.18), topRowRun() headroom probe; window.__bcBannerPreview counter
 src\banner\layout.ts -> BANNER_W 2560 / BANNER_H 1440 / STRIP_W 1546 / STRIP_H 423 / MASTER 2048, FIG_H = STRIP_H * 0.92 (headroom), bannerRects(spec, width) -> {strip, left, right, text}: busts flush to the strip edges, floor-anchored, wordmark centred
-src\banner\compose.ts -> BANNER_Z_ORDER ['bg','left','right','text'], composeBanner(): drawLayersRect over the whole frame or the strip only -> figures (drop shadow riding the silhouette alpha) -> wordmark -> drawGrainRect; crop 'frame'|'strip'; token() reads CSS vars
+src\banner\compose.ts -> BANNER_Z_ORDER ['bg','left','right','text'], composeBanner(): drawLayersRect over the whole frame or the strip only -> figures (drop shadow riding the silhouette alpha) -> wordmark; crop 'frame'|'strip'; token() reads CSS vars
 src\banner\text.ts -> ensureBannerFonts(), measureBannerText(), drawBannerText(ctx, rect, spec, scale) -> ink box; CAP_RATIO 0.72 fit, MIN_SIZE 10
 src\banner\lighting.ts -> mirrorRig(rig) + bannerRig(family, slot, side: 0|1): per-side rig so the two edge busts read as one lit scene
 src\banner\cards.ts -> BANNER_COUNT 4, BannerCard, bannerCard(index, seed)/bannerCards(seed): per-card pose/spec/copy, no shared state
@@ -45,9 +45,9 @@ Preset data
 src\preset\slots.txt -> THE preset menu: one `Label: MC1|...` share code per line, grid order
 src\preset\slots.ts -> parses slots.txt at boot into SLOTS; bad lines warn + skip; empty file throws
 src\preset\presets.ts -> Preset/BonePose/Crop types, SLOT_KEYS, DEFAULT_CROP, EXPORT_SIZES
-src\preset\codec.ts -> encodePreset(slot), decodePreset(code): Slot|null (segments incl. bgl: print and light:); bgl:r|f,pitch,grain,ink2 absent = DEFAULT_BACKDROP
-src\preset\variants.ts -> Variant/Slot types, BackdropSpec {style flat|riso, pitch, ink2, grain}, DEFAULT_BACKDROP (riso, 0.017 of width, ink2 on, grain 0.45), DEFAULT_VARIANT, coverage(), halftoneScreen(), grainCanvas() (module-cached 128px mulberry32 tile), drawGrainRect(), drawLayersRect(ctx,w,h,variant,region?), drawBackdrop/drawGlow/drawStar/drawVignette
-src\preset\randomize.ts -> seeded mulberry32: randomVariant/randomRig/randomizeSlots/nextSeed/seedFromSearch (hue maths only, no palette); backdrop pitch 0.013-0.021, ink2 70%, grain 0.30-0.55
+src\preset\codec.ts -> encodePreset(slot), decodePreset(code): Slot|null (segments incl. bgl: print and light:); bgl:r|f,pitch,grain,ink2 where the grain slot is retired and always encodes 0 (old codes still decode); absent = DEFAULT_BACKDROP
+src\preset\variants.ts -> Variant/Slot types, BackdropSpec {style flat|riso, pitch, ink2}, DEFAULT_BACKDROP (riso, 0.017 of width, ink2 on), DEFAULT_VARIANT, coverage(), halftoneScreen(), drawLayersRect(ctx,w,h,variant,region?), drawBackdrop/drawGlow/drawStar/drawVignette
+src\preset\randomize.ts -> seeded mulberry32: randomVariant/randomRig/randomizeSlots/nextSeed/seedFromSearch (hue maths only, no palette); backdrop pitch 0.013-0.021, ink2 70%
 
 Screens and widgets
 src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), paste-code form
@@ -60,7 +60,7 @@ src\components\SkinDrop.tsx -> shared skin upload: hidden file input + FileReade
 src\components\icons.tsx -> inline SVG icons (Upload, Replace, Paste, Copy, Edit, Download), stroke currentColor
 
 Edit page
-src\edit\controls.ts -> parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf/boundsOf/applyParam; TOGGLES (halftone, grain) as {id,label,group,get,set} + togglesOf(group); HSL<->hex colours, az/el<->Vec3 lights, crop writes keep the square inside the frame; grain back-on restores DEFAULT_BACKDROP.grain
+src\edit\controls.ts -> parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf/boundsOf/applyParam; TOGGLES (halftone) as {id,label,group,get,set} + togglesOf(group); HSL<->hex colours, az/el<->Vec3 lights, crop writes keep the square inside the frame
 src\edit\EditScreen.tsx -> sticky preview + scrolling 6-card control column (backdrop card opens with the two .toggle-chip buttons) + sticky footer (code chip, Done, Download); coalesced preview renders (counter at window.__bcPreviewRenders); Escape commits
 src\edit\Slider.tsx -> one labeled native range input: fixed-width value box, scaleX fill, no focus ring
 
@@ -80,7 +80,7 @@ Storage: none. No backend, no persistence, no cookies, no localStorage; the grid
 Pipeline: File input -> FileReader.readAsDataURL -> store.skinUrl -> shared offscreen SkinViewer (master = size*2 clamped 1024..4096) -> screenshot("png") -> 2D canvas crop to the preset bust box -> output size -> data URL -> <img> card src / <a download> href.
 Cutout pipeline: same viewer, full body, no animation (bind pose), zoom 40 -> screenshot -> scan alpha -> trim to ink box -> scale long edge -> data URL.
 Editor preview: renderPreview() at a 2048 master, character cached per skin+camera+pose+light, 2D layers recomposed per keystroke.
-Banner pipeline: store.bannerSeed -> bannerCards(seed) -> 2 bust captures (pose per card, side rig) -> trimBust -> 2D compose at the requested width (halftone + figures + wordmark + grain) -> canvas.toDataURL -> tile img / <a download>. Export widths 2560x1440 frame, 1546x423 strip, JPEG 0.92 fallback under the 6 MB cap.
+Banner pipeline: store.bannerSeed -> bannerCards(seed) -> 2 bust captures (pose per card, side rig) -> trimBust -> 2D compose at the requested width (halftone + figures + wordmark) -> canvas.toDataURL -> tile img / <a download>. Export widths 2560x1440 frame, 1546x423 strip, JPEG 0.92 fallback under the 6 MB cap.
 Skin never leaves the machine; no network calls at runtime.
 
 3. Endpoints
@@ -120,7 +120,7 @@ Verify gotchas: `goto` substitutes $url only when a step's value is exactly "$ur
 - navigator.clipboard may be blocked outside HTTPS/localhost; Copy falls back to a "copy failed" toast instead of throwing.
 - Renderer is a lazy dynamic import, so the main bundle stays small; the "renderer" chunk is named by manualChunks.
 - No state persistence: refresh loses skin and selection except a #c= code in the URL.
-- Backdrop layering is order-critical: fill -> halftone screens -> glow -> star -> vignette -> figures -> wordmark -> grain. Grain lands last on purpose (the skin gets printed too); moving it under the figures makes them read as stickers. Halftone is clipped to its area (strip or whole frame) so a strip crop never pays for pixels nobody sees.
+- Backdrop layering is order-critical: fill -> halftone screens -> glow -> star -> vignette -> figures -> wordmark. Halftone is clipped to its area (strip or whole frame) so a strip crop never pays for pixels nobody sees.
 - Pitch is a fraction of canvas WIDTH, never a pixel count: preview and export must agree proportionally. Anything below 6px per dot turns into moire, which is why the JPEG fallback bumps pitch.
 - Banner heads: the crop is not the PFP crop. FIG_H = STRIP_H * 0.92 bottom-anchored leaves air above the crown; reusing the square PFP framing cuts the head flat at the strip top (the reported bug). Verify with the banner-frame headroom probe, not by eye.
 - Banner invariants the probes assert: paint order bg>left>right>text, 16:9 frame, busts flush to the strip edges (<=1px), wordmark centred, strip inside the frame. The glyph-centroid drift metric is loose (12px) because box centring is the real instrument.

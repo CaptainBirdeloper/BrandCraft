@@ -8,6 +8,7 @@ import {
   type BannerSpec,
 } from './preset/banner';
 import type { Slot } from './preset/variants';
+import type { BannerCard } from './banner/cards';
 import { nextSeed, randomizeSlots, seedFromSearch } from './preset/randomize';
 import { SLOTS } from './preset/slots';
 
@@ -27,7 +28,13 @@ interface AppState {
   /** The editor works on a draft; the grid only changes when the draft is committed. */
   editDraft: Slot | null;
   /** Where closing the download page returns to. */
-  returnTo: 'editor' | 'edit';
+  returnTo: 'editor' | 'edit' | 'feed';
+  /** Fullscreen feed on screen; tracked apart from `screen` so it survives a detour into the editor. */
+  feedKind: 'pfp' | 'banner' | null;
+  /** Last slot written by the editor, so the feed can refresh the cell it came from. */
+  lastCommit: Slot | null;
+  /** A banner opened from the feed: it is not one of the four in `banners`. */
+  downloadBanner: { spec: BannerSpec; card: BannerCard } | null;
   /** One spec per banner: wordmark, typeface, lighting, size and pairing are per card. */
   banners: BannerSpec[];
   /** Banner card the download page is showing; null means the profile photo. */
@@ -44,6 +51,10 @@ interface AppState {
   openDownload: () => void;
   openBannerDownload: (index: number) => void;
   closeDownload: () => void;
+  openFeed: (kind: 'pfp' | 'banner') => void;
+  closeFeed: () => void;
+  openFeedDownload: (slot: Slot) => void;
+  openFeedBannerDownload: (spec: BannerSpec, card: BannerCard) => void;
   setBanner: (index: number, patch: Partial<BannerSpec>) => void;
   rerollBanners: () => void;
   showToast: (message: string) => void;
@@ -65,6 +76,9 @@ export const useAppStore = create<AppState>((set) => ({
   screen: 'editor',
   editDraft: null,
   returnTo: 'editor',
+  feedKind: null,
+  lastCommit: null,
+  downloadBanner: null,
   banners: BANNER_SPEC_DEFAULTS.map((spec) => ({ ...spec })),
   bannerIndex: null,
   toast: null,
@@ -91,6 +105,7 @@ export const useAppStore = create<AppState>((set) => ({
         customSlot: state.customSlot?.preset.id === id ? draft : state.customSlot,
         slot: draft,
         editDraft: null,
+        lastCommit: draft,
         screen: 'editor' as Screen,
       };
     }),
@@ -98,10 +113,23 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       screen: 'download',
       bannerIndex: null,
-      returnTo: state.screen === 'edit' ? 'edit' : 'editor',
+      downloadBanner: null,
+      returnTo: state.screen === 'edit' ? 'edit' : state.feedKind ? 'feed' : 'editor',
     })),
-  openBannerDownload: (index) => set({ screen: 'download', bannerIndex: index, returnTo: 'editor' }),
-  closeDownload: () => set((state) => ({ screen: state.returnTo, returnTo: 'editor' })),
+  openBannerDownload: (index) =>
+    set({ screen: 'download', bannerIndex: index, downloadBanner: null, returnTo: 'editor' }),
+  closeDownload: () =>
+    set((state) => ({
+      screen: state.returnTo === 'edit' ? 'edit' : 'editor',
+      returnTo: 'editor',
+      downloadBanner: null,
+    })),
+  openFeed: (feedKind) => set({ feedKind }),
+  closeFeed: () => set({ feedKind: null }),
+  openFeedDownload: (slot) =>
+    set({ slot, screen: 'download', bannerIndex: null, downloadBanner: null, returnTo: 'feed' }),
+  openFeedBannerDownload: (spec, card) =>
+    set({ screen: 'download', bannerIndex: null, downloadBanner: { spec, card }, returnTo: 'feed' }),
   setBanner: (index, patch) =>
     set((state) => ({
       banners: state.banners.map((spec, at) => (at === index ? { ...spec, ...patch } : spec)),

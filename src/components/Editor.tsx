@@ -9,7 +9,7 @@ import { PastePill } from './PastePill';
 import { PresetCard } from './PresetCard';
 import { SkinDrop } from './SkinDrop';
 import { BannerSection } from './BannerSection';
-import { RefreshIcon } from './icons';
+import { RefreshIcon, FullscreenIcon } from './icons';
 
 const CARD_SIZE = 512;
 const CUTOUT_SIZE = 384;
@@ -131,6 +131,15 @@ export function Editor() {
           >
             <RefreshIcon />
           </m.button>
+          <button
+            type="button"
+            className="refresh-open"
+            aria-label="Open fullscreen preset feed"
+            title="Fullscreen: endless randomised cards, Esc to leave"
+            onClick={() => useAppStore.getState().openFeed('pfp')}
+          >
+            <FullscreenIcon />
+          </button>
         </div>
         <m.div className="grid" variants={gridVariants} initial="hidden" animate="show">
           {list.map((item, index) => (

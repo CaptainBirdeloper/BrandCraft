@@ -31,14 +31,21 @@ const MASTER = 2048;
 const YOUTUBE_MAX_BYTES = 6_000_000;
 
 /**
- * The card bust is built from nothing but the render and the ink: the whole square
- * capture, trimmed to its alpha bounds, then cut from the *top* of that bound down.
- * Anchoring at the ink top is what keeps the head whole — the old preset band
- * started at `crop.y` and sliced the crown off any pose that framed high.
+ * The banner bust is built from nothing but the render and the ink — never from a
+ * preset's PFP camera or crop. Two things make the head whole:
+ *
+ * 1. The capture always sits at `BUST_ZOOM`, the full-body framing, whatever the
+ *    slot's PFP zoom is. A PFP zoom frames the face, so a crown that leaves the
+ *    square never comes back: the ink box would start at a flat-cut head.
+ * 2. The slice is cut from the *ink top* down (so no band ever starts below the
+ *    crown), and `HEADROOM` of transparent air is baked above it, so the figure
+ *    keeps air above the hair even if the strip layout ever changes.
  */
 const BUST_ASPECT = 1.18;
+const BUST_ZOOM = 40;
+const HEADROOM = 0.06;
 
-function trimBust(raw: HTMLImageElement): HTMLCanvasElement {
+function buildBust(raw: HTMLImageElement): { canvas: HTMLCanvasElement; crownRun: number } {
   const canvas = document.createElement('canvas');
   canvas.width = MASTER;
   canvas.height = MASTER;
@@ -47,14 +54,14 @@ function trimBust(raw: HTMLImageElement): HTMLCanvasElement {
   ctx.drawImage(raw, 0, 0, MASTER, MASTER);
   const ink = trimAlphaCanvas(canvas);
   const height = Math.min(ink.height, Math.round(ink.width / BUST_ASPECT));
-  if (height >= ink.height) return ink;
+  const air = Math.round(height * HEADROOM);
   const out = document.createElement('canvas');
   out.width = ink.width;
-  out.height = height;
+  out.height = height + air;
   const outCtx = out.getContext('2d');
   if (!outCtx) throw new Error('2D canvas unavailable');
-  outCtx.drawImage(ink, 0, 0, ink.width, height, 0, 0, ink.width, height);
-  return out;
+  outCtx.drawImage(ink, 0, 0, ink.width, height, 0, air, ink.width, height);
+  return { canvas: out, crownRun: topRowRun(ink) };
 }
 
 /** Opaque share of the top row: ~1 means the capture itself cut the head. */
@@ -105,7 +112,8 @@ async function captureFigures(
         // The pose reaches the skeleton on a loop tick, not on playAnimation.
         await waitFrames(1);
         viewer.setRotation(slot.preset.theta, slot.preset.phi);
-        viewer.setZoom(slot.preset.zoom);
+        // Banner framing is its own: a PFP zoom clips the crown out of the capture.
+        viewer.setZoom(BUST_ZOOM);
         setLightRig(bannerRig(spec.rig, slot, side), resolveRigColors(slot.variant));
         shots.push({ slot, side, url: viewer.screenshot('png') });
       }
@@ -119,13 +127,18 @@ async function captureFigures(
     shots.map(async (_shot, index) => {
       const raw = raws[index];
       if (!raw) throw new Error('Banner capture missing');
-      const trimmed = trimBust(raw);
+      const bust = buildBust(raw);
       return {
-        image: await toImage(trimmed.toDataURL('image/png')),
-        topRun: topRowRun(trimmed),
+        image: await toImage(bust.canvas.toDataURL('image/png')),
+        topRun: bust.crownRun,
       } satisfies BannerFigure;
     }),
   );
+
+  const crowns = figures.map((figure) => Number(figure.topRun.toFixed(3)));
+  const probe = window as Window & { __bcBannerCrowns?: number[]; __bcBannerBust?: number[] };
+  probe.__bcBannerCrowns = crowns;
+  probe.__bcBannerBust = figures.map((figure) => figure.image.height / figure.image.width);
 
   return cards.map((_, index) => {
     const left = figures[index * 2];
