@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BrandCraft: Browser-Only Minecraft Avatar & Banner Studio</title>
+  <meta name="description" content="Drop your Minecraft skin. Render print-grade avatars and YouTube banners in your browser. Zero server uploads." />
+  <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" type="image/svg+xml" href="../public/favicon.svg" />
+</head>
+<body class="landing-body">
+  <!-- Top Navigation -->
+  <header class="landing-nav" id="main-nav">
+    <div class="nav-container">
+      <a href="#" class="nav-brand" aria-label="BrandCraft Home">
+        <span class="brand-logo-text"><span class="brand-name">brand</span><span class="brand-craft">CRAFT</span></span>
+      </a>
+
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#workflow" class="nav-link">How It Works</a>
+        <a href="#outputs" class="nav-link">Outputs</a>
+        <a href="#presets" class="nav-link">Share Codes</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://brndcrft.vercel.app" class="btn-primary nav-cta">Open Studio <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-container">
+        <h1 class="hero-heading">
+          uhh you can create<br />
+          <span class="hero-heading-italic">your brand</span> with this
+        </h1>
+
+        <p class="hero-subheading">
+          Render studio avatars and YouTube banners directly in your browser. WebGL handles the 3-point lighting rigs and risograph grain locally. No accounts, no server uploads.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="https://brndcrft.vercel.app" class="btn-primary hero-launch">
+            Open Studio <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <!-- Hero Video: Endless Procedural Showcase (No controls, click to pause) -->
+        <div class="hero-video-frame">
+          <div class="media-container hero-media">
+            <video
+              class="ambient-video"
+              src="../.assets/landing/endless%20procedural%20showcase.mp4"
+              poster="../.assets/landing/endless%20procedural%20showcase.webp"
+              autoplay
+              loop
+              muted
+              playsinline
+              preload="metadata"
+              aria-label="BrandCraft studio render preview (click to pause)"
+            ></video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workflow Section: Visual Video Walkthrough -->
+    <section class="workflow-section" id="workflow">
+      <div class="workflow-container">
+        <div class="section-title-wrap">
+          <h2 class="section-heading">How It Works</h2>
+          <p class="section-sub">Four steps from skin file to finished art.</p>
+        </div>
+
+        <div class="workflow-grid">
+          <!-- Step 1: Drop & Pick -->
+          <article class="workflow-card">
+            <div class="card-media-wrap">
+              <div class="media-container">
+                <video
+                  class="ambient-video"
+                  src="../.assets/landing/skin%20selection.mp4"
+                  poster="../.assets/landing/skin%20selection.webp"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="none"
+                  aria-label="Skin drop and preset selection video (click to pause)"
+                ></video>
+              </div>
+            </div>
+            <div class="card-body">
+              <span class="step-num">Step 1</span>
+              <h3 class="card-title">Drop Skin and Pick Poses</h3>
+              <p class="card-desc">
+                Drop your skin PNG. BrandCraft maps it to the 3D rig and renders 8 portrait angles at once.
+              </p>
+            </div>
+          </article>
+
+          <!-- Step 2: Instant Reroll -->
+          <article class="workflow-card">
+            <div class="card-media-wrap">
+              <div class="media-container">
+                <video
+                  class="ambient-video"
+                  src="../.assets/landing/refresh%20feature.mp4"
+                  poster="../.assets/landing/refresh%20feature.webp"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="none"
+                  aria-label="Lighting and color refresh video (click to pause)"
+                ></video>
+              </div>
+            </div>
+            <div class="card-body">
+              <span class="step-num">Step 2</span>
+              <h3 class="card-title">Reroll Lighting and Colors</h3>
+              <p class="card-desc">
+                Hit reroll. Each click seeds new light angles and backdrop colors. Stop when you like what you see.
+              </p>
+            </div>
+          </article>
+
+          <!-- Step 3: Studio Editor -->
+          <article class="workflow-card">
+            <div class="card-media-wrap">
+              <div class="media-container">
+                <video
+                  class="ambient-video"
+                  src="../.assets/landing/asset%20editing%20showcase.mp4"
+                  poster="../.assets/landing/asset%20editing%20showcase.webp"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="none"
+                  aria-label="Studio editor controls video (click to pause)"
+                ></video>
+              </div>
+            </div>
+            <div class="card-body">
+              <span class="step-num">Step 3</span>
+              <h3 class="card-title">Fine-Tune in the Editor</h3>
+              <p class="card-desc">
+                Adjust bone rotations and camera framing directly. The preview updates live at full 2048px resolution.
+              </p>
+            </div>
+          </article>
+
+          <!-- Step 4: Multi-Scale Export -->
+          <article class="workflow-card">
+            <div class="card-media-wrap">
+              <div class="media-container">
+                <video
+                  class="ambient-video"
+                  src="../.assets/landing/download%20asset.mp4"
+                  poster="../.assets/landing/download%20asset.webp"
+                  autoplay
+                  loop
+                  muted
+                  playsinline
+                  preload="none"
+                  aria-label="Multi-scale export video (click to pause)"
+                ></video>
+              </div>
+            </div>
+            <div class="card-body">
+              <span class="step-num">Step 4</span>
+              <h3 class="card-title">Export High-Res PNGs</h3>
+              <p class="card-desc">
+                Export square profile cards with contact shadows, or pull transparent alpha cutouts for your video thumbnails.
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Outputs Section: Avatars and YouTube Banners -->
+    <section class="outputs-section" id="outputs">
+      <div class="outputs-container">
+        <div class="section-title-wrap">
+          <h2 class="section-heading">What You Get</h2>
+          <p class="section-sub">Profile avatars and YouTube channel art calibrated to exact platform specs.</p>
+        </div>
+
+        <div class="outputs-grid">
+          <!-- 2048 Master Render -->
+          <div class="output-card">
+            <div class="output-media-wrap">
+              <img 
+                src="../.assets/brandcraft-recline-2048.png" 
+                alt="BrandCraft 2048px high resolution profile avatar sample"
+                loading="lazy"
+                class="output-img"
+              />
+            </div>
+            <div class="output-info">
+              <h3 class="output-title">Square Profile Avatars</h3>
+              <p class="output-desc">
+                Export at 1024, 2048, or 4096 pixels square. Includes custom directional lighting and optional risograph halftone grain.
+              </p>
+            </div>
+          </div>
+
+          <!-- YouTube Banner Suite -->
+          <div class="output-card">
+            <div class="output-media-wrap">
+              <img 
+                src="../.assets/banners-fullscreen.png" 
+                alt="BrandCraft YouTube banner template fitted with desktop and mobile safe strip"
+                loading="lazy"
+                class="output-img"
+              />
+            </div>
+            <div class="output-info">
+              <h3 class="output-title">YouTube Banner Suite</h3>
+              <p class="output-desc">
+                Full 2560×1440 channel art with dual character busts fitted directly inside YouTube's 1546×423 desktop and mobile safe strip.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preset Share Code Strip -->
+    <section class="presets-section" id="presets">
+      <div class="presets-container">
+        <div class="preset-box">
+          <div class="preset-text">
+            <h3 class="preset-heading">Portable Share Codes</h3>
+            <p class="preset-desc">
+              Every pose angle and lighting coordinate packs into one text string. Paste it into BrandCraft to duplicate the setup on any skin.
+            </p>
+          </div>
+          <div class="preset-code-wrap">
+            <code class="preset-code-inline">MC1|hd:-6,20,-5|ra:18,0,-8|cam:-0.15,1.7,33|bg:#153329|star:6,86,50,22,20,#f45288|light:k=-30,26,-34,1.05</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="bottom-cta-section">
+      <div class="bottom-cta-container">
+        <h2 class="bottom-cta-title">Ready to render your skin?</h2>
+        <p class="bottom-cta-sub">Free and browser-native. Open source under GPL-3.0.</p>
+        <div class="bottom-cta-btn-wrap">
+          <a href="https://brndcrft.vercel.app" class="btn-primary hero-launch">
+            Open Studio <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Clean Footer -->
+  <footer class="landing-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <span class="footer-brand"><span class="brand-name">brand</span><span class="brand-craft">CRAFT</span></span>
+        <span class="footer-sep">•</span>
+        <span class="footer-copy">Browser-only Minecraft skin renderer</span>
+      </div>
+      <div class="footer-right">
+        <a href="https://brndcrft.vercel.app" class="footer-link">Launch Studio</a>
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script defer src="./main.js"></script>
+</body>
+</html>

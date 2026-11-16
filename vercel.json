@@ -3,6 +3,10 @@
     {
       "source": "/app",
       "destination": "/index.html"
+    },
+    {
+      "source": "/landing",
+      "destination": "/page/index.html"
     }
   ]
 }

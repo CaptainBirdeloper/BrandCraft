@@ -1,0 +1,641 @@
+/* ==========================================================================
+   BrandCraft Custom Serif Typography
+   ========================================================================== */
+@font-face {
+  font-family: 'BrandCraftSerif';
+  src: url('../public/fonts/serif-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BrandCraftSerif';
+  src: url('../public/fonts/serif-italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BrandCraftSerif';
+  src: url('../public/fonts/serif-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'BrandCraftSerif';
+  src: url('../public/fonts/serif-bolditalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   BrandCraft Landing Page — Clean Poster Aesthetic
+   Stack: HTML5, CSS3, TypeScript
+   Aesthetic: Dark navy canvas (#090446), Signal Yellow (#ffff00), hairline borders,
+              editorial poster type, zero drop shadows, zero green.
+   ========================================================================== */
+
+:root {
+  --accent: #ffff00;
+  --accent-ink: #090446;
+  --accent-hover: #e6e600;
+
+  --surface-canvas: #090446;
+  --surface-raised: #181347;
+  --surface-overlay: #26215b;
+  --surface-tile: #050228;
+
+  --text-primary: #ffffff;
+  --text-secondary: #b5b0a0;
+  --text-muted: #8b8575;
+
+  --action-primary: var(--accent);
+  --action-primary-text: var(--accent-ink);
+
+  --border-subtle: rgba(255, 255, 255, 0.12);
+  --border-strong: #787599;
+
+  --font-display: 'BrandCraftSerif', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --nav-height: 68px;
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--surface-canvas);
+  color: var(--text-primary);
+}
+
+body.landing-body {
+  min-height: 100vh;
+  background-color: var(--surface-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Accessible Focus States */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Navigation & Brand Wordmark Logo
+   ========================================================================== */
+
+.landing-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  background: rgba(9, 4, 70, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Exact BrandCraft Wordmark Logo from Studio Interface */
+.brand-logo-text,
+.footer-brand {
+  font-family: 'BrandCraftSerif', Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: baseline;
+  user-select: none;
+}
+
+.brand-name {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.brand-craft {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+.nav-link {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+/* ==========================================================================
+   Stylish Button System (Exact Match to BrandCraft Studio Interface)
+   ========================================================================== */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background-color: var(--accent);
+  color: #090446 !important;
+  font-family: 'BrandCraftSerif', Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0.65rem 1.9rem;
+  border-radius: 9999px;
+  border: none;
+  transition: transform 0.12s ease, filter 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px) scale(1.02);
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 0, 0.28));
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(1);
+}
+
+.btn-primary .btn-icon,
+.btn-primary .arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+}
+
+.btn-primary:hover .btn-icon {
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Stylish Secondary Pill ("paste code") */
+.btn-secondary-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #8c869e;
+  font-family: 'BrandCraftSerif', Georgia, serif;
+  font-style: italic;
+  font-size: 0.96rem;
+  padding: 0.55rem 1.45rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.btn-secondary-pill:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 0, 0.25);
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+.hero-section {
+  padding: 5rem 1.5rem 3.5rem 1.5rem;
+}
+
+.hero-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.25rem;
+}
+
+.hero-heading-italic {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.hero-subheading {
+  max-width: 680px;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 2.25rem;
+}
+
+.hero-cta-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-bottom: 4rem;
+}
+
+.hero-launch {
+  font-size: 1.22rem;
+  padding: 0.8rem 2.4rem;
+}
+
+/* Hero Media Frame (No controls, clean cinematic video, click to pause) */
+.hero-video-frame {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.media-container {
+  position: relative;
+  background: var(--surface-tile);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  transition: border-color 0.2s ease;
+}
+
+.media-container:hover {
+  border-color: var(--border-strong);
+}
+
+.media-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Workflow Section (Video Walkthrough Grid)
+   ========================================================================== */
+
+.workflow-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem;
+}
+
+.section-title-wrap {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 3.5rem auto;
+}
+
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.section-sub {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
+.workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.workflow-card {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease;
+}
+
+.workflow-card:hover {
+  border-color: var(--border-strong);
+}
+
+.card-media-wrap {
+  width: 100%;
+}
+
+.card-media-wrap .media-container {
+  aspect-ratio: 16 / 9;
+  border: none;
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.card-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   Outputs Section (Avatars and YouTube Banners)
+   ========================================================================== */
+
+.outputs-section {
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 5rem 1.5rem;
+}
+
+.outputs-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.outputs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.output-card {
+  background: var(--surface-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.output-media-wrap {
+  width: 100%;
+  background: var(--surface-tile);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.output-img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.output-info {
+  padding: 1.5rem;
+}
+
+.output-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.output-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   Preset Share Strip Section
+   ========================================================================== */
+
+.presets-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem;
+}
+
+.preset-box {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.preset-text {
+  max-width: 480px;
+}
+
+.preset-heading {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.preset-desc {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.preset-code-wrap {
+  flex: 1;
+  background: var(--surface-tile);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+}
+
+.preset-code-inline {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--accent);
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* ==========================================================================
+   Bottom CTA Section
+   ========================================================================== */
+
+.bottom-cta-section {
+  text-align: center;
+  padding: 5rem 1.5rem;
+}
+
+.bottom-cta-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.bottom-cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.bottom-cta-sub {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.landing-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 2.5rem 1.5rem;
+  background: var(--surface-canvas);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.footer-right {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-link {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .workflow-grid,
+  .outputs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}
