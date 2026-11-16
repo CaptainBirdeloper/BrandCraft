@@ -1,5 +1,9 @@
 # brandcraft
 
+[![Live Demo](https://img.shields.io/badge/demo-brndcrft.vercel.app-brightgreen?style=flat-square)](https://brndcrft.vercel.app)
+
+**Live Demo:** [brndcrft.vercel.app](https://brndcrft.vercel.app)
+
 Browser-native Minecraft skin renderer. Turn a skin file into print-grade profile avatars and calibrated YouTube banner art without a backend, account, or cloud queue. Everything computes client-side via WebGL.
 
 ![BrandCraft Studio Interface](.assets/overview.png)
