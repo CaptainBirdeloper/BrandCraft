@@ -530,31 +530,38 @@ img {
   .rail {
     width: 100%;
     border-left: 0;
-    border-top: 1px solid var(--accent);
+    border-top: 0;
+    border-bottom: 1px solid var(--border-subtle);
     flex-direction: row;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: 10px;
-    padding: 12px;
+    gap: 8px;
+    padding: 10px 12px;
   }
 
   .pill-replace {
-    flex: 1 1 150px;
+    flex: 1 1 auto;
     margin: 0;
+    height: 40px;
+    min-height: 40px;
+    font-size: 0.95rem;
+    padding: 0 16px;
   }
 
   .cutout {
-    width: 96px;
+    width: 44px;
+    height: 44px;
     margin: 0;
-    border-radius: 12px;
+    border-radius: 8px;
+    flex: none;
   }
 
   .paste-rail {
-    flex: 2 1 180px;
+    flex: 1 1 auto;
     width: auto;
     margin: 0;
-    height: 44px;
-    min-height: 44px;
+    height: 40px;
+    min-height: 40px;
   }
 
   .toast {
@@ -659,20 +666,37 @@ img {
   }
 
   .circle {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
   }
 
   .rail {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
   }
 
   .cutout {
-    width: 80px;
-    align-self: center;
+    display: none;
+  }
+
+  .pill-replace {
+    flex: 1 1 auto;
+    height: 38px;
+    min-height: 38px;
+    font-size: 0.88rem;
+    padding: 0 12px;
+    margin: 0;
+  }
+
+  .paste-rail {
+    flex: 1 1 auto;
+    height: 38px;
+    min-height: 38px;
+    margin: 0;
   }
 }
 
