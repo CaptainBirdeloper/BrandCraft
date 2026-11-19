@@ -78,6 +78,8 @@ html {
   scroll-behavior: smooth;
   background-color: var(--surface-canvas);
   color: var(--text-primary);
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body.landing-body {
@@ -89,6 +91,8 @@ body.landing-body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 img, video {
@@ -198,6 +202,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
+  min-height: 44px;
   background-color: var(--accent);
   color: #090446 !important;
   font-family: 'BrandCraftSerif', Georgia, serif;
@@ -206,7 +211,7 @@ button {
   padding: 0.65rem 1.9rem;
   border-radius: 9999px;
   border: none;
-  transition: transform 0.12s ease, filter 0.15s ease, background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
   user-select: none;
   cursor: pointer;
   text-decoration: none;
@@ -214,26 +219,11 @@ button {
 
 .btn-primary:hover {
   background-color: var(--accent-hover);
-  transform: translateY(-1px) scale(1.02);
-  filter: drop-shadow(0 4px 12px rgba(255, 255, 0, 0.28));
+  box-shadow: 0 0 0 2px var(--accent-hover);
 }
 
 .btn-primary:active {
-  transform: translateY(0) scale(1);
-}
-
-.btn-primary .btn-icon,
-.btn-primary .arrow {
-  display: inline-block;
-  transition: transform 0.15s ease;
-}
-
-.btn-primary:hover .btn-icon {
-  transform: translateY(-2px);
-}
-
-.btn-primary:hover .arrow {
-  transform: translateX(3px);
+  background-color: var(--accent-hover);
 }
 
 /* Stylish Secondary Pill ("paste code") */
@@ -242,6 +232,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.08);
   color: #8c869e;
   font-family: 'BrandCraftSerif', Georgia, serif;
@@ -625,17 +616,123 @@ button {
    ========================================================================== */
 
 @media (max-width: 860px) {
+  .hero-section {
+    padding: 2.5rem 1rem 1.75rem;
+  }
+
+  .hero-cta-group {
+    margin-bottom: 2rem;
+  }
+
+  .workflow-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .section-title-wrap {
+    margin-bottom: 2rem;
+  }
+
   .workflow-grid,
   .outputs-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .outputs-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .output-info {
+    padding: 1rem;
+  }
+
+  .output-img {
+    height: 220px;
+  }
+
+  .presets-section {
+    padding: 2.5rem 1rem;
   }
 
   .preset-box {
     flex-direction: column;
     align-items: flex-start;
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+
+  .preset-code-wrap {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+
+  .bottom-cta-section {
+    padding: 2.5rem 1rem;
+  }
+
+  .landing-footer {
+    padding: 1.5rem 1rem;
   }
 
   .nav-links {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-heading {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  .nav-brand {
+    min-height: 44px;
+  }
+
+  .footer-link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0 1rem;
+  }
+
+  .brand-logo-text {
+    font-size: 1.35rem;
+  }
+
+  .hero-section {
+    padding: 2rem 1rem 1.5rem;
+  }
+
+  .hero-heading {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+
+  .hero-cta-group {
+    width: 100%;
+  }
+
+  .btn-primary,
+  .btn-secondary-pill {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .preset-code-wrap {
+    overflow-x: auto;
+    word-break: break-all;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
