@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { m } from 'motion/react';
 import { FAST } from '../motion';
 
@@ -23,9 +23,11 @@ export function Slider({ paramId, label, value, min, max, step, unit, onChange }
   const inputId = `${paramId}-${reactId}`;
   const span = max - min;
   const ratio = span > 0 ? Math.min(1, Math.max(0, (value - min) / span)) : 0;
+  const pctStr = `${(ratio * 100).toFixed(2)}%`;
+  const [isDragging, setIsDragging] = useState(false);
 
   return (
-    <div className="slider" data-param={paramId}>
+    <div className={`slider${isDragging ? ' is-dragging' : ''}`} data-param={paramId}>
       <div className="slider-head">
         <label className="slider-label" htmlFor={inputId}>
           {label}
@@ -42,13 +44,24 @@ export function Slider({ paramId, label, value, min, max, step, unit, onChange }
           </m.span>
         </span>
       </div>
-      <div className="slider-track">
-        {/* scaleX, not width: never a layout pass while dragging. */}
-        <m.div
+      <div className={`slider-track${isDragging ? ' is-dragging' : ''}`}>
+        <div className="slider-gutter" />
+        {/* Fill active bar with smooth width */}
+        <div
           className="slider-fill"
-          initial={false}
-          animate={{ scaleX: ratio }}
-          transition={FAST}
+          style={{ width: pctStr }}
+        />
+        {/* Floating value balloon above thumb */}
+        <div
+          className="slider-balloon"
+          style={{ left: pctStr }}
+        >
+          {formatValue(value, unit)}
+        </div>
+        {/* Tactile thumb capsule */}
+        <div
+          className="slider-thumb"
+          style={{ left: pctStr }}
         />
         <input
           id={inputId}
@@ -60,6 +73,12 @@ export function Slider({ paramId, label, value, min, max, step, unit, onChange }
           value={value}
           aria-label={label}
           onChange={(event) => onChange(Number(event.target.value))}
+          onPointerDown={() => setIsDragging(true)}
+          onPointerUp={() => setIsDragging(false)}
+          onPointerCancel={() => setIsDragging(false)}
+          onTouchStart={() => setIsDragging(true)}
+          onTouchEnd={() => setIsDragging(false)}
+          onTouchCancel={() => setIsDragging(false)}
         />
       </div>
     </div>

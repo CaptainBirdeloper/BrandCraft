@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { m } from 'motion/react';
 import { encodePreset } from '../preset/codec';
 import { GROUPS, applyParam, boundsOf, paramsOf, togglesOf } from './controls';
-import { SMOOTH, TAP, TAP_TRANSITION, screenVariants } from '../motion';
+import type { GroupId } from './controls';
+import { SLIDING_PILL, SMOOTH, TAP, TAP_TRANSITION, screenVariants } from '../motion';
 import { clearPreviewCache, renderPreview } from '../render/render';
 import { useAppStore } from '../store';
 import type { Slot } from '../preset/variants';
@@ -22,6 +23,7 @@ export function EditScreen() {
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<GroupId>('camera');
   /** One preview render in flight at a time; the newest request always wins. */
   const busy = useRef(false);
   const pending = useRef<Slot | null>(null);
@@ -117,53 +119,91 @@ export function EditScreen() {
       </div>
 
       <div className="edit-panel">
-        <div className="edit-scroll" data-testid="edit-scroll">
-          {GROUPS.map((group) => (
-            <section className="control-card" key={group.id} data-group={group.id}>
-              <header className="control-head">
-                <h2 className="control-title">{group.title}</h2>
-                <span className="control-hint">{group.hint}</span>
-              </header>
-              {togglesOf(group.id).length > 0 ? (
-                <div className="toggle-row">
-                  {togglesOf(group.id).map((toggle) => {
-                    const on = toggle.get(draft);
-                    return (
-                      <m.button
-                        key={toggle.id}
-                        type="button"
-                        className={`toggle-chip${on ? ' is-on' : ''}`}
-                        data-toggle={toggle.id}
-                        aria-pressed={on}
-                        whileTap={TAP}
-                        transition={TAP_TRANSITION}
-                        onClick={() => updateDraft(toggle.set(draft, !on))}
-                      >
-                        <span className="toggle-pip" />
-                        {toggle.label}
-                      </m.button>
-                    );
-                  })}
-                </div>
-              ) : null}
-              {paramsOf(group.id).map((param) => {
-                const { min, max } = boundsOf(param, draft);
-                return (
-                  <Slider
-                    key={param.id}
-                    paramId={param.id}
-                    label={param.label}
-                    value={param.get(draft)}
-                    min={min}
-                    max={max}
-                    step={param.step}
-                    unit={param.unit}
-                    onChange={(value) => updateDraft(applyParam(draft, param, value))}
+        <div className="edit-sheet-grabber" aria-hidden="true" />
+        <nav className="edit-tabs" role="tablist" aria-label="Control groups">
+          {GROUPS.map((group) => {
+            const isActive = activeTab === group.id;
+            return (
+              <button
+                key={group.id}
+                type="button"
+                role="tab"
+                id={`tab-${group.id}`}
+                aria-selected={isActive}
+                aria-controls={`group-${group.id}`}
+                className={`edit-tab${isActive ? ' is-active' : ''}`}
+                onClick={() => setActiveTab(group.id)}
+              >
+                {isActive && (
+                  <m.div
+                    layoutId="activeTabPill"
+                    className="edit-tab-slider"
+                    transition={SLIDING_PILL}
                   />
-                );
-              })}
-            </section>
-          ))}
+                )}
+                <span className="edit-tab-label">{group.title}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="edit-scroll" data-testid="edit-scroll">
+          {GROUPS.map((group) => {
+            const isTabHidden = group.id !== activeTab;
+            return (
+              <section
+                className={`control-card${isTabHidden ? ' is-tab-hidden' : ''}`}
+                key={group.id}
+                id={`group-${group.id}`}
+                role="tabpanel"
+                aria-labelledby={`tab-${group.id}`}
+                data-group={group.id}
+              >
+                <header className="control-head">
+                  <h2 className="control-title">{group.title}</h2>
+                  <span className="control-hint">{group.hint}</span>
+                </header>
+                {togglesOf(group.id).length > 0 ? (
+                  <div className="toggle-row">
+                    {togglesOf(group.id).map((toggle) => {
+                      const on = toggle.get(draft);
+                      return (
+                        <m.button
+                          key={toggle.id}
+                          type="button"
+                          className={`toggle-chip${on ? ' is-on' : ''}`}
+                          data-toggle={toggle.id}
+                          aria-pressed={on}
+                          whileTap={TAP}
+                          transition={TAP_TRANSITION}
+                          onClick={() => updateDraft(toggle.set(draft, !on))}
+                        >
+                          <span className="toggle-pip" />
+                          {toggle.label}
+                        </m.button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+                {paramsOf(group.id).map((param) => {
+                  const { min, max } = boundsOf(param, draft);
+                  return (
+                    <Slider
+                      key={param.id}
+                      paramId={param.id}
+                      label={param.label}
+                      value={param.get(draft)}
+                      min={min}
+                      max={max}
+                      step={param.step}
+                      unit={param.unit}
+                      onChange={(value) => updateDraft(applyParam(draft, param, value))}
+                    />
+                  );
+                })}
+              </section>
+            );
+          })}
         </div>
 
         <footer className="edit-foot">

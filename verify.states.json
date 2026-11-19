@@ -490,7 +490,7 @@
           "settle": 1400
         },
         {
-          "eval": "(() => { const code = document.querySelector('.edit-code-text').textContent; const src = document.querySelector('.edit-img').src; const value = document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent; if (value !== '44Â°') throw new Error('label did not follow: ' + value); if (code === window.__before.code) throw new Error('code unchanged'); if (src === window.__before.src) throw new Error('preview unchanged'); if (!code.includes('star:')) throw new Error('code lost star segment'); return true; })()"
+          "eval": "(() => { const code = document.querySelector('.edit-code-text').textContent; const src = document.querySelector('.edit-img').src; const value = document.querySelector('[data-param=\"star-rotation\"] .slider-value').textContent; if (value !== '44°') throw new Error('label did not follow: ' + value); if (code === window.__before.code) throw new Error('code unchanged'); if (src === window.__before.src) throw new Error('preview unchanged'); if (!code.includes('star:')) throw new Error('code lost star segment'); return true; })()"
         }
       ]
     },
@@ -532,7 +532,7 @@
           "settle": 2400
         },
         {
-          "eval": "(() => { const renders = window.__bcPreviewRenders - window.__base; const value = document.querySelector('[data-param=\"cam-phi\"] .slider-value').textContent; if (value !== '73Â°') throw new Error('last value not painted: ' + value); if (renders > 2) throw new Error('burst was not coalesced: ' + renders + ' renders'); return true; })()"
+          "eval": "(() => { const renders = window.__bcPreviewRenders - window.__base; const value = document.querySelector('[data-param=\"cam-phi\"] .slider-value').textContent; if (value !== '73°') throw new Error('last value not painted: ' + value); if (renders > 2) throw new Error('burst was not coalesced: ' + renders + ' renders'); return true; })()"
         }
       ]
     },

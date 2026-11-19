@@ -11,8 +11,9 @@ export const BOUNCY: Transition = { type: 'spring', visualDuration: 0.5, bounce:
 export const FAST: Transition = { type: 'spring', visualDuration: 0.22, bounce: 0.1 };
 
 /** Tap is the one place allowed to bounce hard; it lasts a single gesture. */
-export const TAP_TRANSITION: Transition = { type: 'spring', visualDuration: 0.35, bounce: 0.55 };
+export const TAP_TRANSITION: Transition = { type: 'spring', visualDuration: 0.16, bounce: 0.05 };
 export const TAP = { scale: 0.96 };
+export const SLIDING_PILL: Transition = { type: 'spring', visualDuration: 0.28, bounce: 0.12 };
 
 /** Cards land 35ms apart, so the eight of them read as one sweep, not a queue. */
 export const gridVariants: Variants = {
