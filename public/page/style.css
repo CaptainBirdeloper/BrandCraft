@@ -198,32 +198,44 @@ button {
    ========================================================================== */
 
 .btn-primary {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  min-height: 44px;
+  min-height: 48px;
   background-color: var(--accent);
   color: #090446 !important;
   font-family: 'BrandCraftSerif', Georgia, serif;
   font-size: 1.15rem;
   font-weight: 700;
-  padding: 0.65rem 1.9rem;
+  padding: 0.7rem 2.1rem;
   border-radius: 9999px;
-  border: none;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28), 0 0 20px rgba(255, 255, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background-color 0.15s ease,
+              filter 0.15s ease;
   user-select: none;
   cursor: pointer;
   text-decoration: none;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .btn-primary:hover {
   background-color: var(--accent-hover);
-  box-shadow: 0 0 0 2px var(--accent-hover);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36), 0 0 32px rgba(255, 255, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .btn-primary:active {
-  background-color: var(--accent-hover);
+  /* Diffuse ambient shadow collapse, specular dimming, spring settle */
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255, 255, 0, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.25);
+  filter: brightness(0.94);
+  transition-duration: 0.08s;
 }
 
 .arrow {
@@ -231,18 +243,24 @@ button {
   font-style: normal;
   display: inline-block;
   line-height: 1;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-primary:hover .arrow {
+  opacity: 1;
 }
 
 .nav-cta {
   font-size: 0.95rem;
-  padding: 0.45rem 1.15rem;
-  min-height: 38px;
+  padding: 0.45rem 1.25rem;
+  min-height: 40px;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
 /* Stylish Secondary Pill ("paste code") */
 .btn-secondary-pill {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -255,17 +273,30 @@ button {
   font-size: 0.96rem;
   padding: 0.55rem 1.45rem;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background-color 0.15s ease,
+              color 0.15s ease,
+              border-color 0.15s ease;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
+  transform: translateZ(0);
 }
 
 .btn-secondary-pill:hover {
   color: var(--accent);
   background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 0, 0.25);
+  border-color: rgba(255, 255, 0, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.32), 0 0 16px rgba(255, 255, 0, 0.15);
+}
+
+.btn-secondary-pill:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition-duration: 0.08s;
 }
 
 /* ==========================================================================
@@ -273,7 +304,7 @@ button {
    ========================================================================== */
 
 .hero-section {
-  padding: 5rem 1.5rem 3.5rem 1.5rem;
+  padding: 2.75rem 1.5rem 2.25rem 1.5rem;
 }
 
 .hero-container {
@@ -287,11 +318,11 @@ button {
 
 .hero-heading {
   font-family: var(--font-display);
-  font-size: clamp(2.4rem, 5.5vw, 4.4rem);
+  font-size: clamp(2.3rem, 5.2vw, 4.2rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.12;
   letter-spacing: -0.025em;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .hero-heading-italic {
@@ -301,11 +332,11 @@ button {
 }
 
 .hero-subheading {
-  max-width: 680px;
-  font-size: 1.15rem;
-  line-height: 1.6;
+  max-width: 660px;
+  font-size: 1.12rem;
+  line-height: 1.55;
   color: var(--text-secondary);
-  margin-bottom: 2.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .hero-cta-group {
@@ -313,8 +344,8 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.85rem;
-  margin-bottom: 4rem;
+  gap: 0.75rem;
+  margin-bottom: 2.25rem;
 }
 
 .hero-launch {
@@ -322,11 +353,21 @@ button {
   padding: 0.8rem 2.4rem;
 }
 
-/* Hero Media Frame (No controls, clean cinematic video, click to pause) */
+/* Hero Elevated Studio Frame */
 .hero-video-frame {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1060px;
   margin: 0 auto;
+  position: relative;
+  padding: 6px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 0, 0.08) 100%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 28px 72px -16px rgba(0, 0, 0, 0.7), 0 0 45px -10px rgba(255, 255, 0, 0.12);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hero-video-frame:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 32px 84px -16px rgba(0, 0, 0, 0.8), 0 0 55px -8px rgba(255, 255, 0, 0.18);
 }
 
 .media-container {
@@ -350,93 +391,433 @@ button {
   cursor: pointer;
 }
 
+/* Floating Tactile Studio Pill HUD */
+.hero-floating-hud {
+  position: absolute;
+  top: 1.15rem;
+  right: 1.15rem;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.hero-hud-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.42rem 0.95rem;
+  min-height: 38px;
+  border-radius: 9999px;
+  background: rgba(9, 4, 70, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.hero-hud-pill:hover {
+  background: rgba(9, 4, 70, 0.92);
+  border-color: rgba(255, 255, 0, 0.5);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), 0 0 18px rgba(255, 255, 0, 0.25);
+}
+
+.hero-hud-pill:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.hud-pulse-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+}
+
+.hud-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+  animation: hud-dot-pulse 2s infinite ease-in-out;
+}
+
+.hero-hud-pill.is-paused .hud-pulse-dot,
+.stage-hud-btn.is-paused .hud-pulse-dot {
+  background: #ffaa00;
+  box-shadow: 0 0 10px #ffaa00;
+  animation: none;
+}
+
+@keyframes hud-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.65; }
+}
+
+.hud-action-divider {
+  opacity: 0.3;
+  margin: 0 0.1rem;
+}
+
+.hud-icon-state {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+}
+
 /* ==========================================================================
-   Workflow Section (Video Walkthrough Grid)
+   Workflow Section — Apple-Grade Interactive Studio Walkthrough Stage
    ========================================================================== */
 
 .workflow-section {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 5rem 1.5rem;
+  padding: 3.5rem 1.5rem 3.75rem 1.5rem;
 }
 
-.section-title-wrap {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto 3.5rem auto;
-}
-
-.section-heading {
-  font-family: var(--font-display);
-  font-size: clamp(2rem, 3.5vw, 2.75rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.5rem;
-}
-
-.section-sub {
-  font-size: 1.05rem;
-  color: var(--text-secondary);
-}
-
-.workflow-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-}
-
-.workflow-card {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.2s ease;
-}
-
-.workflow-card:hover {
-  border-color: var(--border-strong);
-}
-
-.card-media-wrap {
-  width: 100%;
-}
-
-.card-media-wrap .media-container {
-  aspect-ratio: 16 / 9;
-  border: none;
-  border-bottom: 1px solid var(--border-subtle);
-  border-radius: 0;
-}
-
-.card-body {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.step-num {
+.section-badge {
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--accent);
+  background: rgba(255, 255, 0, 0.08);
+  border: 1px solid rgba(255, 255, 0, 0.28);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 0.85rem;
   text-transform: uppercase;
 }
 
-.card-title {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+.walkthrough-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.card-desc {
-  font-size: 0.92rem;
+/* Nav Pill-Bar / Tabs */
+.walkthrough-nav-container {
+  width: 100%;
+}
+
+.walkthrough-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  background: rgba(9, 4, 70, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.4rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+}
+
+.walkthrough-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  min-height: 56px;
+  border-radius: 9px;
+  background: transparent;
+  border: 1px solid transparent;
   color: var(--text-secondary);
-  line-height: 1.55;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+  overflow: hidden;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              color 0.2s ease;
+  transform: translateZ(0);
+}
+
+.walkthrough-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.walkthrough-tab:active {
+  transform: translateY(1px) scale(0.985);
+  transition-duration: 0.08s;
+}
+
+.walkthrough-tab.is-active {
+  background: var(--surface-raised);
+  border-color: rgba(255, 255, 0, 0.35);
+  color: var(--text-primary);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.tab-badge {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.22rem 0.48rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.walkthrough-tab.is-active .tab-badge {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.tab-text-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.tab-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-subtitle {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.25;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.walkthrough-tab.is-active .tab-subtitle {
+  color: var(--text-secondary);
+}
+
+/* Progress indicator on active tab */
+.tab-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.walkthrough-tab.is-active .tab-progress {
+  opacity: 1;
+}
+
+.tab-progress-fill {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  transition: width 0.1s linear;
+}
+
+/* Stage Viewport Frame */
+.walkthrough-viewport-frame {
+  position: relative;
+  background: var(--surface-tile);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 32px 84px -16px rgba(0, 0, 0, 0.75), 0 0 45px -10px rgba(255, 255, 0, 0.08);
+  overflow: hidden;
+}
+
+.walkthrough-media-stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.walkthrough-panel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+  z-index: 1;
+}
+
+.walkthrough-panel.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.walkthrough-media {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+}
+
+.walkthrough-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Bottom Glass Caption Overlay */
+.walkthrough-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2.5rem 1.75rem 1.5rem 1.75rem;
+  background: linear-gradient(to top, rgba(9, 4, 70, 0.96) 0%, rgba(9, 4, 70, 0.75) 55%, transparent 100%);
+  pointer-events: none;
+  display: flex;
+  align-items: flex-end;
+}
+
+.overlay-content {
+  max-width: 680px;
+}
+
+.overlay-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.overlay-heading {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.35rem;
+  color: #ffffff;
+}
+
+.overlay-description {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Floating Stage HUD */
+.walkthrough-floating-hud {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 10;
+}
+
+.stage-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.42rem 1rem;
+  min-height: 38px;
+  border-radius: 9999px;
+  background: rgba(9, 4, 70, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.stage-hud-btn:hover {
+  background: rgba(9, 4, 70, 0.92);
+  border-color: rgba(255, 255, 0, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 255, 0, 0.2);
+}
+
+.stage-hud-btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.stage-hud-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(9, 4, 70, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  padding: 0.2rem 0.35rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+}
+
+.stage-step-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.stage-step-arrow:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.stage-step-arrow:active {
+  transform: scale(0.92);
+}
+
+.stage-step-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent);
+  padding: 0 0.5rem;
+  user-select: none;
 }
 
 /* ==========================================================================
@@ -447,7 +828,7 @@ button {
   background: var(--surface-raised);
   border-top: 1px solid var(--border-subtle);
   border-bottom: 1px solid var(--border-subtle);
-  padding: 5rem 1.5rem;
+  padding: 3.75rem 1.5rem;
 }
 
 .outputs-container {
@@ -484,7 +865,7 @@ button {
 }
 
 .output-info {
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 .output-title {
@@ -507,14 +888,14 @@ button {
 .presets-section {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 4.5rem 1.5rem;
+  padding: 3.5rem 1.5rem;
 }
 
 .preset-box {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  padding: 2rem;
+  padding: 1.5rem 1.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -540,11 +921,15 @@ button {
 
 .preset-code-wrap {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
   background: var(--surface-tile);
   border: 1px solid var(--border-subtle);
-  border-radius: 4px;
-  padding: 1rem 1.25rem;
-  overflow-x: auto;
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  position: relative;
 }
 
 .preset-code-inline {
@@ -553,6 +938,59 @@ button {
   color: var(--accent);
   word-break: break-all;
   white-space: pre-wrap;
+  flex: 1;
+}
+
+/* Tactile 1-Click Copy Code Button */
+.btn-copy-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.5rem 1.15rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.2s ease,
+              border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              color 0.2s ease;
+  transform: translateZ(0);
+}
+
+.btn-copy-code:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 0, 0.4);
+  color: var(--accent);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 0 16px rgba(255, 255, 0, 0.18);
+}
+
+.btn-copy-code:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition-duration: 0.08s;
+}
+
+.btn-copy-code.is-copied {
+  background: rgba(0, 255, 136, 0.16);
+  border-color: #00ff88;
+  color: #00ff88;
+  box-shadow: 0 0 16px rgba(0, 255, 136, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* ==========================================================================
@@ -561,7 +999,7 @@ button {
 
 .bottom-cta-section {
   text-align: center;
-  padding: 5rem 1.5rem;
+  padding: 3.75rem 1.5rem;
 }
 
 .bottom-cta-container {
@@ -632,65 +1070,142 @@ button {
 
 @media (max-width: 860px) {
   .hero-section {
-    padding: 2.5rem 1rem 1.75rem;
+    padding: 2rem 1rem 1.75rem;
+  }
+
+  .hero-video-frame {
+    padding: 4px;
+    border-radius: 10px;
   }
 
   .hero-cta-group {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
 
   .workflow-section {
-    padding: 2.5rem 1rem;
+    padding: 3rem 1rem 3.5rem 1rem;
   }
 
   .section-title-wrap {
     margin-bottom: 2rem;
   }
 
-  .workflow-grid,
-  .outputs-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .walkthrough-tabs {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    padding: 0.35rem;
   }
 
-  .card-body {
-    padding: 1rem;
+  .walkthrough-tab {
+    padding: 0.5rem 0.5rem;
+    min-height: 44px;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .tab-title {
+    font-size: 0.82rem;
+  }
+
+  .walkthrough-media-stack {
+    aspect-ratio: auto;
+    position: relative;
+  }
+
+  .walkthrough-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+  }
+
+  .walkthrough-panel.is-active {
+    position: relative;
+  }
+
+  .walkthrough-media {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    width: 100%;
+    flex: none;
+  }
+
+  .walkthrough-card-overlay {
+    position: static;
+    background: var(--surface-tile);
+    padding: 1.1rem 1.1rem 1.25rem;
+    border-top: 1px solid var(--border-subtle);
+    pointer-events: auto;
+  }
+
+  .overlay-heading {
+    font-size: 1.15rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .overlay-description {
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .walkthrough-floating-hud {
+    top: 0.85rem;
+    right: 0.85rem;
+  }
+
+  .stage-hud-btn {
+    padding: 0.35rem 0.75rem;
+    min-height: 36px;
+    font-size: 0.7rem;
+  }
+
+  .outputs-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 
   .outputs-section {
-    padding: 2.5rem 1rem;
+    padding: 3rem 1rem;
   }
 
   .output-info {
-    padding: 1rem;
+    padding: 1.25rem;
   }
 
   .output-img {
-    height: 220px;
+    height: 240px;
   }
 
   .presets-section {
-    padding: 2.5rem 1rem;
+    padding: 3rem 1rem;
   }
 
   .preset-box {
     flex-direction: column;
-    align-items: flex-start;
-    padding: 1.25rem 1rem;
-    gap: 1rem;
+    align-items: stretch;
+    padding: 1.5rem 1.25rem;
+    gap: 1.25rem;
   }
 
   .preset-code-wrap {
     width: 100%;
-    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .btn-copy-code {
+    width: 100%;
+    min-height: 44px;
   }
 
   .bottom-cta-section {
-    padding: 2.5rem 1rem;
+    padding: 3rem 1rem;
   }
 
   .landing-footer {
-    padding: 1.5rem 1rem;
+    padding: 1.75rem 1rem;
   }
 
   .nav-links {
@@ -700,7 +1215,7 @@ button {
 
 @media (max-width: 768px) {
   .hero-heading {
-    font-size: clamp(2rem, 6vw, 3rem);
+    font-size: clamp(1.9rem, 6vw, 2.8rem);
   }
 
   .nav-brand {
@@ -716,7 +1231,7 @@ button {
 
 @media (max-width: 480px) {
   .nav-container {
-    padding: 0 0.85rem;
+    padding: 0 max(0.85rem, env(safe-area-inset-left));
     gap: 0.5rem;
   }
 
@@ -730,19 +1245,19 @@ button {
 
   .nav-cta {
     font-size: 0.82rem;
-    padding: 0.35rem 0.8rem;
-    min-height: 34px;
+    padding: 0.35rem 0.85rem;
+    min-height: 38px;
     width: auto !important;
     max-width: none !important;
     flex-shrink: 0;
   }
 
   .hero-section {
-    padding: 2rem 1rem 1.5rem;
+    padding: 1.75rem max(1rem, env(safe-area-inset-left)) 1.5rem;
   }
 
   .hero-heading {
-    font-size: clamp(1.75rem, 8vw, 2.25rem);
+    font-size: clamp(1.65rem, 7.5vw, 2.2rem);
   }
 
   .hero-cta-group {
@@ -753,7 +1268,57 @@ button {
   .bottom-cta-btn-wrap .btn-primary,
   .btn-secondary-pill {
     width: 100%;
-    max-width: 320px;
+    max-width: 340px;
+    min-height: 48px;
+  }
+
+  .hero-floating-hud {
+    top: 0.65rem;
+    right: 0.65rem;
+  }
+
+  .hero-hud-pill {
+    padding: 0.35rem 0.75rem;
+    min-height: 36px;
+    font-size: 0.68rem;
+  }
+
+  .walkthrough-tabs {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+
+  .walkthrough-tab {
+    min-height: 40px;
+    padding: 0.35rem 0.2rem;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .tab-badge {
+    font-size: 0.68rem;
+    padding: 0.12rem 0.28rem;
+  }
+
+  .tab-title {
+    font-size: 0.72rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .walkthrough-card-overlay {
+    padding: 0.85rem 0.85rem 1rem;
+  }
+
+  .overlay-heading {
+    font-size: 1.05rem;
+  }
+
+  .overlay-description {
+    font-size: 0.8rem;
+    line-height: 1.35;
   }
 
   .preset-code-wrap {

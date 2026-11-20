@@ -22,10 +22,6 @@
         <a href="#outputs" class="nav-link">Outputs</a>
         <a href="#presets" class="nav-link">Share Codes</a>
       </nav>
-
-      <div class="nav-actions">
-        <a href="https://brndcrft.vercel.app" class="btn-primary nav-cta">Open Studio <span class="arrow" aria-hidden="true">→</span></a>
-      </div>
     </div>
   </header>
 
@@ -48,11 +44,11 @@
           </a>
         </div>
 
-        <!-- Hero Video: Endless Procedural Showcase (No controls, click to pause) -->
+        <!-- Hero Video: Elevated Studio Frame with Floating Tactile HUD -->
         <div class="hero-video-frame">
           <div class="media-container hero-media">
             <video
-              class="ambient-video"
+              class="ambient-video hero-video"
               src="/page/assets/endless%20procedural%20showcase.mp4"
               poster="/page/assets/endless%20procedural%20showcase.webp"
               autoplay
@@ -60,125 +56,160 @@
               muted
               playsinline
               preload="metadata"
-              aria-label="BrandCraft studio render preview (click to pause)"
+              aria-label="BrandCraft studio render preview"
             ></video>
+
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Workflow Section: Visual Video Walkthrough -->
+    <!-- Workflow Section: Apple-Grade Interactive Studio Walkthrough Stage -->
     <section class="workflow-section" id="workflow">
       <div class="workflow-container">
         <div class="section-title-wrap">
-          <h2 class="section-heading">How It Works</h2>
-          <p class="section-sub">Four steps from skin file to finished art.</p>
+          <h2 class="section-heading">Studio Walkthrough</h2>
+          <p class="section-sub">Four precision stages from raw skin texture to print-grade masterpiece.</p>
         </div>
 
-        <div class="workflow-grid">
-          <!-- Step 1: Drop & Pick -->
-          <article class="workflow-card">
-            <div class="card-media-wrap">
-              <div class="media-container">
-                <video
-                  class="ambient-video"
-                  src="/page/assets/skin%20selection.mp4"
-                  poster="/page/assets/skin%20selection.webp"
-                  autoplay
-                  loop
-                  muted
-                  playsinline
-                  preload="none"
-                  aria-label="Skin drop and preset selection video (click to pause)"
-                ></video>
-              </div>
-            </div>
-            <div class="card-body">
-              <span class="step-num">Step 1</span>
-              <h3 class="card-title">Drop Skin and Pick Poses</h3>
-              <p class="card-desc">
-                Drop your skin PNG. BrandCraft maps it to the 3D rig and renders 8 portrait angles at once.
-              </p>
-            </div>
-          </article>
+        <div class="walkthrough-stage" id="workflow-walkthrough">
+          <!-- Segmented Step Navigation Pill-Bar / Tabs -->
+          <div class="walkthrough-nav-container">
+            <nav class="walkthrough-tabs" role="tablist" aria-label="BrandCraft Workflow Steps">
+              <button class="walkthrough-tab is-active" role="tab" aria-selected="true" aria-controls="step-panel-0" id="tab-step-0" data-step="0">
+                <span class="tab-badge">01</span>
+                <span class="tab-text-group">
+                  <span class="tab-title">Skin Ingest</span>
+                </span>
+                <span class="tab-progress"><span class="tab-progress-fill"></span></span>
+              </button>
+              <button class="walkthrough-tab" role="tab" aria-selected="false" aria-controls="step-panel-1" id="tab-step-1" data-step="1">
+                <span class="tab-badge">02</span>
+                <span class="tab-text-group">
+                  <span class="tab-title">Seed & Light</span>
+                </span>
+                <span class="tab-progress"><span class="tab-progress-fill"></span></span>
+              </button>
+              <button class="walkthrough-tab" role="tab" aria-selected="false" aria-controls="step-panel-2" id="tab-step-2" data-step="2">
+                <span class="tab-badge">03</span>
+                <span class="tab-text-group">
+                  <span class="tab-title">Studio Editor</span>
+                </span>
+                <span class="tab-progress"><span class="tab-progress-fill"></span></span>
+              </button>
+              <button class="walkthrough-tab" role="tab" aria-selected="false" aria-controls="step-panel-3" id="tab-step-3" data-step="3">
+                <span class="tab-badge">04</span>
+                <span class="tab-text-group">
+                  <span class="tab-title">Multi-Scale Export</span>
+                </span>
+                <span class="tab-progress"><span class="tab-progress-fill"></span></span>
+              </button>
+            </nav>
+          </div>
 
-          <!-- Step 2: Instant Reroll -->
-          <article class="workflow-card">
-            <div class="card-media-wrap">
-              <div class="media-container">
-                <video
-                  class="ambient-video"
-                  src="/page/assets/refresh%20feature.mp4"
-                  poster="/page/assets/refresh%20feature.webp"
-                  autoplay
-                  loop
-                  muted
-                  playsinline
-                  preload="none"
-                  aria-label="Lighting and color refresh video (click to pause)"
-                ></video>
+          <!-- Walkthrough Stage Screen -->
+          <div class="walkthrough-viewport-frame">
+            <div class="walkthrough-media-stack">
+              <!-- Step 1 Video Panel -->
+              <div class="walkthrough-panel is-active" id="step-panel-0" role="tabpanel" aria-labelledby="tab-step-0" data-index="0">
+                <div class="media-container walkthrough-media">
+                  <video
+                    class="ambient-video walkthrough-video"
+                    src="/page/assets/skin%20selection.mp4"
+                    poster="/page/assets/skin%20selection.webp"
+                    autoplay
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    aria-label="Step 1: Skin drop and pose selection video"
+                  ></video>
+                </div>
+                <div class="walkthrough-card-overlay">
+                  <div class="overlay-content">
+                    <h3 class="overlay-heading">Drop Skin & Pick Poses</h3>
+                    <p class="overlay-description">
+                      Drop your skin PNG. BrandCraft maps it to the 3D rig and renders 8 portrait angles simultaneously with full 3-point illumination.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="card-body">
-              <span class="step-num">Step 2</span>
-              <h3 class="card-title">Reroll Lighting and Colors</h3>
-              <p class="card-desc">
-                Hit reroll. Each click seeds new light angles and backdrop colors. Stop when you like what you see.
-              </p>
-            </div>
-          </article>
 
-          <!-- Step 3: Studio Editor -->
-          <article class="workflow-card">
-            <div class="card-media-wrap">
-              <div class="media-container">
-                <video
-                  class="ambient-video"
-                  src="/page/assets/asset%20editing%20showcase.mp4"
-                  poster="/page/assets/asset%20editing%20showcase.webp"
-                  autoplay
-                  loop
-                  muted
-                  playsinline
-                  preload="none"
-                  aria-label="Studio editor controls video (click to pause)"
-                ></video>
+              <!-- Step 2 Video Panel -->
+              <div class="walkthrough-panel" id="step-panel-1" role="tabpanel" aria-labelledby="tab-step-1" data-index="1" hidden>
+                <div class="media-container walkthrough-media">
+                  <video
+                    class="ambient-video walkthrough-video"
+                    src="/page/assets/refresh%20feature.mp4"
+                    poster="/page/assets/refresh%20feature.webp"
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    aria-label="Step 2: Instant reroll lighting and colors video"
+                  ></video>
+                </div>
+                <div class="walkthrough-card-overlay">
+                  <div class="overlay-content">
+                    <h3 class="overlay-heading">Reroll Lighting & Colors</h3>
+                    <p class="overlay-description">
+                      Hit reroll. Each click seeds randomized key light angles, fill ratios, and backdrop duotones. Lock your favorite with one tap.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div class="card-body">
-              <span class="step-num">Step 3</span>
-              <h3 class="card-title">Fine-Tune in the Editor</h3>
-              <p class="card-desc">
-                Adjust bone rotations and camera framing directly. The preview updates live at full 2048px resolution.
-              </p>
-            </div>
-          </article>
 
-          <!-- Step 4: Multi-Scale Export -->
-          <article class="workflow-card">
-            <div class="card-media-wrap">
-              <div class="media-container">
-                <video
-                  class="ambient-video"
-                  src="/page/assets/download%20asset.mp4"
-                  poster="/page/assets/download%20asset.webp"
-                  autoplay
-                  loop
-                  muted
-                  playsinline
-                  preload="none"
-                  aria-label="Multi-scale export video (click to pause)"
-                ></video>
+              <!-- Step 3 Video Panel -->
+              <div class="walkthrough-panel" id="step-panel-2" role="tabpanel" aria-labelledby="tab-step-2" data-index="2" hidden>
+                <div class="media-container walkthrough-media">
+                  <video
+                    class="ambient-video walkthrough-video"
+                    src="/page/assets/asset%20editing%20showcase.mp4"
+                    poster="/page/assets/asset%20editing%20showcase.webp"
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    aria-label="Step 3: Studio editor fine tuning video"
+                  ></video>
+                </div>
+                <div class="walkthrough-card-overlay">
+                  <div class="overlay-content">
+                    <h3 class="overlay-heading">Fine-Tune in Editor</h3>
+                    <p class="overlay-description">
+                      Directly manipulate bone rotations, camera focal depth, and risograph grain density. Every slider responds in realtime at full 2048px resolution.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 4 Video Panel -->
+              <div class="walkthrough-panel" id="step-panel-3" role="tabpanel" aria-labelledby="tab-step-3" data-index="3" hidden>
+                <div class="media-container walkthrough-media">
+                  <video
+                    class="ambient-video walkthrough-video"
+                    src="/page/assets/download%20asset.mp4"
+                    poster="/page/assets/download%20asset.webp"
+                    loop
+                    muted
+                    playsinline
+                    preload="metadata"
+                    aria-label="Step 4: Multi-scale high resolution export video"
+                  ></video>
+                </div>
+                <div class="walkthrough-card-overlay">
+                  <div class="overlay-content">
+                    <h3 class="overlay-heading">High-Res PNGs</h3>
+                    <p class="overlay-description">
+                      Export square profile cards with contact shadows, or pull transparent alpha cutouts ready for your YouTube thumbnails and stream overlays.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="card-body">
-              <span class="step-num">Step 4</span>
-              <h3 class="card-title">Export High-Res PNGs</h3>
-              <p class="card-desc">
-                Export square profile cards with contact shadows, or pull transparent alpha cutouts for your video thumbnails.
-              </p>
-            </div>
-          </article>
+
+
+          </div>
         </div>
       </div>
     </section>
@@ -242,24 +273,23 @@
             </p>
           </div>
           <div class="preset-code-wrap">
-            <code class="preset-code-inline">MC1|hd:-6,20,-5|ra:18,0,-8|cam:-0.15,1.7,33|bg:#153329|star:6,86,50,22,20,#f45288|light:k=-30,26,-34,1.05</code>
+            <code class="preset-code-inline" id="preset-share-code">MC1|hd:-6,20,-5|ra:18,0,-8|cam:-0.15,1.7,33|bg:#153329|star:6,86,50,22,20,#f45288|light:k=-30,26,-34,1.05</code>
+            <button class="btn-copy-code" id="btn-copy-code" type="button" aria-label="Copy preset share code">
+              <svg class="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <svg class="icon-copied hidden" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span class="copy-feedback-text">Copy</span>
+            </button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Final Call to Action -->
-    <section class="bottom-cta-section">
-      <div class="bottom-cta-container">
-        <h2 class="bottom-cta-title">Ready to render your skin?</h2>
-        <p class="bottom-cta-sub">Free and browser-native. Open source under GPL-3.0.</p>
-        <div class="bottom-cta-btn-wrap">
-          <a href="https://brndcrft.vercel.app" class="btn-primary hero-launch">
-            Open Studio <span class="arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-      </div>
-    </section>
+
   </main>
 
   <!-- Clean Footer -->
@@ -267,8 +297,6 @@
     <div class="footer-container">
       <div class="footer-left">
         <span class="footer-brand"><span class="brand-name">brand</span><span class="brand-craft">CRAFT</span></span>
-        <span class="footer-sep">•</span>
-        <span class="footer-copy">Browser-only Minecraft skin renderer</span>
       </div>
       <div class="footer-right">
         <a href="https://brndcrft.vercel.app" class="footer-link">Launch Studio</a>
