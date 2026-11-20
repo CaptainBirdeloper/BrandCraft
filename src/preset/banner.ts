@@ -10,6 +10,15 @@ export type BannerSize = (typeof BANNER_SIZES)[number];
 export const BANNER_TEXT_MAX = 16;
 export const DEFAULT_BANNER_TEXT = 'Subscribe';
 
+export const BANNER_ARCHETYPES = ['wings', 'asymmetric', 'duel'] as const;
+export type BannerArchetype = (typeof BANNER_ARCHETYPES)[number];
+
+export const BANNER_ARCHETYPE_LABELS: Record<BannerArchetype, string> = {
+  wings: 'Wings',
+  asymmetric: 'Asymmetric',
+  duel: 'Duel',
+};
+
 /** Font variations. `tracking` is extra letter space in em, on top of the fitted size. */
 export const BANNER_FONTS = [
   { id: 'caps', label: 'Serif Caps', family: 'serif', weight: 700, italic: false, upper: true, tracking: 0.02 },
@@ -48,6 +57,9 @@ export const PAIR_OFFSETS: readonly number[] = [2, 3, 4, 5, 6];
 
 export interface BannerSpec {
   text: string;
+  tagline?: string;
+  handle?: string;
+  archetype?: BannerArchetype;
   fontId: BannerFontId;
   rig: RigFamily;
   /** Wordmark size dial, applied around the box centre. */
@@ -58,6 +70,7 @@ export interface BannerSpec {
 
 export const DEFAULT_BANNER_SPEC: BannerSpec = {
   text: DEFAULT_BANNER_TEXT,
+  archetype: 'wings',
   fontId: 'caps',
   rig: 'editorial',
   textScale: 1,
@@ -71,15 +84,34 @@ export const DEFAULT_BANNER_SPEC: BannerSpec = {
  */
 export const BANNER_SPEC_DEFAULTS: readonly BannerSpec[] = [
   DEFAULT_BANNER_SPEC,
-  { text: DEFAULT_BANNER_TEXT, fontId: 'advercase', rig: 'rim', textScale: 0.86, pairOffset: 3 },
-  { text: DEFAULT_BANNER_TEXT, fontId: 'italic', rig: 'flat', textScale: 1, pairOffset: 5 },
-  { text: DEFAULT_BANNER_TEXT, fontId: 'inter', rig: 'editorial', textScale: 0.74, pairOffset: 2 },
+  {
+    text: DEFAULT_BANNER_TEXT,
+    archetype: 'duel',
+    fontId: 'advercase',
+    rig: 'rim',
+    textScale: 0.86,
+    pairOffset: 3,
+  },
+  {
+    text: DEFAULT_BANNER_TEXT,
+    archetype: 'asymmetric',
+    fontId: 'italic',
+    rig: 'flat',
+    textScale: 1,
+    pairOffset: 5,
+  },
+  {
+    text: DEFAULT_BANNER_TEXT,
+    archetype: 'wings',
+    fontId: 'inter',
+    rig: 'editorial',
+    textScale: 0.74,
+    pairOffset: 2,
+  },
 ];
 
 /** Pipes and control characters would break a one-line share format; 16 glyphs fit the strip. */
 export function clampBannerText(raw: string): string {
-  return raw
-    .replace(/[|\u0000-\u001f\u007f]/g, '')
-    .slice(0, BANNER_TEXT_MAX)
-    .trim();
+  const sanitized = raw.replace(/[|\u0000-\u001f\u007f]/g, '');
+  return Array.from(sanitized).slice(0, BANNER_TEXT_MAX).join('');
 }

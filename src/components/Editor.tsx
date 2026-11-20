@@ -6,6 +6,7 @@ import { renderCutout, renderPresets } from '../render/render';
 import { useAppStore } from '../store';
 import type { Slot } from '../preset/variants';
 import { PastePill } from './PastePill';
+import { HalftoneToggle } from './HalftoneToggle';
 import { PresetCard } from './PresetCard';
 import { SkinDrop } from './SkinDrop';
 import { UsernamePill } from './UsernamePill';
@@ -184,6 +185,7 @@ export function Editor() {
           )}
         </div>
         <PastePill variant="rail" />
+        <HalftoneToggle variant="rail" />
 
         <AnimatePresence>
           {toast ? (

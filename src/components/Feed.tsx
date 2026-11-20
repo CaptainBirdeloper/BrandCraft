@@ -10,6 +10,7 @@ import {
 import { prng, seedAt, wildBanner, wildSlot } from '../feed/wild';
 import { FeedCell } from '../feed/FeedCell';
 import type { FeedItem, FeedKind } from '../feed/types';
+import { clampBannerText } from '../preset/banner';
 import { renderBannerPreview } from '../render/banner';
 import { renderPreset } from '../render/render';
 import { useAppStore } from '../store';
@@ -49,6 +50,10 @@ function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
+function revokeBlob(url: string | null | undefined): void {
+  if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
+}
+
 export function Feed({ kind, hidden }: FeedProps) {
   const skinUrl = useAppStore((s) => s.skinUrl);
   const lastCommit = useAppStore((s) => s.lastCommit);
@@ -57,6 +62,13 @@ export function Feed({ kind, hidden }: FeedProps) {
   const openFeedDownload = useAppStore((s) => s.openFeedDownload);
   const openFeedBannerDownload = useAppStore((s) => s.openFeedBannerDownload);
   const showToast = useAppStore((s) => s.showToast);
+  const banners = useAppStore((s) => s.banners);
+  const setBanner = useAppStore((s) => s.setBanner);
+
+  const initialWordmark = banners[0]?.text ?? 'Subscribe';
+  const [wordmark, setWordmark] = useState(initialWordmark);
+  const wordmarkRef = useRef(wordmark);
+  wordmarkRef.current = wordmark;
 
   const [seed, setSeed] = useState(() => (Math.random() * 4294967296) >>> 0);
   const [box, setBox] = useState({ width: 0, height: 0 });
@@ -81,12 +93,51 @@ export function Feed({ kind, hidden }: FeedProps) {
   const skinRef = useRef(skinUrl);
   skinRef.current = skinUrl;
 
+  const didMountWordmark = useRef(false);
+  // Debounced in-place invalidation for banner text modification
+  useEffect(() => {
+    if (!didMountWordmark.current) {
+      didMountWordmark.current = true;
+      return;
+    }
+    if (kind !== 'banner') return;
+    const timer = window.setTimeout(() => {
+      // 1. Sync store
+      const count = useAppStore.getState().banners.length;
+      for (let i = 0; i < count; i++) {
+        setBanner(i, { text: wordmark });
+      }
+
+      // 2. Invalidate existing banner items in place (preserve layout, poses, and scroll)
+      let touched = false;
+      items.current.forEach((item) => {
+        if (item.spec) {
+          item.spec.text = wordmark;
+          if (item.url) {
+            revokeBlob(item.url);
+            item.url = null;
+          }
+          item.status = 'queued';
+          touched = true;
+        }
+      });
+      if (touched) bump();
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+  }, [wordmark, kind, setBanner]);
+
+  const handleWordmarkChange = (val: string) => {
+    const sanitized = clampBannerText(val);
+    setWordmark(sanitized);
+  };
+
   const make = useCallback(
     (id: number): FeedItem => {
       const rand = prng(seedAt(seed, id));
       const cardId = `feed-${seed}-${id}`;
       if (kind === 'banner') {
-        const wild = wildBanner(rand, cardId, id, 'Subscribe');
+        const wild = wildBanner(rand, cardId, id, wordmarkRef.current);
         return { id, status: 'queued', slot: wild.slot, url: null, spec: wild.spec, card: wild.card };
       }
       return { id, status: 'queued', slot: wildSlot(rand, cardId, `Wild ${id + 1}`), url: null };
@@ -122,7 +173,11 @@ export function Feed({ kind, hidden }: FeedProps) {
     // Retire everything off the window. Positions come from the id, so this never
     // shifts the cards the user is looking at.
     for (const id of items.current.keys()) {
-      if (id < next.from || id > next.to) items.current.delete(id);
+      if (id < next.from || id > next.to) {
+        const item = items.current.get(id);
+        if (item?.url) revokeBlob(item.url);
+        items.current.delete(id);
+      }
     }
     if (grew || items.current.size !== before) bump();
   }, [ensure, bump]);
@@ -140,6 +195,10 @@ export function Feed({ kind, hidden }: FeedProps) {
       if (frame.current) {
         window.cancelAnimationFrame(frame.current);
       }
+      items.current.forEach((item) => {
+        if (item.url) revokeBlob(item.url);
+      });
+      items.current.clear();
     };
   }, []);
 
@@ -179,6 +238,9 @@ export function Feed({ kind, hidden }: FeedProps) {
 
   // A re-roll throws the live set away and starts from id 0 again.
   useEffect(() => {
+    items.current.forEach((item) => {
+      if (item.url) revokeBlob(item.url);
+    });
     items.current.clear();
     keep.current = { from: 0, to: -1 };
     tail.current = -1;
@@ -194,6 +256,7 @@ export function Feed({ kind, hidden }: FeedProps) {
       if (item.slot.preset.id !== target && item.slot.preset.id !== `${target}-l`) continue;
       item.slot = lastCommit;
       if (item.card) item.card = { ...item.card, left: lastCommit };
+      if (item.url) revokeBlob(item.url);
       item.url = null;
       item.status = 'queued';
       touched = true;
@@ -233,10 +296,13 @@ export function Feed({ kind, hidden }: FeedProps) {
                   Math.min(renderWidth(m, STRIP_ASPECT), 1240),
                 )
               : await renderPreset(item.slot, skin, renderWidth(m, 1));
-          if (items.current.get(id) === item) {
+          if (items.current.get(id) === item && item.status === 'rendering') {
             item.url = url;
             item.status = 'ready';
             failures = 0;
+          } else {
+            // Card was retired, re-rolled, or invalidated while in-flight
+            revokeBlob(url);
           }
         } catch (error) {
           failures += 1;
@@ -338,6 +404,19 @@ export function Feed({ kind, hidden }: FeedProps) {
           {kind === 'banner' ? 'Banners' : 'Presets'} · endless · {liveCount} live · seed{' '}
           {seed.toString(36)}
         </span>
+        {kind === 'banner' ? (
+          <div className="feed-wordmark-pill">
+            <input
+              type="text"
+              className="feed-wordmark-input"
+              value={wordmark}
+              maxLength={16}
+              placeholder="Wordmark"
+              aria-label="Customize banner wordmark"
+              onChange={(e) => handleWordmarkChange(e.target.value)}
+            />
+          </div>
+        ) : null}
         <button
           type="button"
           className="refresh"

@@ -4,6 +4,8 @@
  * width, so a card preview and a 2560 px export use the same fractions.
  */
 
+import type { BannerArchetype } from '../preset/banner';
+
 export const BANNER_W = 2560;
 export const BANNER_H = 1440;
 
@@ -14,8 +16,8 @@ export const STRIP_H = 423;
 export const BANNER_ASPECT = BANNER_W / BANNER_H;
 export const STRIP_ASPECT = STRIP_W / STRIP_H;
 
-const STRIP_X = (BANNER_W - STRIP_W) / 2;
-const STRIP_Y = (BANNER_H - STRIP_H) / 2;
+const STRIP_X = Math.round((BANNER_W - STRIP_W) / 2);
+const STRIP_Y = Math.floor((BANNER_H - STRIP_H) / 2);
 
 /**
  * A bust box is the figure's own aspect at full strip height, pinned to its strip
@@ -76,6 +78,7 @@ export function bannerRects(
   width: number,
   leftAspect: number | null,
   rightAspect: number | null,
+  archetype: BannerArchetype = 'wings',
 ): BannerRects {
   const scale = width / BANNER_W;
   const px = (value: number) => value * scale;
@@ -83,8 +86,82 @@ export function bannerRects(
   const left = leftAspect ?? PLACEHOLDER_ASPECT;
   const right = rightAspect ?? PLACEHOLDER_ASPECT;
 
-  // Both figures stay extreme for as long as they fit; if the pair is too wide the
-  // only honest correction is to scale both down. Cropping is what we are avoiding.
+  if (archetype === 'asymmetric') {
+    // Dominant hero figure on left (1.15x scale) + secondary offset figure on right (~0.85x scale) + offset wordmark
+    let heroH = Math.min(STRIP_H * 0.98, FIG_H * 1.15);
+    let secH = FIG_H * 0.85;
+    let wl = left * heroH;
+    let wr = right * secH;
+
+    const maxLeftW = STRIP_W * 0.42;
+    if (wl > maxLeftW) {
+      const shrink = maxLeftW / wl;
+      heroH *= shrink;
+      wl *= shrink;
+    }
+
+    const maxRightW = STRIP_W * 0.32;
+    if (wr > maxRightW) {
+      const shrink = maxRightW / wr;
+      secH *= shrink;
+      wr *= shrink;
+    }
+
+    const heroFloorY = STRIP_Y + STRIP_H - heroH;
+    const secFloorY = STRIP_Y + STRIP_H - secH;
+
+    // Wordmark sits between hero and secondary figure, offset right of center
+    const textStartX = STRIP_X + wl + TEXT_GUTTER;
+    const textEndX = STRIP_X + STRIP_W - wr - TEXT_GUTTER;
+    const textW = Math.max(0, textEndX - textStartX);
+    const textH = STRIP_H * TEXT_H_RATIO;
+
+    return {
+      left: { x: px(STRIP_X), y: px(heroFloorY), w: px(wl), h: px(heroH) },
+      right: { x: px(STRIP_X + STRIP_W - wr), y: px(secFloorY), w: px(wr), h: px(secH) },
+      text: {
+        x: px(textStartX),
+        y: px(STRIP_Y + (STRIP_H - textH) / 2),
+        w: px(textW),
+        h: px(textH),
+      },
+    };
+  }
+
+  if (archetype === 'duel') {
+    // Confrontational pair facing inward, slightly shifted toward center
+    let h = FIG_H * 0.98;
+    let wl = left * h;
+    let wr = right * h;
+
+    // Shift in by 5% of strip width from each edge
+    const inset = STRIP_W * 0.05;
+    const room = (STRIP_W - TEXT_MIN_W) / 2 - TEXT_GUTTER - inset;
+    const widest = Math.max(wl, wr);
+    if (widest > room) {
+      const shrink = room / widest;
+      h *= shrink;
+      wl *= shrink;
+      wr *= shrink;
+    }
+
+    const floorY = STRIP_Y + STRIP_H - h;
+    const textW = Math.max(0, STRIP_W - 2 * (inset + Math.max(wl, wr) + TEXT_GUTTER));
+    const textH = STRIP_H * TEXT_H_RATIO;
+
+    return {
+      left: { x: px(STRIP_X + inset), y: px(floorY), w: px(wl), h: px(h) },
+      right: { x: px(STRIP_X + STRIP_W - inset - wr), y: px(floorY), w: px(wr), h: px(h) },
+      text: {
+        x: px(STRIP_X + STRIP_W / 2 - textW / 2),
+        y: px(STRIP_Y + (STRIP_H - textH) / 2),
+        w: px(textW),
+        h: px(textH),
+      },
+    };
+  }
+
+  // Archetype 'wings' (classic symmetrical flanking)
   let h = FIG_H;
   let wl = left * h;
   let wr = right * h;
@@ -113,12 +190,12 @@ export function bannerRects(
   };
 }
 
-export function bannerLayout(width: number): BannerLayout {
+export function bannerLayout(width: number, archetype: BannerArchetype = 'wings'): BannerLayout {
   const scale = width / BANNER_W;
   const px = (value: number) => value * scale;
 
   return {
-    ...bannerRects(width, null, null),
+    ...bannerRects(width, null, null, archetype),
     width: Math.round(BANNER_W * scale),
     height: Math.round(BANNER_H * scale),
     scale,

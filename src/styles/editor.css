@@ -226,6 +226,39 @@
   object-fit: contain;
 }
 
+
+
+button.halftone-toggle {
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s ease, filter 0.15s ease;
+}
+
+button.halftone-toggle:hover {
+  filter: brightness(1.08);
+}
+
+button.halftone-toggle:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+button.halftone-toggle:not(.is-active) {
+  opacity: 0.65;
+}
+
+button.halftone-toggle:not(.is-active):hover {
+  opacity: 0.9;
+}
+
+.halftone-label {
+  cursor: pointer;
+  user-select: none;
+  text-align: left;
+  font-size: clamp(10px, 1.18vw, 22px);
+}
+
 .paste-rail {
   width: 81.4%;
   margin: clamp(6px, 0.76vw, 16px) auto 0;

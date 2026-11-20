@@ -1,5 +1,12 @@
 import type { BannerCard } from '../banner/cards';
-import { BANNER_FONTS, DEFAULT_BANNER_TEXT, PAIR_OFFSETS, RIG_FAMILIES, TEXT_SCALES } from '../preset/banner';
+import {
+  BANNER_ARCHETYPES,
+  BANNER_FONTS,
+  DEFAULT_BANNER_TEXT,
+  PAIR_OFFSETS,
+  RIG_FAMILIES,
+  TEXT_SCALES,
+} from '../preset/banner';
 import type { BannerSpec } from '../preset/banner';
 import type { Preset } from '../preset/presets';
 import { randomRig } from '../preset/randomize';
@@ -156,9 +163,13 @@ export function wildBanner(
   const left = wildSlot(rand, `${id}-l`, `Banner ${index + 1} · left`);
   const right = wildSlot(rand, `${id}-r`, `Banner ${index + 1} · right`);
   const spec: BannerSpec = {
-    text: text.slice(0, 16) || DEFAULT_BANNER_TEXT,
+    text:
+      typeof text === 'string' && text.length > 0
+        ? Array.from(text).slice(0, 16).join('')
+        : DEFAULT_BANNER_TEXT,
     fontId: pick(BANNER_FONTS, rand).id,
     rig: pick(RIG_FAMILIES, rand),
+    archetype: pick(BANNER_ARCHETYPES, rand),
     textScale: pick(TEXT_SCALES, rand),
     pairOffset: pick(PAIR_OFFSETS, rand),
   };

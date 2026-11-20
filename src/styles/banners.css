@@ -7,7 +7,6 @@
   flex-direction: column;
 }
 
-/* The grid keeps its own height; the banner section below it scrolls in. */
 .stage-column > .stage {
   flex: none;
 }
@@ -16,10 +15,42 @@
   padding: 0 clamp(12px, 2.06vw, 48px) clamp(20px, 4vw, 64px) clamp(12px, 1.83vw, 40px);
 }
 
-/* Same head as the profile picture section: title at the stage's left edge, one
-   randomizer beside it that re-rolls every banner at once. */
 .banners-head {
   margin: clamp(14px, 2vw, 44px) 0 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 16px);
+}
+
+.wordmark-pill {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: clamp(32px, 2.5vw, 40px);
+  padding: 0 clamp(10px, 1vw, 16px);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-card);
+  border-radius: 999px;
+  transition: border-color 0.15s ease;
+}
+
+.wordmark-pill:focus-within {
+  border-color: var(--accent);
+}
+
+.wordmark-input {
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: clamp(11px, 0.75vw, 13px);
+  letter-spacing: 0.04em;
+  width: clamp(100px, 10vw, 150px);
+}
+
+.wordmark-input::placeholder {
+  color: var(--text-muted);
 }
 
 .banners-error {
@@ -31,34 +62,32 @@
   font-size: clamp(9px, 0.7vw, 13px);
 }
 
-/* Four strips per row across the whole stage: banners get their own width budget,
-   they are not tied to the profile grid's columns. */
+/* 2x2 Showcase Grid: generous height, 2 columns on desktop */
 .banners-grid {
-  margin: clamp(6px, 0.8vw, 16px) 0 0;
+  margin: clamp(10px, 1.2vw, 20px) 0 0;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(4px, 0.73vw, 16px) clamp(4px, 0.68vw, 15px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 20px);
 }
 
-/* A banner card is the phone strip: 1546x423, nothing else. */
+/* Clean phone strip card: 1546x423 */
 .banner-card {
   position: relative;
   width: 100%;
   aspect-ratio: 1546 / 423;
   min-height: 44px;
   border: 2px solid var(--border-card);
-  border-radius: clamp(4px, 0.62vw, 12px);
+  border-radius: clamp(6px, 0.8vw, 12px);
   background: #000000;
   overflow: hidden;
-  transition: border-color 0.12s ease;
+  transition: border-color 0.15s ease;
 }
 
 .banner-card:hover {
   border-color: var(--accent);
 }
 
-/* The image is the click target: it opens the download page for this banner. */
 .banner-card-open {
   position: absolute;
   inset: 0;
@@ -70,6 +99,11 @@
   border: 0;
   background: transparent;
   cursor: pointer;
+}
+
+.banner-card-open:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .banner-card-img {
@@ -120,7 +154,7 @@
 
   .banners-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 10px;
   }
 
   .download-preview.is-banner {
@@ -134,14 +168,15 @@
   }
 
   .banners-grid {
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .banners-grid {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   .download-preview.is-banner {

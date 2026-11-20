@@ -57,6 +57,7 @@ interface AppState {
   openFeedBannerDownload: (spec: BannerSpec, card: BannerCard) => void;
   setBanner: (index: number, patch: Partial<BannerSpec>) => void;
   rerollBanners: () => void;
+  toggleHalftone: () => void;
   showToast: (message: string) => void;
   clearToast: () => void;
 }
@@ -148,7 +149,7 @@ export const useAppStore = create<AppState>((set) => ({
           const next = (from + 1 + Math.floor(Math.random() * (list.length - 1))) % list.length;
           return list[next] ?? current;
         };
-        const font = step(BANNER_FONTS, BANNER_FONTS.find((item) => item.id === spec.fontId)!);
+        const font = step(BANNER_FONTS, BANNER_FONTS.find((item) => item.id === spec.fontId) ?? BANNER_FONTS[0]);
         return {
           ...spec,
           fontId: font.id,
@@ -158,6 +159,45 @@ export const useAppStore = create<AppState>((set) => ({
         };
       }),
     })),
+  toggleHalftone: () =>
+    set((state) => {
+      const isRiso = state.slots.some((s) => s.variant.backdrop.style === 'riso');
+      const nextStyle = isRiso ? 'flat' : 'riso';
+      return {
+        slots: state.slots.map((s) => ({
+          ...s,
+          variant: {
+            ...s.variant,
+            backdrop: { ...s.variant.backdrop, style: nextStyle },
+          },
+        })),
+        slot: {
+          ...state.slot,
+          variant: {
+            ...state.slot.variant,
+            backdrop: { ...state.slot.variant.backdrop, style: nextStyle },
+          },
+        },
+        ...(state.editDraft && {
+          editDraft: {
+            ...state.editDraft,
+            variant: {
+              ...state.editDraft.variant,
+              backdrop: { ...state.editDraft.variant.backdrop, style: nextStyle },
+            },
+          },
+        }),
+        customSlot: state.customSlot
+          ? {
+              ...state.customSlot,
+              variant: {
+                ...state.customSlot.variant,
+                backdrop: { ...state.customSlot.variant.backdrop, style: nextStyle },
+              },
+            }
+          : null,
+      };
+    }),
   showToast: (toast) => set({ toast }),
   clearToast: () => set({ toast: null }),
 }));

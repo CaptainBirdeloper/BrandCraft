@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { m } from 'motion/react';
 import { bannerCards, type BannerCard } from '../banner/cards';
 import { renderBannerPreview } from '../render/banner';
-import type { BannerSpec } from '../preset/banner';
+import {
+  DEFAULT_BANNER_SPEC,
+  clampBannerText,
+  type BannerSpec,
+} from '../preset/banner';
 import { BOUNCY } from '../motion';
 import { useAppStore } from '../store';
 import { RefreshIcon, FullscreenIcon } from './icons';
@@ -18,8 +22,8 @@ interface TileProps {
 }
 
 /**
- * One banner. Just the strip and the tap target — randomizing lives on the section
- * heading, beside the title, exactly like the profile picture grid.
+ * Minimalist banner card: edge-to-edge artwork in 1546x423 aspect ratio.
+ * Clicking opens full download screen. Zero overlay clutter.
  */
 function BannerTile({ card, spec, skinUrl }: TileProps) {
   const openBannerDownload = useAppStore((s) => s.openBannerDownload);
@@ -33,7 +37,11 @@ function BannerTile({ card, spec, skinUrl }: TileProps) {
     const timer = window.setTimeout(() => {
       renderBannerPreview(spec, card, skinUrl, CARD_WIDTH)
         .then((next) => {
-          if (!cancelled) setUrl(next);
+          if (cancelled) {
+            URL.revokeObjectURL(next);
+            return;
+          }
+          setUrl(next);
         })
         .catch((err: unknown) => {
           if (cancelled) return;
@@ -46,6 +54,12 @@ function BannerTile({ card, spec, skinUrl }: TileProps) {
       window.clearTimeout(timer);
     };
   }, [spec, card, skinUrl]);
+
+  useEffect(() => {
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [url]);
 
   return (
     <div className="banner-card">
@@ -72,8 +86,17 @@ export function BannerSection() {
   const customSlot = useAppStore((s) => s.customSlot);
   const banners = useAppStore((s) => s.banners);
   const rerollBanners = useAppStore((s) => s.rerollBanners);
+  const setBanner = useAppStore((s) => s.setBanner);
 
   const [spins, setSpins] = useState(0);
+  const channelName = banners[0]?.text ?? 'Subscribe';
+
+  const handleNameChange = (val: string) => {
+    const sanitized = clampBannerText(val);
+    banners.forEach((_, idx) => {
+      setBanner(idx, { text: sanitized });
+    });
+  };
 
   const shuffle = () => {
     setSpins((value) => value + 1);
@@ -81,11 +104,10 @@ export function BannerSection() {
   };
 
   const pool = useMemo(() => (customSlot ? [...slots, customSlot] : slots), [slots, customSlot]);
-  /** Only the pairings matter to the cards; re-rolling one must not re-render the rest. */
-  const pairKey = banners.map((banner) => banner.pairOffset).join('-');
+  const pairOffsets = banners.map((banner) => banner.pairOffset);
   const cards = useMemo(
-    () => bannerCards(pool, pairKey.split('-').map((pairOffset) => ({ pairOffset: Number(pairOffset) }))),
-    [pool, pairKey],
+    () => bannerCards(pool, pairOffsets.map((pairOffset) => ({ pairOffset }))),
+    [pool, pairOffsets.join(',')],
   );
 
   if (!skinUrl) return null;
@@ -94,11 +116,22 @@ export function BannerSection() {
     <section className="banners">
       <div className="stage-head banners-head">
         <h2 className="stage-title">Banners</h2>
+        <div className="wordmark-pill">
+          <input
+            type="text"
+            className="wordmark-input"
+            value={channelName}
+            maxLength={16}
+            placeholder="Wordmark"
+            aria-label="Custom banner wordmark"
+            onChange={(e) => handleNameChange(e.target.value)}
+          />
+        </div>
         <m.button
           type="button"
           className="refresh"
           aria-label="Randomize banners"
-          title="Randomize all four banners: type, lighting, size, pairing"
+          title="Randomize all four banners: archetype, type, lighting, size, pairing"
           onClick={shuffle}
           animate={{ rotate: spins * 360 }}
           transition={BOUNCY}
@@ -115,12 +148,13 @@ export function BannerSection() {
           <FullscreenIcon />
         </button>
       </div>
+
       <div className="banners-grid">
         {cards.map((card) => (
           <BannerTile
             key={card.index}
             card={card}
-            spec={banners[card.index] ?? banners[0]}
+            spec={banners[card.index] ?? banners[0] ?? DEFAULT_BANNER_SPEC}
             skinUrl={skinUrl}
           />
         ))}

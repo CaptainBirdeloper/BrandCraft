@@ -34,6 +34,37 @@
   color: var(--text-muted);
 }
 
+.feed-wordmark-pill {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: clamp(28px, 2vw, 34px);
+  padding: 0 clamp(8px, 0.8vw, 14px);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-card);
+  border-radius: 999px;
+  transition: border-color 0.15s ease;
+}
+
+.feed-wordmark-pill:focus-within {
+  border-color: var(--accent);
+}
+
+.feed-wordmark-input {
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: clamp(10px, 0.72vw, 12px);
+  letter-spacing: 0.04em;
+  width: clamp(80px, 9vw, 130px);
+}
+
+.feed-wordmark-input::placeholder {
+  color: var(--text-muted);
+}
+
 .feed-exit {
   flex: none;
   padding: clamp(4px, 0.5vw, 9px) clamp(10px, 1vw, 18px);

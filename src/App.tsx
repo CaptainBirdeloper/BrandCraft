@@ -13,10 +13,20 @@ export default function App() {
   const screen = useAppStore((s) => s.screen);
   const editDraft = useAppStore((s) => s.editDraft);
   const feedKind = useAppStore((s) => s.feedKind);
+  const setSkin = useAppStore((s) => s.setSkin);
   const setCustomPreset = useAppStore((s) => s.setCustomPreset);
   const setCodeError = useAppStore((s) => s.setCodeError);
 
   useEffect(() => {
+    if (window.location.hash.startsWith('#dev')) {
+      setSkin('/test-skin.png', 'DevSkin');
+      if (window.location.hash.includes('feed-banner')) {
+        useAppStore.getState().openFeed('banner');
+      } else if (window.location.hash.includes('feed')) {
+        useAppStore.getState().openFeed('pfp');
+      }
+      return;
+    }
     if (!window.location.hash.startsWith('#c=')) return;
     const code = decodeURIComponent(window.location.hash.slice(3));
     const preset = decodePreset(code);
@@ -25,7 +35,7 @@ export default function App() {
       return;
     }
     setCodeError(true);
-  }, [setCustomPreset, setCodeError]);
+  }, [setSkin, setCustomPreset, setCodeError]);
 
   // Pages overlap instead of waiting on each other: the drop feels instant.
   return (

@@ -30,6 +30,22 @@ const CARD_WIDTH = 1240;
 const MASTER = 2048;
 const YOUTUBE_MAX_BYTES = 6_000_000;
 
+/** In-memory cache for 3D character bust captures with LRU boundary. */
+const MAX_FIGURE_CACHE = 24;
+const bannerFigureCache = new Map<string, [BannerFigure, BannerFigure]>();
+
+function figureCacheKey(card: BannerCard, spec: BannerSpec, skin: string): string {
+  return `${card.left.preset.id}-${card.right.preset.id}-${spec.rig}-${skin}`;
+}
+
+function setFigureCache(key: string, figures: [BannerFigure, BannerFigure]): void {
+  if (bannerFigureCache.size >= MAX_FIGURE_CACHE) {
+    const oldest = bannerFigureCache.keys().next().value;
+    if (oldest) bannerFigureCache.delete(oldest);
+  }
+  bannerFigureCache.set(key, figures);
+}
+
 /**
  * The banner bust is built from nothing but the render and the ink — never from a
  * preset's PFP camera or crop. Two things make the head whole:
@@ -159,9 +175,14 @@ export async function renderBannerPreview(
   skin: string,
   width = CARD_WIDTH,
 ): Promise<string> {
-  const pairs = await enqueueCapture(() => captureFigures([card], spec, skin));
+  const key = figureCacheKey(card, spec, skin);
+  let figures = bannerFigureCache.get(key);
+  if (!figures) {
+    const pairs = await enqueueCapture(() => captureFigures([card], spec, skin));
+    figures = pairs[0];
+    if (figures) setFigureCache(key, figures);
+  }
   await ensureBannerFonts();
-  const figures = pairs[0];
   if (!figures) throw new Error('Banner figures missing');
   const { canvas, rects } = composeBanner({ card, spec, figures }, width, 'strip');
   const probe = window as Window & { __bcBannerPreview?: unknown };
@@ -182,9 +203,14 @@ export async function renderBanner(
   width: number,
 ): Promise<BannerResult> {
   const started = performance.now();
-  const pairs = await enqueueCapture(() => captureFigures([card], spec, skin));
+  const key = figureCacheKey(card, spec, skin);
+  let figures = bannerFigureCache.get(key);
+  if (!figures) {
+    const pairs = await enqueueCapture(() => captureFigures([card], spec, skin));
+    figures = pairs[0];
+    if (figures) setFigureCache(key, figures);
+  }
   await ensureBannerFonts();
-  const figures = pairs[0];
   if (!figures) throw new Error('Banner figures missing');
   const composed = composeBanner({ card, spec, figures }, width);
   const canvas = composed.canvas;

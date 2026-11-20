@@ -38,7 +38,8 @@
     flex: none;
   }
 
-  .paste-rail {
+  .paste-rail,
+  .halftone-toggle-rail {
     flex: 1 1 auto;
     width: auto;
     margin: 0;
@@ -174,7 +175,8 @@
     margin: 0;
   }
 
-  .paste-rail {
+  .paste-rail,
+  .halftone-toggle-rail {
     flex: 1 1 auto;
     height: 38px;
     min-height: 38px;

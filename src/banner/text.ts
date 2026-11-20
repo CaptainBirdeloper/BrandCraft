@@ -1,4 +1,4 @@
-﻿import type { BannerFont } from '../preset/banner';
+﻿import { bannerFont, type BannerFont } from '../preset/banner';
 import type { Rect } from './layout';
 
 /** Cap-height as a fraction of the font size, used to fit text inside its box. */
@@ -69,14 +69,18 @@ export function drawBannerText(
   rect: Rect,
   ink: string,
 ): TextFit {
-  const trimmed = text.trim();
-  const glyphs = glyphsOf(trimmed, font);
+  const glyphs = glyphsOf(text, font);
   if (glyphs.length === 0 || rect.w <= 0 || rect.h <= 0) return { w: 0, h: 0, size: 0 };
 
   const heightCeiling = (rect.h * 0.94) / CAP_RATIO;
   let size = heightCeiling;
-  while (size > MIN_SIZE && measureBannerText(ctx, trimmed, font, font.tracking, size) > rect.w) {
-    size *= 0.95;
+  const initialWidth = measureBannerText(ctx, text, font, font.tracking, size);
+  if (initialWidth > rect.w && initialWidth > 0) {
+    size = Math.max(MIN_SIZE, Math.floor(heightCeiling * (rect.w / initialWidth)));
+    // Final check for fractional glyph rounding
+    if (measureBannerText(ctx, text, font, font.tracking, size) > rect.w && size > MIN_SIZE) {
+      size = Math.max(MIN_SIZE, size - 1);
+    }
   }
   size = Math.max(MIN_SIZE, size);
 
@@ -96,4 +100,42 @@ export function drawBannerText(
   });
 
   return { w: total, h: size * CAP_RATIO, size };
+}
+
+/**
+ * Draws multi-line identity hierarchy: Tagline above, Main Wordmark centered, Handle below.
+ */
+export function drawBannerIdentity(
+  ctx: CanvasRenderingContext2D,
+  spec: { text: string; tagline?: string; handle?: string },
+  font: BannerFont,
+  rect: Rect,
+  ink: string,
+): TextFit {
+  const hasTagline = Boolean(spec.tagline && spec.tagline.trim().length > 0);
+  const hasHandle = Boolean(spec.handle && spec.handle.trim().length > 0);
+
+  if (!hasTagline && !hasHandle) {
+    return drawBannerText(ctx, spec.text, font, rect, ink);
+  }
+
+  const tagH = hasTagline ? rect.h * 0.2 : 0;
+  const handleH = hasHandle ? rect.h * 0.18 : 0;
+  const mainH = rect.h - tagH - handleH;
+
+  const tagRect: Rect = { x: rect.x, y: rect.y, w: rect.w, h: tagH };
+  const mainRect: Rect = { x: rect.x, y: rect.y + tagH, w: rect.w, h: mainH };
+  const handleRect: Rect = { x: rect.x, y: rect.y + tagH + mainH, w: rect.w, h: handleH };
+
+  if (hasTagline && spec.tagline) {
+    drawBannerText(ctx, spec.tagline, bannerFont('caps'), tagRect, 'rgba(255, 255, 255, 0.72)');
+  }
+
+  const mainFit = drawBannerText(ctx, spec.text, font, mainRect, ink);
+
+  if (hasHandle && spec.handle) {
+    drawBannerText(ctx, spec.handle, bannerFont('inter'), handleRect, 'rgba(234, 179, 8, 0.85)');
+  }
+
+  return mainFit;
 }
