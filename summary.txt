@@ -105,7 +105,7 @@ None. Static SPA; the renderer library runs in-browser. No fetch/XHR/API.
 
 4. Commands
 Build gate: node <pnpm.mjs> exec tsc --noEmit, then exec vite build. pnpm is not on PATH in this shell; node + pnpm.mjs paths come from the runtime dependency payload.
-Verify: node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state <name>; states live in verify.states.json. States that only print numbers (custom, perf, anim, probe, banner-frame, edit-backdrop) are probes: they always throw with measurements.
+Verify: npx verify check --url http://127.0.0.1:4173/ --state <name>; states live in verify.states.json. States that only print numbers (custom, perf, anim, probe, banner-frame, edit-backdrop) are probes: they always throw with measurements.
 Verify gotchas: `goto` substitutes $url only when a step's value is exactly "$url", so put ?r= or #c= on --url; there is no --state-file flag. `shot --selector` fails (bbox null) on .grid / .banners-grid / .download-preview -- use --selector "body" or --region. Two clicks in one eval both read the same pre-render draft, so drive one control per step with a settle between.
 
 5. Pitfalls

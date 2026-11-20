@@ -11,7 +11,7 @@
         {
           "upload": {
             "selector": ".cta input[type=\"file\"]",
-            "files": ["C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"]
+            "files": ["./public/test-skin.png"]
           }
         },
         { "waitFor": ".preset img" },
@@ -30,7 +30,7 @@
         {
           "upload": {
             "selector": ".cta input[type=\"file\"]",
-            "files": ["C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"]
+            "files": ["./public/test-skin.png"]
           }
         },
         { "waitFor": ".banner-card img" },
@@ -52,7 +52,7 @@
         {
           "upload": {
             "selector": ".cta input[type=\"file\"]",
-            "files": ["C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"]
+            "files": ["./public/test-skin.png"]
           }
         },
         { "waitFor": ".preset img" },
@@ -101,7 +101,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -125,7 +125,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -155,7 +155,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -188,7 +188,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -215,7 +215,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -239,7 +239,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -278,7 +278,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -305,7 +305,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -332,7 +332,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -371,7 +371,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -428,7 +428,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -464,7 +464,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -506,7 +506,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -548,7 +548,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -608,7 +608,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -656,7 +656,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -698,7 +698,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -734,7 +734,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -786,7 +786,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -822,7 +822,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -858,7 +858,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -900,7 +900,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -938,7 +938,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -990,7 +990,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -1018,7 +1018,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },
@@ -1043,7 +1043,7 @@
           "upload": {
             "selector": ".cta input[type=\"file\"]",
             "files": [
-              "C:/Users/jesmi/OneDrive/Desktop/temp fn/other/fw.png"
+              "./public/test-skin.png"
             ]
           }
         },

@@ -111,9 +111,9 @@ Headless Chrome test suites run through `verify.states.json` to validate renderi
 
 ```bash
 # Verify banner section geometry, ink boundaries, and export sizes
-node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-section
-node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-frame
-node C:\Users\jesmi\.dsh\skills\verify\bin\verify.mjs check --url http://127.0.0.1:4173/ --state banner-export
+npx verify check --url http://127.0.0.1:4173/ --state banner-section
+npx verify check --url http://127.0.0.1:4173/ --state banner-frame
+npx verify check --url http://127.0.0.1:4173/ --state banner-export
 ```
 
 ---
