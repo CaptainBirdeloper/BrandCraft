@@ -1,6 +1,6 @@
 BrandCraft
 Generated: 2026-11-11 (trimmed index: map + traps. Long-form record lives in summarybkp.txt)
-Purpose: browser-only Minecraft skin renderer. Drop a skin -> 8 preset cards (share codes in src\preset\slots.txt) -> tune any card on the edit page (46 sliders + 1 halftone chip over the same codec) -> download screen -> save the PNG (riso print baked in) at 1K/2K/4K. Below the grid: 4 banner cards (2 busts + wordmark, one shared refresh) that export 2560x1440 / 1546x423 strip.
+Purpose: browser-only Minecraft skin renderer. Drop a skin or enter username -> 8 random preset cards (sampled per roll from pool of 16 in src\preset\slots.txt) -> tune any card on the edit page (46 sliders + 1 halftone chip over the same codec) -> download screen -> save the PNG (riso print baked in) at 1K/2K/4K. Below the grid: 4 banner cards (2 busts + wordmark, one shared refresh) that export 2560x1440 / 1546x423 strip.
 
 0. Reader contract
 - Trust the map, verify before editing: paths and names here are maintained by hand, so confirm a file before a mutating edit. Grep is cheap; a stale assumption is not.

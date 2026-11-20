@@ -103,10 +103,23 @@ export function randomRig(rand: () => number): LightRig {
   });
 }
 
-/** Keep every pose, camera and crop from the base card; re-roll only look. */
-export function randomizeSlots(base: readonly Slot[], seed: number): Slot[] {
+export const MAIN_GRID_SLOTS = 8;
+
+/** Keep every pose, camera and crop from the base card; re-roll only look.
+ * When base has more slots than count, pick count distinct slots using the PRNG. */
+export function randomizeSlots(base: readonly Slot[], seed: number, count = MAIN_GRID_SLOTS): Slot[] {
   const rand = prng(seed);
-  return base.map((slot) => ({
+  const pool = [...base];
+  if (pool.length > count) {
+    for (let i = pool.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(rand() * (i + 1));
+      const temp = pool[i];
+      pool[i] = pool[j];
+      pool[j] = temp;
+    }
+    pool.length = count;
+  }
+  return pool.map((slot) => ({
     preset: { ...slot.preset, light: randomRig(rand) },
     variant: randomVariant(rand),
   }));
