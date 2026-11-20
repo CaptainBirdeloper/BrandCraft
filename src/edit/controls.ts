@@ -4,85 +4,20 @@ import { poseKey } from '../render/poses';
 import { SLOT_KEYS } from '../preset/presets';
 import type { BonePose } from '../preset/presets';
 import type { BackdropSpec, Slot, StarSpec } from '../preset/variants';
+import type { GroupId, LampKey, Param, ParamGroup, Toggle } from './types';
+import {
+  clamp,
+  hexToHsl,
+  hslToHex,
+  spherical,
+  tidy,
+  toDeg,
+  toRad,
+  wrapDeg,
+} from './math';
 
-export type GroupId = 'camera' | 'framing' | 'pose' | 'backdrop' | 'star' | 'light';
-
-export interface ParamGroup {
-  id: GroupId;
-  title: string;
-  hint: string;
-}
-
-/**
- * One slider. `get` returns the value the user sees (already rounded to the step), so
- * the label, the code and a decode/encode round trip always agree.
- */
-export interface Param {
-  id: string;
-  label: string;
-  group: GroupId;
-  /** A function when the bound depends on another value, like the crop offset. */
-  min: number | ((slot: Slot) => number);
-  max: number | ((slot: Slot) => number);
-  step: number;
-  unit: string;
-  get: (slot: Slot) => number;
-  set: (slot: Slot, value: number) => Slot;
-}
-
-/**
- * A switch, not a slider: one press flips it. The screen is either printed or flat —
- * a two-stop range would say the same thing with more chrome.
- */
-export interface Toggle {
-  id: string;
-  label: string;
-  group: GroupId;
-  get: (slot: Slot) => boolean;
-  set: (slot: Slot, on: boolean) => Slot;
-}
-
-type LampKey = 'key' | 'fill' | 'rim';
-
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
-const tidy = (value: number) => Math.round(value * 1000) / 1000;
-const toDeg = (rad: number) => (rad * 180) / Math.PI;
-const toRad = (deg: number) => (deg * Math.PI) / 180;
-
-/** Direct angles are wrapped to −180…180 so the slider never reads 270. */
-function wrapDeg(rad: number): number {
-  const deg = toDeg(rad);
-  return Math.round((((deg + 180) % 360) + 360) % 360 - 180);
-}
-
-function hexToHsl(hex: string): { h: number; s: number; l: number } {
-  const value = Number.parseInt(hex.slice(1), 16);
-  const r = ((value >> 16) & 255) / 255;
-  const g = ((value >> 8) & 255) / 255;
-  const b = (value & 255) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  const l = (max + min) / 2;
-  if (max === min) return { h: 0, s: 0, l };
-  const delta = max - min;
-  const s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-  const raw = max === r ? ((g - b) / delta) % 6 : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
-  return { h: raw * 60, s, l };
-}
-
-function hslToHex(hue: number, saturation: number, lightness: number): string {
-  const h = ((hue % 360) + 360) % 360;
-  const s = clamp(saturation, 0, 1);
-  const l = clamp(lightness, 0, 1);
-  const channel = (offset: number): number => {
-    const k = (offset + h / 30) % 12;
-    const a = s * Math.min(l, 1 - l);
-    const value = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
-    return Math.round(value * 255);
-  };
-  const byte = (value: number) => value.toString(16).padStart(2, '0');
-  return `#${byte(channel(0))}${byte(channel(8))}${byte(channel(4))}`;
-}
+export type { GroupId, LampKey, Param, ParamGroup, Toggle };
+export { clamp, tidy, toDeg, toRad, wrapDeg, hexToHsl, hslToHex, spherical };
 
 /** Hue / saturation / lightness sliders over one hex, without a palette anywhere. */
 function colourParams(
@@ -196,18 +131,6 @@ function withCrop(slot: Slot, patch: { size?: number; x?: number; y?: number }):
   crop.x = tidy(clamp(crop.x, 0, 1 - crop.w));
   crop.y = tidy(clamp(crop.y, 0, 1 - crop.h));
   return { ...slot, preset: { ...slot.preset, crop } };
-}
-
-function spherical(pos: Vec3): { az: number; el: number; r: number } {
-  const dx = pos[0] - LIGHT_TARGET[0];
-  const dy = pos[1] - LIGHT_TARGET[1];
-  const dz = pos[2] - LIGHT_TARGET[2];
-  const r = Math.hypot(dx, dy, dz) || 1;
-  return {
-    az: toDeg(Math.atan2(dx, dz)),
-    el: toDeg(Math.asin(clamp(dy / r, -1, 1))),
-    r,
-  };
 }
 
 function setLamp(

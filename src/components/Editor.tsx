@@ -8,6 +8,7 @@ import type { Slot } from '../preset/variants';
 import { PastePill } from './PastePill';
 import { PresetCard } from './PresetCard';
 import { SkinDrop } from './SkinDrop';
+import { UsernamePill } from './UsernamePill';
 import { BannerSection } from './BannerSection';
 import { RefreshIcon, FullscreenIcon } from './icons';
 
@@ -166,6 +167,7 @@ export function Editor() {
 
       <aside className="rail">
         <SkinDrop variant="pill" />
+        <UsernamePill variant="rail" />
 
         <div className="cutout">
           {cutout ? (

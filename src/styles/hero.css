@@ -1,0 +1,102 @@
+/* ---------- Onload ---------- */
+
+.onload {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding-bottom: 3.4vh;
+}
+
+.onload-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.onload-logo {
+  width: clamp(140px, 13.54vw, 300px);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(4px, 0.56vw, 12px);
+  margin-top: clamp(16px, 2.79vw, 60px);
+  height: clamp(44px, 4.33vw, 96px);
+  padding: 0 clamp(14px, 1.26vw, 28px);
+  border-radius: 999px;
+  background: var(--action-primary);
+  color: var(--action-primary-text);
+  font-family: 'serif', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(19px, 2.09vw, 46px);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cta:hover {
+  background: var(--action-primary-hover);
+}
+
+.cta-icon {
+  width: clamp(18px, 2.3vw, 50px);
+  height: auto;
+  flex: none;
+}
+
+/* ---------- Paste pill ---------- */
+
+.paste {
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.7vw, 14px);
+  min-height: 44px;
+  height: clamp(44px, 3.42vw, 76px);
+  padding: 0 clamp(10px, 0.9vw, 22px);
+  border-radius: 999px;
+  background: var(--accent-dim);
+}
+
+.paste-hero {
+  width: clamp(120px, 11.73vw, 270px);
+  margin-top: clamp(6px, 0.7vw, 16px);
+}
+
+.paste:focus-within {
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.paste-error,
+.paste-error:focus-within {
+  box-shadow: 0 0 0 2px var(--text-error);
+}
+
+.paste-icon {
+  width: clamp(14px, 2.03vw, 44px);
+  height: auto;
+  flex: none;
+  color: var(--accent-ink);
+}
+
+.paste-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--accent-ink);
+  font-family: 'serif', Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(11px, 1.4vw, 30px);
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.paste-input::placeholder {
+  color: color-mix(in srgb, var(--accent-ink) 70%, transparent);
+}

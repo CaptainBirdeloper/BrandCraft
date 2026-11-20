@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
-import type { BannerCard } from '../banner/cards';
 import { STRIP_ASPECT } from '../banner/layout';
 import {
   contentHeight,
   layoutFor,
-  offsetOf,
   renderWidth,
   windowFor,
   type Metrics,
 } from '../feed/metrics';
 import { prng, seedAt, wildBanner, wildSlot } from '../feed/wild';
-import type { BannerSpec } from '../preset/banner';
-import type { Slot } from '../preset/variants';
+import { FeedCell } from '../feed/FeedCell';
+import type { FeedItem, FeedKind } from '../feed/types';
 import { renderBannerPreview } from '../render/banner';
 import { renderPreset } from '../render/render';
 import { useAppStore } from '../store';
-import { DownloadIcon, PencilIcon, RefreshIcon } from './icons';
+import { RefreshIcon } from './icons';
 
 /**
  * The fullscreen feed. Cards are placed from their id, not from their slot in a
@@ -25,17 +23,8 @@ import { DownloadIcon, PencilIcon, RefreshIcon } from './icons';
  * other render in the app.
  */
 
-interface FeedItem {
-  id: number;
-  status: 'queued' | 'rendering' | 'ready' | 'error';
-  slot: Slot;
-  url: string | null;
-  spec?: BannerSpec;
-  card?: BannerCard;
-}
-
 interface FeedProps {
-  kind: 'pfp' | 'banner';
+  kind: FeedKind;
   /** Mounted but covered by another page: keep the cards, stop the loop. */
   hidden: boolean;
 }
@@ -146,6 +135,14 @@ export function Feed({ kind, hidden }: FeedProps) {
     });
   }, [sync]);
 
+  useEffect(() => {
+    return () => {
+      if (frame.current) {
+        window.cancelAnimationFrame(frame.current);
+      }
+    };
+  }, []);
+
   /** Visible cards first, then whatever else is queued. */
   const pick = useCallback((): number | null => {
     const { from, to } = keep.current;
@@ -239,6 +236,7 @@ export function Feed({ kind, hidden }: FeedProps) {
           if (items.current.get(id) === item) {
             item.url = url;
             item.status = 'ready';
+            failures = 0;
           }
         } catch (error) {
           failures += 1;
@@ -290,55 +288,17 @@ export function Feed({ kind, hidden }: FeedProps) {
     const list: FeedItem[] = [];
     for (const item of items.current.values()) list.push(item);
     list.sort((a, b) => a.id - b.id);
-    return list.map((item) => {
-      const { left, top } = offsetOf(item.id, m);
-      const style = { left, top, width: m.cellW, height: m.cellH };
-      const label = item.slot.preset.label;
-      return (
-        <div key={item.id} className="feed-cell" style={style}>
-          {item.url ? (
-            <img className="feed-cell-img" src={item.url} alt={label} draggable={false} />
-          ) : (
-            <span className="feed-cell-placeholder">
-              {item.status === 'error' ? 'Skipped' : 'Rendering'}
-            </span>
-          )}
-          <div className="feed-cell-actions">
-            {kind === 'banner' ? (
-              <button
-                type="button"
-                className="circle"
-                aria-label={`Download ${label}`}
-                onClick={() => {
-                  if (item.spec && item.card) openFeedBannerDownload(item.spec, item.card);
-                }}
-              >
-                <DownloadIcon />
-              </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className="circle"
-                  aria-label={`Edit ${label}`}
-                  onClick={() => openEdit(item.slot)}
-                >
-                  <PencilIcon />
-                </button>
-                <button
-                  type="button"
-                  className="circle"
-                  aria-label={`Download ${label}`}
-                  onClick={() => openFeedDownload(item.slot)}
-                >
-                  <DownloadIcon />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      );
-    });
+    return list.map((item) => (
+      <FeedCell
+        key={item.id}
+        item={item}
+        metrics={m}
+        kind={kind}
+        onEdit={openEdit}
+        onDownload={openFeedDownload}
+        onBannerDownload={openFeedBannerDownload}
+      />
+    ));
     // `version` stands in for the mutable item map.
   }, [version, metrics, kind, openEdit, openFeedDownload, openFeedBannerDownload]);
 

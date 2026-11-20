@@ -50,24 +50,41 @@ src\preset\variants.ts -> Variant/Slot types, BackdropSpec {style flat|riso, pit
 src\preset\randomize.ts -> seeded mulberry32: randomVariant/randomRig/randomizeSlots/nextSeed/seedFromSearch (hue maths only, no palette); backdrop pitch 0.013-0.021, ink2 70%
 
 Screens and widgets
-src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), paste-code form
-src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll + 4-col card grid) and right rail (Replace Skin pill, cutout square, paste form, toast, logo); owns the card batch render
+src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), username fetch pill, paste-code form
+src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll + 4-col card grid) and right rail (Replace Skin pill, UsernamePill, cutout square, paste form, toast, logo); owns the card batch render
 src\components\PresetCard.tsx -> card div + absolute select button + hover action circles (copy code, edit, download)
 src\components\DownloadScreen.tsx -> full-page download view: ESC hint, preview square, 1k/2k/4k pills
 src\components\BannerSection.tsx -> banner block under the grid: .banners-head (title + one .refresh for all four), .banners-grid of BannerTile (strip preview at CARD_WIDTH 1240, text/font pills, download -> 2560 frame or 1546 strip)
+src\components\UsernamePill.tsx -> shared username skin fetch form (hero + rail): Enter fetches via Crafthead/Minotar cascade
 src\components\PastePill.tsx -> shared paste-code form (hero + rail): Enter or clipboard paste loads the code
 src\components\SkinDrop.tsx -> shared skin upload: hidden file input + FileReader + drag/drop; variant "cta" (hero) or "pill" (rail)
-src\components\icons.tsx -> inline SVG icons (Upload, Replace, Paste, Copy, Edit, Download), stroke currentColor
+src\components\icons.tsx -> inline SVG icons (Upload, Replace, Paste, Copy, Edit, Download, User), stroke currentColor
+src\skin\fetchSkin.ts -> fetchSkinByUsername: validate IGN, Crafthead -> Minotar fallback cascade, blob -> base64 data URL
 
 Edit page
-src\edit\controls.ts -> parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf/boundsOf/applyParam; TOGGLES (halftone) as {id,label,group,get,set} + togglesOf(group); HSL<->hex colours, az/el<->Vec3 lights, crop writes keep the square inside the frame
+src\edit\types.ts -> GroupId, ParamGroup, Param, Toggle, LampKey interfaces
+src\edit\math.ts -> clamp, tidy, toDeg, toRad, wrapDeg, hexToHsl, hslToHex, spherical light maths
+src\edit\controls.ts -> parameter table: GROUPS (6), PARAMS (46) as {id,label,group,min,max,step,unit,get,set}, paramsOf/boundsOf/applyParam; TOGGLES (halftone) as {id,label,group,get,set} + togglesOf(group); crop writes keep the square inside the frame
 src\edit\EditScreen.tsx -> sticky preview + scrolling 6-card control column (backdrop card opens with the two .toggle-chip buttons) + sticky footer (code chip, Done, Download); coalesced preview renders (counter at window.__bcPreviewRenders); Escape commits
 src\edit\Slider.tsx -> one labeled native range input: fixed-width value box, scaleX fill, no focus ring
 
+Feed
+src\feed\types.ts -> FeedItem, FeedKind types
+src\feed\FeedCell.tsx -> virtual feed cell component (image, actions: edit, preset/banner download)
+src\feed\metrics.ts -> layoutFor, windowFor, offsetOf, contentHeight, renderWidth
+src\feed\wild.ts -> prng, seedAt, wildSlot, wildBanner
+
 Styles and assets
 src\styles\tokens.css -> THE palette (roles in design.md, hexes only here)
-src\styles\app.css -> @font-face serif (400/700 + italics) + Inter Italic, onload, editor, rail, download, edit page, .toggle-chip
+src\styles\app.css -> root manifest importing base.css, hero.css, editor.css, download.css, responsive.css, edit.css
+src\styles\base.css -> @font-face serif (400/700 + italics) + Inter Italic, resets, #root layout
+src\styles\hero.css -> onload, logo stack, drop skin cta, paste pill
+src\styles\editor.css -> editor layout, stage, card grid, preset cards, actions, rail, pill
+src\styles\download.css -> download screen, preview container, size pills
+src\styles\responsive.css -> breakpoint media queries (max-width 1280px / 960px / 640px)
+src\styles\edit.css -> edit page, control cards, tabs, sliders, drag feedback, mobile sheet
 src\styles\banners.css -> banner section: .banners, .banners-head, .banners-grid, .banner-card + its stop-row pills; strip previews are narrow rectangles for phone viewing
+src\styles\feed.css -> fullscreen feed overlay, sticky bar, canvas, cells
 CSS naming: a new screen prefixes its classes (.edit-*, .control-*, .download-*) because app.css is one flat sheet and a generic name like .pill already belongs to the rail
 public\logo.png -> wordmark, 1785x407 tight crop
 public\fonts\ -> serif Regular/Bold/Italic/BoldItalic, Inter-Italic.ttf (variable italic 100-900)
