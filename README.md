@@ -4,7 +4,7 @@
 
 **Live Demo:** [brndcrft.vercel.app](https://brndcrft.vercel.app)
 
-Browser-native Minecraft skin renderer. Turn a skin file into print-grade profile avatars and calibrated YouTube banner art without a backend, account, or cloud queue. Everything computes client-side via WebGL.
+I got tired of booting up Blender just to make simple Minecraft PFPs and channel banners, so I built a browser tool that renders them with custom lighting and poses in a few seconds. Everything runs client-side with WebGL — no login, no backend, and your skin never leaves your browser.
 
 ![BrandCraft Studio Interface](.assets/overview.png)
 
