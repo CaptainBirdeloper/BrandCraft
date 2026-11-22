@@ -1,5 +1,5 @@
 BrandCraft
-Generated: 2026-11-11 (trimmed index: map + traps. Long-form record lives in summarybkp.txt)
+Generated: 2026-11-22 (trimmed index: map + traps. Long-form record lives in summarybkp.txt)
 Purpose: browser-only Minecraft skin renderer. Drop a skin or enter username -> 8 random preset cards (sampled per roll from pool of 16 in src\preset\slots.txt) -> tune any card on the edit page (46 sliders + 1 halftone chip over the same codec) -> download screen -> save the PNG (riso print baked in) at 1K/2K/4K. Below the grid: 4 banner cards (2 busts + wordmark, one shared refresh) that export 2560x1440 / 1546x423 strip.
 
 0. Reader contract
@@ -11,7 +11,7 @@ Purpose: browser-only Minecraft skin renderer. Drop a skin or enter username -> 
 - Deeper detail: docs\design.md (why + traps), docs\instruction.md (share-code spec), docs\summarybkp.txt (every CSS class, every module function, token tables).
 
 1. Files
-Folder layout: src\lighting\ (WebGL lighting plugin + rig maths), src\render\ (viewer, batches, editor preview, pose registration, banner busts), src\banner\ (banner geometry, compose, wordmark, banner lighting), src\preset\ (preset types, slots.txt + parser, codec, variants + backdrop engine, banner spec, randomizer), src\edit\ (parameter table, edit page, slider), src\components\ (screens and shared widgets), src\styles\; root keeps App.tsx, main.tsx, motion.ts, store.ts.
+Folder layout: src\lighting\ (WebGL lighting plugin + rig maths), src\render\ (viewer, batches, editor preview, pose registration, banner busts, colorgrade), src\banner\ (banner geometry, compose, wordmark, banner lighting), src\card\ (procedural collector card engine, layouts, compose, types), src\preset\ (preset types, slots.txt + parser, codec, variants + backdrop engine, banner spec, randomizer), src\edit\ (parameter table, edit page, slider), src\feed\ (infinite feed scroller, cell, metrics, wild recipes), src\components\ (screens and shared widgets), src\styles\; root keeps App.tsx, main.tsx, motion.ts, store.ts.
 
 Build config
 index.html -> Vite entry; #root mount, module script /src/main.tsx, data-theme=dark
@@ -23,11 +23,12 @@ start.cmd -> double-click launcher: finds node (PATH, then $USERPROFILE\.dsh bun
 App shell
 src\main.tsx -> createRoot(#root).render(MotionConfig + LazyMotion(domAnimation, strict) > App); imports tokens.css then app.css
 src\App.tsx -> screen switch inside AnimatePresence (hero/editor/edit/download keys, pages overlap); edit falls back to the grid when editDraft is null; reads #c= hash once on mount
-src\store.ts -> zustand: skinUrl, skinName, seed, slots, slot, customSlot, codeError, screen (editor|edit|download), editDraft, returnTo, toast + setSkin/selectPreset/setCustomPreset/setCodeError/reroll/openEdit/updateDraft/commitEdit/openDownload/closeDownload/showToast/clearToast
+src\store.ts -> zustand: skinUrl, skinName, seed, slots, slot, customSlot, codeError, screen (editor|edit|download), editDraft, returnTo, toast, feedOpen, feedKind (preset|banner|card), cardUsername, cardQuote, cardTextColor + setSkin/selectPreset/setCustomPreset/setCodeError/reroll/openEdit/updateDraft/commitEdit/openDownload/closeDownload/showToast/clearToast/openFeed/closeFeed/setCardSpec
 src\motion.ts -> shared springs SMOOTH/SNAPPY/BOUNCY/FAST, TAP/TAP_TRANSITION, gridVariants (35ms stagger), cardVariants, screenVariants
 
 Render + lighting
 src\render\render.ts -> lazy WebGL viewer with the lighting plugin; renderPresets() one-pass batch of bust crops (contact shadow over the variant backdrop); renderPreset() single-card wrapper; renderCutout() upright full body, alpha-trimmed; renderPreview()/clearPreviewCache() for the editor
+src\render\colorgrade.ts -> applyColorGrade(ctx, w, h, preset): 6 cinematic tone curves (warm-film, cool-cyber, noir-contrast, muted-retro, sunset-pop, emerald-haze) via single getImageData buffer index pass
 src\render\poses.ts -> ensurePose(name, bones) registers one animation per name; poseKey(bones) FNV hash so an edited bone set gets its own animation
 src\lighting\lighting.ts -> custom WebGL renderer plugin: patched GLSL lighting model + per-draw uniform injection
 src\lighting\lightrig.ts -> LightRig/LightSource/RigColors, LIGHT_TARGET, DEFAULT_RIG, clampRig, resolveRigColors, darkenRgba, serializeRig/parseRig
@@ -41,6 +42,14 @@ src\banner\lighting.ts -> mirrorRig(rig) + bannerRig(family, slot, side: 0|1): p
 src\banner\cards.ts -> BANNER_COUNT 4, BannerCard, bannerCard(index, seed)/bannerCards(seed): per-card pose/spec/copy, no shared state
 src\preset\banner.ts -> BannerSpec, DEFAULT_BANNER_SPEC, BANNER_SPEC_DEFAULTS, BANNER_SIZES [1280,2048,2560], BANNER_FONTS, RIG_FAMILIES flat|editorial|rim, TEXT_SCALES, PAIR_OFFSETS, BANNER_TEXT_MAX 16, DEFAULT_BANNER_TEXT, clampBannerText()
 
+Collector Cards
+src\card\procedural.ts -> compileProceduralCard(seed, spec) + drawProceduralCard(ctx, w, h, recipe, pfpCanvas): mulberry32 PRNG, 5 distinct archetypes (asymmetric-split, editorial-cover, swiss-matrix, trading-inset, minimalist-poster), 8 palettes, dynamic framing, auto-wrapped typography (drawWrapped), graphic motifs (barcodes, crosshairs, rules, tags)
+src\card\CardSection.tsx -> .cards-section below banners: header with username, quote, text color picker, fullscreen feed toggle; direct <canvas ref> preview, decoupled 3D bust caching ([slot, skinUrl]) for 60fps typing, spring split download pills (1k/2k/4k)
+src\card\types.ts -> CardSpec, ProceduralCardRecipe, CardArchetype, Palette interfaces
+src\card\compose.ts -> composeCard(): multi-layer 2D canvas compositor
+src\card\bevel.ts -> drawGlassBevel(): micro-beveled glass card border accents
+src\card\index.ts -> public card exports (CardSection, compileProceduralCard, drawProceduralCard, etc.)
+
 Preset data
 src\preset\slots.txt -> THE preset menu: one `Label: MC1|...` share code per line, grid order
 src\preset\slots.ts -> parses slots.txt at boot into SLOTS; bad lines warn + skip; empty file throws
@@ -51,7 +60,7 @@ src\preset\randomize.ts -> seeded mulberry32: randomVariant/randomRig/randomizeS
 
 Screens and widgets
 src\components\Hero.tsx -> onload: /logo.png wordmark, yellow "Drop Skin" pill (<SkinDrop variant="cta">), username fetch pill, paste-code form
-src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll + 4-col card grid) and right rail (Replace Skin pill, UsernamePill, cutout square, paste form, toast, logo); owns the card batch render
+src\components\Editor.tsx -> editor (m.main screenVariants): stage (title + icon-only reroll + 4-col card grid, BannerSection, CardSection) and right rail (Replace Skin pill, UsernamePill, cutout square, paste form, toast, logo); owns the card batch render
 src\components\PresetCard.tsx -> card div + absolute select button + hover action circles (copy code, edit, download)
 src\components\DownloadScreen.tsx -> full-page download view: ESC hint, preview square, 1k/2k/4k pills
 src\components\BannerSection.tsx -> banner block under the grid: .banners-head (title + one .refresh for all four), .banners-grid of BannerTile (strip preview at CARD_WIDTH 1240, text/font pills, download -> 2560 frame or 1546 strip)
@@ -69,14 +78,15 @@ src\edit\EditScreen.tsx -> sticky preview + scrolling 6-card control column (bac
 src\edit\Slider.tsx -> one labeled native range input: fixed-width value box, scaleX fill, no focus ring
 
 Feed
-src\feed\types.ts -> FeedItem, FeedKind types
-src\feed\FeedCell.tsx -> virtual feed cell component (image, actions: edit, preset/banner download)
+src\feed\types.ts -> FeedItem (preset|banner|cardRecipe), FeedKind ('preset'|'banner'|'card')
+src\components\Feed.tsx -> fullscreen virtualized infinite scroll feed: aspect 1:1 (preset), 2560:1440 (banner), 3:4 (card); card header controls (username, quote, color) with live in-place invalidation of feed queue
+src\feed\FeedCell.tsx -> virtual feed cell component (image, actions: edit, preset/banner/card download with spring-split 1k/2k/4k pills)
 src\feed\metrics.ts -> layoutFor, windowFor, offsetOf, contentHeight, renderWidth
-src\feed\wild.ts -> prng, seedAt, wildSlot, wildBanner
+src\feed\wild.ts -> prng, seedAt, wildSlot, wildBanner, wildCardRecipe
 
 Styles and assets
 src\styles\tokens.css -> THE palette (roles in design.md, hexes only here)
-src\styles\app.css -> root manifest importing base.css, hero.css, editor.css, download.css, responsive.css, edit.css
+src\styles\app.css -> root manifest importing base.css, hero.css, editor.css, download.css, responsive.css, edit.css, banners.css, feed.css, card.css
 src\styles\base.css -> @font-face serif (400/700 + italics) + Inter Italic, resets, #root layout
 src\styles\hero.css -> onload, logo stack, drop skin cta, paste pill
 src\styles\editor.css -> editor layout, stage, card grid, preset cards, actions, rail, pill
@@ -84,7 +94,8 @@ src\styles\download.css -> download screen, preview container, size pills
 src\styles\responsive.css -> breakpoint media queries (max-width 1280px / 960px / 640px)
 src\styles\edit.css -> edit page, control cards, tabs, sliders, drag feedback, mobile sheet
 src\styles\banners.css -> banner section: .banners, .banners-head, .banners-grid, .banner-card + its stop-row pills; strip previews are narrow rectangles for phone viewing
-src\styles\feed.css -> fullscreen feed overlay, sticky bar, canvas, cells
+src\styles\card.css -> card section: .cards-section padding parity with .banners (0 clamp(12px, 2.06vw, 48px) clamp(20px, 4vw, 64px) clamp(12px, 1.83vw, 40px)), .card-preview-canvas, .card-sizes-group, .card-size-pill, .color-pill, split download buttons
+src\styles\feed.css -> fullscreen feed overlay, sticky bar, canvas, cells, card feed header controls
 CSS naming: a new screen prefixes its classes (.edit-*, .control-*, .download-*) because app.css is one flat sheet and a generic name like .pill already belongs to the rail
 public\logo.png -> wordmark, 1785x407 tight crop
 public\fonts\ -> serif Regular/Bold/Italic/BoldItalic, Inter-Italic.ttf (variable italic 100-900)
@@ -98,6 +109,7 @@ Pipeline: File input -> FileReader.readAsDataURL -> store.skinUrl -> shared offs
 Cutout pipeline: same viewer, full body, no animation (bind pose), zoom 40 -> screenshot -> scan alpha -> trim to ink box -> scale long edge -> data URL.
 Editor preview: renderPreview() at a 2048 master, character cached per skin+camera+pose+light, 2D layers recomposed per keystroke.
 Banner pipeline: store.bannerSeed -> bannerCards(seed) -> 2 bust captures (pose per card, side rig) -> trimBust -> 2D compose at the requested width (halftone + figures + wordmark) -> canvas.toDataURL -> tile img / <a download>. Export widths 2560x1440 frame, 1546x423 strip, JPEG 0.92 fallback under the 6 MB cap.
+Card pipeline: 1 bust render from shared viewer cached into offscreen canvas ([slot, skinUrl]) -> 2D procedural layout compile (5 archetypes, typography wrapping, barcodes/graphics) -> draw to direct <canvas ref> or export canvas (1K: 900x1200, 2K: 1800x2400, 4K: 3600x4800). Text/color editing runs purely in 2D at 60fps without touching 3D WebGL renderer. Infinite feed generates procedural recipes per wild seed.
 Skin never leaves the machine; no network calls at runtime.
 
 3. Endpoints
@@ -144,3 +156,7 @@ Verify gotchas: `goto` substitutes $url only when a step's value is exactly "$ur
 - One .refresh owns all four banner cards: seed bump -> new poses + specs for every card. Never per-card refresh buttons, and never a refresh that also re-rolls the PFPs.
 - Dev server on 5173 can serve stale transforms (OneDrive breaks the Vite watcher): the built preview on 4173 and the on-disk source disagreeing means restart vite, not edit code. Never restart it yourself.
 - .banners-head must contain the refresh button beside the title, level with it and the same width as the PFP refresh; the banner-section probe counts exactly 1.
+- Card WebGL decoupling: 3D skin bust render is slow; never invoke WebGL viewer on card text/color changes. Cache bust canvas keyed on [slot, skinUrl] and recompose procedural 2D layers for 60fps responsiveness.
+- Canvas read discipline: read canvas once with getImageData(0, 0, W, H) and index the pixel buffer directly; never call getImageData(x, y, 1, 1) in a loop.
+- Card padding parity: .cards-section must strictly match .banners horizontal padding (0 clamp(12px, 2.06vw, 48px) clamp(20px, 4vw, 64px) clamp(12px, 1.83vw, 40px)) to prevent right rail collision.
+- Feed live invalidation: editing card username, quote, or color in store must invalidate the active queue in Feed.tsx in place without re-rolling procedural seeds or resetting scroll position.
