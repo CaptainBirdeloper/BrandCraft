@@ -12,6 +12,7 @@ import type { Preset } from '../preset/presets';
 import { randomRig } from '../preset/randomize';
 import { SLOTS } from '../preset/slots';
 import type { Slot, StarSpec, Variant } from '../preset/variants';
+import { randomColorgrade } from '../render/colorgrade';
 
 /**
  * The fullscreen feed's own randomizer. `randomizeSlots` deliberately keeps the
@@ -118,6 +119,7 @@ export function wildVariant(rand: () => number): Variant {
       glow: rand() < ON,
       vignette: rand() < ON,
     },
+    colorgrade: randomColorgrade(rand),
   };
 }
 

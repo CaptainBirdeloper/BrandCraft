@@ -11,6 +11,7 @@ import { PresetCard } from './PresetCard';
 import { SkinDrop } from './SkinDrop';
 import { UsernamePill } from './UsernamePill';
 import { BannerSection } from './BannerSection';
+import { CardSection } from '../card/CardSection';
 import { RefreshIcon, FullscreenIcon } from './icons';
 
 const CARD_SIZE = 512;
@@ -164,6 +165,7 @@ export function Editor() {
         </section>
 
         <BannerSection />
+        <CardSection />
       </div>
 
       <aside className="rail">

@@ -13,6 +13,7 @@ import type { FeedItem, FeedKind } from '../feed/types';
 import { clampBannerText } from '../preset/banner';
 import { renderBannerPreview } from '../render/banner';
 import { renderPreset } from '../render/render';
+import { generateCardRecipe, renderCardRecipe } from '../card/procedural';
 import { useAppStore } from '../store';
 import { RefreshIcon } from './icons';
 
@@ -54,6 +55,16 @@ function revokeBlob(url: string | null | undefined): void {
   if (url && url.startsWith('blob:')) URL.revokeObjectURL(url);
 }
 
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
 export function Feed({ kind, hidden }: FeedProps) {
   const skinUrl = useAppStore((s) => s.skinUrl);
   const lastCommit = useAppStore((s) => s.lastCommit);
@@ -64,6 +75,10 @@ export function Feed({ kind, hidden }: FeedProps) {
   const showToast = useAppStore((s) => s.showToast);
   const banners = useAppStore((s) => s.banners);
   const setBanner = useAppStore((s) => s.setBanner);
+  const cardUsername = useAppStore((s) => s.cardUsername);
+  const cardQuote = useAppStore((s) => s.cardQuote);
+  const cardTextColor = useAppStore((s) => s.cardTextColor);
+  const setCardSpec = useAppStore((s) => s.setCardSpec);
 
   const initialWordmark = banners[0]?.text ?? 'Subscribe';
   const [wordmark, setWordmark] = useState(initialWordmark);
@@ -81,7 +96,7 @@ export function Feed({ kind, hidden }: FeedProps) {
   const tail = useRef(-1);
   const frame = useRef(0);
 
-  const aspect = kind === 'banner' ? STRIP_ASPECT : 1;
+  const aspect = kind === 'banner' ? STRIP_ASPECT : kind === 'card' ? 3 / 4 : 1;
   const metrics = useMemo<Metrics | null>(
     () => (box.width > 0 && box.height > 0 ? layoutFor(box.width, box.height, aspect) : null),
     [box.width, box.height, aspect],
@@ -127,6 +142,33 @@ export function Feed({ kind, hidden }: FeedProps) {
     return () => window.clearTimeout(timer);
   }, [wordmark, kind, setBanner]);
 
+  // Invalidate card items in place when username, quote, or textColor changes
+  useEffect(() => {
+    if (kind !== 'card') return;
+    const store = useAppStore.getState();
+    const uname = store.cardUsername || store.skinName || 'BUILDER';
+    const q = store.cardQuote || 'built with stone and fire';
+    const col = store.cardTextColor || '#FFFF00';
+
+    let touched = false;
+    items.current.forEach((item) => {
+      if (item.cardRecipe) {
+        item.cardRecipe.spec.username = uname;
+        item.cardRecipe.spec.quote = q;
+        item.cardRecipe.spec.textColor = col;
+        item.cardRecipe.palette.text = col;
+        item.cardRecipe.palette.accent = col;
+        if (item.url) {
+          revokeBlob(item.url);
+          item.url = null;
+        }
+        item.status = 'queued';
+        touched = true;
+      }
+    });
+    if (touched) bump();
+  }, [cardUsername, cardQuote, cardTextColor, kind]);
+
   const handleWordmarkChange = (val: string) => {
     const sanitized = clampBannerText(val);
     setWordmark(sanitized);
@@ -139,6 +181,18 @@ export function Feed({ kind, hidden }: FeedProps) {
       if (kind === 'banner') {
         const wild = wildBanner(rand, cardId, id, wordmarkRef.current);
         return { id, status: 'queued', slot: wild.slot, url: null, spec: wild.spec, card: wild.card };
+      }
+      if (kind === 'card') {
+        const slot = wildSlot(rand, cardId, `Card ${id + 1}`);
+        const cardSeed = seedAt(seed, id);
+        const store = useAppStore.getState();
+        const recipe = generateCardRecipe(cardSeed, {
+          username: store.cardUsername || store.skinName || 'BUILDER',
+          quote: store.cardQuote || 'built with stone and fire',
+          textColor: store.cardTextColor || '#FFFF00',
+          seed: cardSeed,
+        });
+        return { id, status: 'queued', slot, url: null, cardRecipe: recipe };
       }
       return { id, status: 'queued', slot: wildSlot(rand, cardId, `Wild ${id + 1}`), url: null };
     },
@@ -286,16 +340,30 @@ export function Feed({ kind, hidden }: FeedProps) {
         bump();
         try {
           const m = metricsRef.current ?? FALLBACK;
-          const url =
-            item.spec && item.card
-              ? // The download page re-renders banners at export size; the feed only needs card sharpness.
-                await renderBannerPreview(
-                  item.spec,
-                  item.card,
-                  skin,
-                  Math.min(renderWidth(m, STRIP_ASPECT), 1240),
-                )
-              : await renderPreset(item.slot, skin, renderWidth(m, 1));
+          let url: string;
+          if (kind === 'card' && item.cardRecipe) {
+            const bustUrl = await renderPreset(item.slot, skin, 512);
+            try {
+              const bustImg = await loadImage(bustUrl);
+              const canvas = renderCardRecipe(item.cardRecipe, bustImg, undefined, 720, 960);
+              const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/png'));
+              canvas.width = 0;
+              canvas.height = 0;
+              if (!blob) throw new Error('Blob creation failed');
+              url = URL.createObjectURL(blob);
+            } finally {
+              if (bustUrl.startsWith('blob:')) URL.revokeObjectURL(bustUrl);
+            }
+          } else if (item.spec && item.card) {
+            url = await renderBannerPreview(
+              item.spec,
+              item.card,
+              skin,
+              Math.min(renderWidth(m, STRIP_ASPECT), 1240),
+            );
+          } else {
+            url = await renderPreset(item.slot, skin, renderWidth(m, 1));
+          }
           if (items.current.get(id) === item && item.status === 'rendering') {
             item.url = url;
             item.status = 'ready';
@@ -397,11 +465,11 @@ export function Feed({ kind, hidden }: FeedProps) {
       className="feed"
       hidden={hidden}
       role="region"
-      aria-label={kind === 'banner' ? 'Fullscreen banner feed' : 'Fullscreen preset feed'}
+      aria-label={kind === 'banner' ? 'Fullscreen banner feed' : kind === 'card' ? 'Fullscreen card feed' : 'Fullscreen preset feed'}
     >
       <div className="feed-bar">
         <span className="feed-meta">
-          {kind === 'banner' ? 'Banners' : 'Presets'} · endless · {liveCount} live · seed{' '}
+          {kind === 'banner' ? 'Banners' : kind === 'card' ? 'Cards' : 'Presets'} · endless · {liveCount} live · seed{' '}
           {seed.toString(36)}
         </span>
         {kind === 'banner' ? (
@@ -415,6 +483,38 @@ export function Feed({ kind, hidden }: FeedProps) {
               aria-label="Customize banner wordmark"
               onChange={(e) => handleWordmarkChange(e.target.value)}
             />
+          </div>
+        ) : kind === 'card' ? (
+          <div style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}>
+            <div className="wordmark-pill">
+              <input
+                type="text"
+                className="wordmark-input"
+                value={cardUsername || skinUrl ? (cardUsername || useAppStore.getState().skinName || '') : ''}
+                placeholder="Username"
+                aria-label="Customize card username"
+                onChange={(e) => setCardSpec({ username: e.target.value })}
+              />
+            </div>
+            <div className="wordmark-pill">
+              <input
+                type="text"
+                className="wordmark-input"
+                value={cardQuote}
+                placeholder="Quote"
+                aria-label="Customize card quote"
+                onChange={(e) => setCardSpec({ quote: e.target.value })}
+              />
+            </div>
+            <div className="wordmark-pill color-pill" title="Text color">
+              <input
+                type="color"
+                className="card-color-input"
+                value={cardTextColor}
+                aria-label="Customize card text color"
+                onChange={(e) => setCardSpec({ textColor: e.target.value })}
+              />
+            </div>
           </div>
         ) : null}
         <button

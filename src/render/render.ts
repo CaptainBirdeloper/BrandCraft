@@ -4,6 +4,7 @@ import type { Crop } from '../preset/presets';
 import { ensurePose } from './poses';
 import type { Slot, Variant } from '../preset/variants';
 import { DEFAULT_VARIANT, drawLayers } from '../preset/variants';
+import { applyColorgrade } from './colorgrade';
 
 type Core = typeof import('@daidr/minecraft-skin-renderer');
 type Viewer = Awaited<ReturnType<Core['createSkinViewer']>>;
@@ -133,6 +134,9 @@ function cropSquare(
     size,
     size,
   );
+  if (variant.colorgrade) {
+    applyColorgrade(ctx, size, size, variant.colorgrade);
+  }
   return canvas.toDataURL('image/png');
 }
 

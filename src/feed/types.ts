@@ -1,6 +1,7 @@
 import type { BannerCard } from '../banner/cards';
 import type { BannerSpec } from '../preset/banner';
 import type { Slot } from '../preset/variants';
+import type { CardRecipe } from '../card/procedural';
 
 export interface FeedItem {
   id: number;
@@ -9,6 +10,7 @@ export interface FeedItem {
   url: string | null;
   spec?: BannerSpec;
   card?: BannerCard;
+  cardRecipe?: CardRecipe;
 }
 
-export type FeedKind = 'pfp' | 'banner';
+export type FeedKind = 'pfp' | 'banner' | 'card';

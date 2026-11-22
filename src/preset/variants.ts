@@ -1,5 +1,6 @@
 import { darkenRgba } from '../lighting/lightrig';
 import type { Preset } from './presets';
+import type { ColorgradeSpec } from '../render/colorgrade';
 
 export interface StarSpec {
   points: number;
@@ -39,6 +40,7 @@ export interface Variant {
   star: StarSpec;
   backdrop: BackdropSpec;
   elements?: VariantElements;
+  colorgrade?: ColorgradeSpec;
 }
 
 export interface Slot {

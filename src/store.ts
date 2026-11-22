@@ -30,7 +30,7 @@ interface AppState {
   /** Where closing the download page returns to. */
   returnTo: 'editor' | 'edit' | 'feed';
   /** Fullscreen feed on screen; tracked apart from `screen` so it survives a detour into the editor. */
-  feedKind: 'pfp' | 'banner' | null;
+  feedKind: 'pfp' | 'banner' | 'card' | null;
   /** Last slot written by the editor, so the feed can refresh the cell it came from. */
   lastCommit: Slot | null;
   /** A banner opened from the feed: it is not one of the four in `banners`. */
@@ -39,6 +39,10 @@ interface AppState {
   banners: BannerSpec[];
   /** Banner card the download page is showing; null means the profile photo. */
   bannerIndex: number | null;
+  cardUsername: string;
+  cardQuote: string;
+  cardTextColor: string;
+  setCardSpec: (patch: { username?: string; quote?: string; textColor?: string }) => void;
   toast: string | null;
   setSkin: (url: string, name: string) => void;
   selectPreset: (slot: Slot) => void;
@@ -51,7 +55,7 @@ interface AppState {
   openDownload: () => void;
   openBannerDownload: (index: number) => void;
   closeDownload: () => void;
-  openFeed: (kind: 'pfp' | 'banner') => void;
+  openFeed: (kind: 'pfp' | 'banner' | 'card') => void;
   closeFeed: () => void;
   openFeedDownload: (slot: Slot) => void;
   openFeedBannerDownload: (spec: BannerSpec, card: BannerCard) => void;
@@ -82,6 +86,15 @@ export const useAppStore = create<AppState>((set) => ({
   downloadBanner: null,
   banners: BANNER_SPEC_DEFAULTS.map((spec) => ({ ...spec })),
   bannerIndex: null,
+  cardUsername: '',
+  cardQuote: 'built with stone and fire',
+  cardTextColor: '#FFFF00',
+  setCardSpec: (patch) =>
+    set((state) => ({
+      cardUsername: patch.username !== undefined ? patch.username : state.cardUsername,
+      cardQuote: patch.quote !== undefined ? patch.quote : state.cardQuote,
+      cardTextColor: patch.textColor !== undefined ? patch.textColor : state.cardTextColor,
+    })),
   toast: null,
   setSkin: (url, name) => set({ skinUrl: url, skinName: name, screen: 'editor' }),
   selectPreset: (slot) => set({ slot }),

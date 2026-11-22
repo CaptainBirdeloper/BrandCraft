@@ -11,4 +11,5 @@ IT IS STRICTLY FORBIDDEN FOR ANY AGENT OR SYSTEM TO GLOSS OVER, BYPASS, OR IGNOR
 - Verification ladder: `tsc --noEmit` on intermediate refactors; run `vite build` only as final milestone gate.
 - Run `/caveman` and `/vibe-coding-essentials` when starting chat.
 - Review allowlist: prompt file list is absolute; never call `read_file` on unlisted files or traverse into callers.
-- Subagent orchestration: coordinator MUST inject AGENTS.md mandates, /caveman, and /vibe-coding-essentials directly into every subagent prompt on turn 0.
+- File Preservation: Never delete, revert (`git checkout`), or discard any files or code without explicit, affirmative user confirmation.
+- Subagent orchestration: coordinator MUST inject AGENTS.md mandates, /caveman, /vibe-coding-essentials, and the specific scope of files directly into every subagent prompt/system prompt on turn 0.

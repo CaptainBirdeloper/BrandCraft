@@ -1,6 +1,7 @@
 import { clampRig, LIGHT_TARGET } from '../lighting/lightrig';
 import type { LightRig, LightSource, Vec3 } from '../lighting/lightrig';
 import type { Slot, StarSpec, Variant } from './variants';
+import { randomColorgrade } from '../render/colorgrade';
 
 /**
  * Backdrop + star + light rig, grown from a seed. Nothing here reads a colour
@@ -70,6 +71,7 @@ export function randomVariant(rand: () => number): Variant {
       pitch: Math.round(range(rand, 0.013, 0.021) * 1000) / 1000,
       ink2: rand() < 0.7,
     },
+    colorgrade: randomColorgrade(rand),
   };
 }
 
